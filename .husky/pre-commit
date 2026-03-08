@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+cd apps/api && bun run codegen
+if [ $? -ne 0 ]; then
+  echo "❌ Codegen failed"
+  exit 1
+fi
+
+cd ../.. && bun run lint
+if [ $? -ne 0 ]; then
+  echo "❌ Lint failed"
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed"
+exit 0

@@ -6,11 +6,13 @@
 	"packageManager": "bun@1.2.2",
 	"private": true,
 	"scripts": {
+		"prepare": "husky",
 		"lint": "turbo run lint",
 		"lint:fix": "turbo run lint:fix",
 		"clean": "turbo run clean",
 		"format": "turbo run format",
 		"build": "turbo run build",
+		"postinstall": "node apps/api/scripts/install-chromium.js",
 		"api:dev": "turbo run dev --filter=api",
 		"api:prod": "turbo run prod --filter=api",
 		"build:dev": "turbo run build --filter=api",
@@ -29,6 +31,7 @@
 		"biome": "^0.3.3",
 		"dotenv": "^17.2.3",
 		"dotenv-cli": "^8.0.0",
+		"husky": "^9.1.7",
 		"turbo": "^2.5.4",
 		"typescript": "^5.7.3"
 	}

@@ -31,12 +31,12 @@ input UpdateCustomerInvoiceInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	customerinvoice(id: ID!): CustomerInvoice
 	customerinvoices(organizationId: ID!, page: Int, limit: Int, status: String): [CustomerInvoice!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createCustomerInvoice(input: CreateCustomerInvoiceInput!): CustomerInvoice!
 	updateCustomerInvoice(id: ID!, input: UpdateCustomerInvoiceInput!): CustomerInvoice!
 	deleteCustomerInvoice(id: ID!): CustomerInvoice!

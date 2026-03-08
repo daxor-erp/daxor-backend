@@ -29,12 +29,12 @@ input UpdateVendorInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	vendor(id: ID!): Vendor
 	vendors(organizationId: ID!, page: Int, limit: Int, search: String): [Vendor!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createVendor(input: CreateVendorInput!): Vendor!
 	updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
 	deleteVendor(id: ID!): Vendor!
