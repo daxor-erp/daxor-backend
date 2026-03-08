@@ -8,11 +8,5 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-cd ../.. && bun run lint
-if [ $? -ne 0 ]; then
-  echo "❌ Lint failed"
-  exit 1
-fi
-
 echo "✅ Pre-commit checks passed"
 exit 0

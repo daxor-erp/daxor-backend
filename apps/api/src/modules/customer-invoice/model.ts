@@ -10,7 +10,7 @@ const invoiceItemSchema = new Schema({
 
 const customerInvoiceSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	invoiceNumber: { type: String, required: true, unique: true },
+	invoiceNumber: { type: String, required: true },
 	salesOrderId: { type: Schema.Types.ObjectId, ref: 'SalesOrder' },
 	projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
 	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },

@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose'
 
 const organizationSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	code: { type: String, required: true, unique: true },
+	code: { type: String, required: true },
 	name: { type: String, required: true },
 	type: { type: String, enum: ['client', 'vendor', 'both'] },
 	contactPerson: { type: String },

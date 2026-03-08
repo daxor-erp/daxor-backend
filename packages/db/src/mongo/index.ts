@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { DbDataConnectionError } from '@repo/errors'
+import { DbDataCreationError } from '@repo/errors'
 
 export const connectDB = async (uri: string, debug = false) => {
 	try {
@@ -8,7 +8,7 @@ export const connectDB = async (uri: string, debug = false) => {
 		console.log('MongoDB connected successfully')
 	} catch (error) {
 		console.error('MongoDB connection error:', error)
-		throw new DbDataConnectionError('Failed to connect to MongoDB')
+		throw new DbDataCreationError('MongoDB connection')
 	}
 }
 

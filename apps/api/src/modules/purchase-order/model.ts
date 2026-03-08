@@ -10,7 +10,7 @@ const poItemSchema = new Schema({
 
 const purchaseOrderSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	poNumber: { type: String, required: true, unique: true },
+	poNumber: { type: String, required: true },
 	vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor' },
 	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	deliveryDate: { type: Date },

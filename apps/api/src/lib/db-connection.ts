@@ -7,8 +7,8 @@ export const connectDB = async (uri: string, debugMode: boolean): Promise<Connec
 	if (dbConnection) return dbConnection
 
 	try {
+		mongoose.set('debug', false)
 		const mongooseInstance = await mongoose.connect(uri)
-		if (debugMode) mongoose.set('debug', debugMode)
 		dbConnection = mongooseInstance.connection
 		logger.info('Database connected successfully')
 		return dbConnection

@@ -12,7 +12,7 @@
 		"clean": "turbo run clean",
 		"format": "turbo run format",
 		"build": "turbo run build",
-		"postinstall": "node apps/api/scripts/install-chromium.js",
+		"postinstall": "node scripts/install-chromium.js",
 		"api:dev": "turbo run dev --filter=api",
 		"api:prod": "turbo run prod --filter=api",
 		"build:dev": "turbo run build --filter=api",
