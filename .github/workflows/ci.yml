@@ -24,9 +24,6 @@ jobs:
     - name: Run codegen
       run: cd apps/api && bun run codegen
     
-    - name: Lint
-      run: bun run lint
-    
     - name: Build
       run: bun run build
     

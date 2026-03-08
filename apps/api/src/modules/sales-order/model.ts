@@ -10,7 +10,7 @@ const orderItemSchema = new Schema({
 
 const salesOrderSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	salesOrderNumber: { type: String, required: true, unique: true },
+	salesOrderNumber: { type: String, required: true },
 	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
 	orderDate: { type: Date, required: true, default: Date.now },

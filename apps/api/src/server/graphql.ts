@@ -66,9 +66,10 @@ export class GraphQLServer {
 	}
 
 	private createSchema() {
-		const rawTypeDefs = mergeTypeDefs(
-			loadFilesSync(path.join(__dirname, '..', 'modules/**/*.graphql')),
-		)
+		const rawTypeDefs = mergeTypeDefs([
+			...loadFilesSync(path.join(__dirname, '..', 'schema.graphql')),
+			...loadFilesSync(path.join(__dirname, '..', 'modules/**/*.graphql')),
+		])
 
 		const rawResolvers = mergeResolvers(
 			loadFilesSync(path.join(__dirname, '..', 'modules/**/resolvers.*')),

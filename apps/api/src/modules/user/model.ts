@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose'
 
 const userSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	email: { type: String, required: true, unique: true },
+	email: { type: String, required: true },
 	passwordHash: { type: String },
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
