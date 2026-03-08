@@ -25,12 +25,12 @@ input UpdatePurchaseOrderInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	purchaseorder(id: ID!): PurchaseOrder
 	purchaseorders(organizationId: ID!, page: Int, limit: Int, status: String): [PurchaseOrder!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
 	updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
 	deletePurchaseOrder(id: ID!): PurchaseOrder!

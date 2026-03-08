@@ -35,14 +35,14 @@ input UpdateUserInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	user(id: ID!): User
 	userByEmail(email: String!): User
 	usersByRole(role: String!): [User!]!
 	usersByOrganization(organizationId: ID!, page: Int, limit: Int, type: String, status: String, search: String): UserList!
 }
 
-type Mutation {
+extend type Mutation {
 	createUser(input: CreateUserInput!): User!
 	updateUser(id: ID!, input: UpdateUserInput!): User!
 	deleteUser(id: ID!): User!

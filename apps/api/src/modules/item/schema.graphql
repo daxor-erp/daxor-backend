@@ -29,12 +29,12 @@ input UpdateItemInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	item(id: ID!): Item
 	items(organizationId: ID!, page: Int, limit: Int, search: String): [Item!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createItem(input: CreateItemInput!): Item!
 	updateItem(id: ID!, input: UpdateItemInput!): Item!
 	deleteItem(id: ID!): Item!

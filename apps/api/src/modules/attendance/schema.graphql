@@ -23,12 +23,12 @@ input UpdateAttendanceInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	attendance(id: ID!): Attendance
 	attendances(organizationId: ID!, userId: ID, page: Int, limit: Int): [Attendance!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createAttendance(input: CreateAttendanceInput!): Attendance!
 	updateAttendance(id: ID!, input: UpdateAttendanceInput!): Attendance!
 	deleteAttendance(id: ID!): Attendance!

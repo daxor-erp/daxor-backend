@@ -1,34 +1,33 @@
 import DataLoader from 'dataloader'
 import { injectable, singleton } from 'tsyringe'
-import { UserService } from './service'
+import { ItemService } from './service'
 import { DataLoaderFactory } from '~/lib/data-loader'
 
 /**
- * UserLoaderService - Batches and caches user database queries
- * Prevents N+1 query problems when loading users in GraphQL resolvers
- * Used for resolving createdBy, updatedBy, and other user references
+ * ItemLoaderService - Batches and caches item database queries
+ * Prevents N+1 query problems when loading items in GraphQL resolvers
  */
 
 @singleton()
 @injectable()
-export class UserLoaderService {
+export class ItemLoaderService {
 	private byIdLoader: DataLoader<string, any | null>
 
 	constructor(
 		private readonly dataLoaderFactory: DataLoaderFactory,
-		private readonly userService: UserService,
+		private readonly itemService: ItemService,
 	) {
 		this.byIdLoader = this.createIdLoader()
 	}
 
 	private createIdLoader() {
 		return this.dataLoaderFactory.create<string, any>(
-			'user_by_id',
+			'item_by_id',
 			async (ids: readonly string[]): Promise<Array<any | null>> => {
-				const users = await Promise.all(ids.map(id => this.userService.findById(id)))
-				return users
+				const items = await Promise.all(ids.map(id => this.itemService.findById(id)))
+				return items
 			},
-			{ ttl: 300, prefix: 'user:id:' }
+			{ ttl: 300, prefix: 'item:id:' }
 		)
 	}
 

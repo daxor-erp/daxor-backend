@@ -26,12 +26,12 @@ input UpdateOrganizationInput {
 	status: String
 }
 
-type Query {
+extend type Query {
 	organization(id: ID!): Organization
 	organizations(page: Int, limit: Int, search: String): [Organization!]!
 }
 
-type Mutation {
+extend type Mutation {
 	createOrganization(input: CreateOrganizationInput!): Organization!
 	updateOrganization(id: ID!, input: UpdateOrganizationInput!): Organization!
 	deleteOrganization(id: ID!): Organization!
