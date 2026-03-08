@@ -1,0 +1,38 @@
+type Organization {
+	id: ID!
+	seqNo: String!
+	name: String!
+	code: String
+	address: String
+	phone: String
+	email: String
+	status: String!
+	createdAt: String!
+}
+
+input CreateOrganizationInput {
+	name: String!
+	code: String
+	address: String
+	phone: String
+	email: String
+}
+
+input UpdateOrganizationInput {
+	name: String
+	address: String
+	phone: String
+	email: String
+	status: String
+}
+
+type Query {
+	organization(id: ID!): Organization
+	organizations(page: Int, limit: Int, search: String): [Organization!]!
+}
+
+type Mutation {
+	createOrganization(input: CreateOrganizationInput!): Organization!
+	updateOrganization(id: ID!, input: UpdateOrganizationInput!): Organization!
+	deleteOrganization(id: ID!): Organization!
+}

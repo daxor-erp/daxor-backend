@@ -1,0 +1,37 @@
+type SalesOrder {
+	id: ID!
+	seqNo: String!
+	customerId: ID!
+	projectId: ID
+	totalAmount: Float!
+	status: String!
+	orderDate: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreateSalesOrderInput {
+	customerId: ID!
+	projectId: ID
+	totalAmount: Float!
+	orderDate: String!
+	organizationId: ID!
+}
+
+input UpdateSalesOrderInput {
+	customerId: ID
+	projectId: ID
+	totalAmount: Float
+	status: String
+}
+
+type Query {
+	salesorder(id: ID!): SalesOrder
+	salesorders(organizationId: ID!, page: Int, limit: Int, status: String): [SalesOrder!]!
+}
+
+type Mutation {
+	createSalesOrder(input: CreateSalesOrderInput!): SalesOrder!
+	updateSalesOrder(id: ID!, input: UpdateSalesOrderInput!): SalesOrder!
+	deleteSalesOrder(id: ID!): SalesOrder!
+}

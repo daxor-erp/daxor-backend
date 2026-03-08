@@ -1,0 +1,35 @@
+type Attendance {
+	id: ID!
+	userId: ID!
+	date: String!
+	checkIn: String
+	checkOut: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreateAttendanceInput {
+	userId: ID!
+	date: String!
+	checkIn: String
+	checkOut: String
+	organizationId: ID!
+}
+
+input UpdateAttendanceInput {
+	checkIn: String
+	checkOut: String
+	status: String
+}
+
+type Query {
+	attendance(id: ID!): Attendance
+	attendances(organizationId: ID!, userId: ID, page: Int, limit: Int): [Attendance!]!
+}
+
+type Mutation {
+	createAttendance(input: CreateAttendanceInput!): Attendance!
+	updateAttendance(id: ID!, input: UpdateAttendanceInput!): Attendance!
+	deleteAttendance(id: ID!): Attendance!
+}

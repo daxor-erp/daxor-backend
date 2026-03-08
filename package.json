@@ -1,0 +1,35 @@
+{
+	"name": "daxor.api",
+	"engines": {
+		"node": ">=22"
+	},
+	"packageManager": "bun@1.2.2",
+	"private": true,
+	"scripts": {
+		"lint": "turbo run lint",
+		"lint:fix": "turbo run lint:fix",
+		"clean": "turbo run clean",
+		"format": "turbo run format",
+		"build": "turbo run build",
+		"api:dev": "turbo run dev --filter=api",
+		"api:prod": "turbo run prod --filter=api",
+		"build:dev": "turbo run build --filter=api",
+		"build:prod": "turbo run build --filter=api"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"dependencies": {
+		"puppeteer": "^24.15.0"
+	},
+	"devDependencies": {
+		"@repo/biome-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"biome": "^0.3.3",
+		"dotenv": "^17.2.3",
+		"dotenv-cli": "^8.0.0",
+		"turbo": "^2.5.4",
+		"typescript": "^5.7.3"
+	}
+}

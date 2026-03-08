@@ -1,0 +1,38 @@
+type Project {
+	id: ID!
+	seqNo: String!
+	name: String!
+	description: String
+	startDate: String
+	endDate: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreateProjectInput {
+	name: String!
+	description: String
+	startDate: String
+	endDate: String
+	organizationId: ID!
+}
+
+input UpdateProjectInput {
+	name: String
+	description: String
+	startDate: String
+	endDate: String
+	status: String
+}
+
+type Query {
+	project(id: ID!): Project
+	projects(organizationId: ID!, page: Int, limit: Int, search: String): [Project!]!
+}
+
+type Mutation {
+	createProject(input: CreateProjectInput!): Project!
+	updateProject(id: ID!, input: UpdateProjectInput!): Project!
+	deleteProject(id: ID!): Project!
+}

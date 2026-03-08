@@ -1,0 +1,49 @@
+type User {
+	id: ID!
+	seqNo: String!
+	email: String!
+	firstName: String!
+	lastName: String!
+	userType: String
+	roles: [String!]
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+type UserList {
+	users: [User!]!
+	total: Int!
+	page: Int!
+	limit: Int!
+}
+
+input CreateUserInput {
+	email: String!
+	firstName: String!
+	lastName: String!
+	password: String
+	userType: String
+	roles: [String!]
+	organizationId: ID!
+}
+
+input UpdateUserInput {
+	firstName: String
+	lastName: String
+	roles: [String!]
+	status: String
+}
+
+type Query {
+	user(id: ID!): User
+	userByEmail(email: String!): User
+	usersByRole(role: String!): [User!]!
+	usersByOrganization(organizationId: ID!, page: Int, limit: Int, type: String, status: String, search: String): UserList!
+}
+
+type Mutation {
+	createUser(input: CreateUserInput!): User!
+	updateUser(id: ID!, input: UpdateUserInput!): User!
+	deleteUser(id: ID!): User!
+}

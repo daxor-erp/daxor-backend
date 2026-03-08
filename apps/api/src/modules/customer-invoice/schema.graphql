@@ -1,0 +1,43 @@
+type CustomerInvoice {
+	id: ID!
+	seqNo: String!
+	customerId: ID!
+	salesOrderId: ID
+	invoiceDate: String!
+	dueDate: String
+	totalAmount: Float!
+	paidAmount: Float
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreateCustomerInvoiceInput {
+	customerId: ID!
+	salesOrderId: ID
+	invoiceDate: String!
+	dueDate: String
+	totalAmount: Float!
+	organizationId: ID!
+}
+
+input UpdateCustomerInvoiceInput {
+	customerId: ID
+	salesOrderId: ID
+	invoiceDate: String
+	dueDate: String
+	totalAmount: Float
+	paidAmount: Float
+	status: String
+}
+
+type Query {
+	customerinvoice(id: ID!): CustomerInvoice
+	customerinvoices(organizationId: ID!, page: Int, limit: Int, status: String): [CustomerInvoice!]!
+}
+
+type Mutation {
+	createCustomerInvoice(input: CreateCustomerInvoiceInput!): CustomerInvoice!
+	updateCustomerInvoice(id: ID!, input: UpdateCustomerInvoiceInput!): CustomerInvoice!
+	deleteCustomerInvoice(id: ID!): CustomerInvoice!
+}

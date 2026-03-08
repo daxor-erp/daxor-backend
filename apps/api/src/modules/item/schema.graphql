@@ -1,0 +1,41 @@
+type Item {
+	id: ID!
+	seqNo: String!
+	name: String!
+	description: String
+	category: String
+	unit: String
+	rate: Float
+	organizationId: ID!
+	status: String!
+	createdAt: String!
+}
+
+input CreateItemInput {
+	name: String!
+	description: String
+	category: String
+	unit: String
+	rate: Float
+	organizationId: ID!
+}
+
+input UpdateItemInput {
+	name: String
+	description: String
+	category: String
+	unit: String
+	rate: Float
+	status: String
+}
+
+type Query {
+	item(id: ID!): Item
+	items(organizationId: ID!, page: Int, limit: Int, search: String): [Item!]!
+}
+
+type Mutation {
+	createItem(input: CreateItemInput!): Item!
+	updateItem(id: ID!, input: UpdateItemInput!): Item!
+	deleteItem(id: ID!): Item!
+}

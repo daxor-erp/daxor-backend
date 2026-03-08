@@ -1,0 +1,1 @@
+export { getNextSequence } from './model';

@@ -1,0 +1,22 @@
+{
+	"private": true,
+	"type": "module",
+	"version": "0.0.0",
+	"name": "@repo/observability",
+	"scripts": {
+		"type-check": "tsc --noEmit",
+		"lint": "tsc --noEmit && biome lint .",
+		"lint:fix": "biome lint . --write && biome format . --write",
+		"format": "biome format . --write"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./logger": "./src/logger.ts",
+		"./metrics": "./src/metrics.ts"
+	},
+	"devDependencies": {
+		"@repo/biome-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"typescript": "^5.7.3"
+	}
+}

@@ -1,0 +1,37 @@
+type PurchaseOrder {
+	id: ID!
+	seqNo: String!
+	vendorId: ID!
+	projectId: ID
+	totalAmount: Float!
+	status: String!
+	orderDate: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreatePurchaseOrderInput {
+	vendorId: ID!
+	projectId: ID
+	totalAmount: Float!
+	orderDate: String!
+	organizationId: ID!
+}
+
+input UpdatePurchaseOrderInput {
+	vendorId: ID
+	projectId: ID
+	totalAmount: Float
+	status: String
+}
+
+type Query {
+	purchaseorder(id: ID!): PurchaseOrder
+	purchaseorders(organizationId: ID!, page: Int, limit: Int, status: String): [PurchaseOrder!]!
+}
+
+type Mutation {
+	createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
+	updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
+	deletePurchaseOrder(id: ID!): PurchaseOrder!
+}

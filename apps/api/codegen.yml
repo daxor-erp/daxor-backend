@@ -1,0 +1,29 @@
+overwrite: true
+schema: './src/modules/**/*.graphql'
+generates:
+  ./src/types/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      enumsAsTypes: false
+      useTypeImports: true
+      avoidOptionals: true
+      useIndexSignature: true
+      defaultMapper: Partial<{T}>
+      strictScalars: true
+      makeResolverTypeCallable: true
+      resolverTypeWrapperSignature: 'Promise<T> | T'
+      contextType: '~/types/graphql.context#GraphQLContext'
+      mappers:
+        Context: '~/types/graphql.context#GraphQLContext'
+      scalars:
+        URL: String
+        Timestamp: number
+        Time: number
+        ObjectID: 'mongodb#ObjectId'
+        JSON: '{ [key: string]: any }'
+
+hooks:
+  afterAllFileWrite:
+    - biome format ./src/types/graphql.ts --write

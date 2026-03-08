@@ -1,0 +1,28 @@
+{
+	"name": "@repo/errors",
+	"private": true,
+	"type": "module",
+	"version": "0.0.0",
+	"scripts": {
+		"type-check": "tsc --noEmit",
+		"lint": "tsc --noEmit && biome lint .",
+		"lint:fix": "biome lint . --write && biome format . --write",
+		"format": "biome format . --write"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./db": "./src/db.error.ts",
+		"./api": "./src/api.error.ts",
+		"./base": "./src/base.error.ts",
+		"./graphql": "./src/graphql.error.ts"
+	},
+	"dependencies": {
+		"graphql": "^16.10.0",
+		"http-errors": "^2.0.0"
+	},
+	"devDependencies": {
+		"@repo/biome-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"typescript": "^5.7.3"
+	}
+}

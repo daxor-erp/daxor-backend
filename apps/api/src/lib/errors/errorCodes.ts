@@ -1,0 +1,34 @@
+/**
+ * Error Codes
+ */
+
+export const ERROR_CODES = {
+  // Validation Errors (400)
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INVALID_INPUT: 'INVALID_INPUT',
+  
+  // Authentication Errors (401)
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  INVALID_TOKEN: 'INVALID_TOKEN',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+  
+  // Authorization Errors (403)
+  FORBIDDEN: 'FORBIDDEN',
+  INSUFFICIENT_PERMISSIONS: 'INSUFFICIENT_PERMISSIONS',
+  
+  // Not Found Errors (404)
+  NOT_FOUND: 'NOT_FOUND',
+  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
+  
+  // Conflict Errors (409)
+  CONFLICT: 'CONFLICT',
+  DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
+  
+  // Server Errors (500)
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+  DATABASE_ERROR: 'DATABASE_ERROR'
+} as const;
+
+export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
+
+export default ERROR_CODES;
