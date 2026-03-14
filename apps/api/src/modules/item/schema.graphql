@@ -17,6 +17,7 @@ input CreateItemInput {
 	category: String
 	unit: String
 	rate: Float
+	status: String
 	organizationId: ID!
 }
 
