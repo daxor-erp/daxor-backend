@@ -6,7 +6,8 @@ export type GraphQLContext = {
 	user?: {
 		id: string
 		email: string
-		role: string
+		role?: string
+		roles?: string[]
 		organizationId?: string
 	}
 }

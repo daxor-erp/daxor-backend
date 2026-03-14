@@ -326,6 +326,14 @@ export type CreatePurchaseOrderInput = {
   vendorId: Scalars['ID']['input'];
 };
 
+export type CreateRoleInput = {
+  description: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  organizationId: InputMaybe<Scalars['ID']['input']>;
+  permissions: Array<PermissionInput>;
+};
+
 export type CreateSalesEnquiryInput = {
   assignedTo: InputMaybe<Scalars['ID']['input']>;
   budget: InputMaybe<Scalars['Float']['input']>;
@@ -805,6 +813,7 @@ export type Mutation = {
   createPurchaseOrder: PurchaseOrder;
   createRawMaterialRequisition: RawMaterialRequisition;
   createRecruitment: Recruitment;
+  createRole: Role;
   createSalaryProcessing: SalaryProcessing;
   createSalesEnquiry: SalesEnquiry;
   createSalesOrder: SalesOrder;
@@ -842,6 +851,7 @@ export type Mutation = {
   deleteProductionPlanning: Scalars['Boolean']['output'];
   deleteProject: Project;
   deletePurchaseOrder: PurchaseOrder;
+  deleteRole: Scalars['Boolean']['output'];
   deleteSalaryProcessing: Scalars['Boolean']['output'];
   deleteSalesEnquiry: SalesEnquiry;
   deleteSalesOrder: SalesOrder;
@@ -855,6 +865,7 @@ export type Mutation = {
   login: AuthPayload;
   reconcileCashBank: CashBank;
   register: AuthPayload;
+  seedSystemRoles: Array<Role>;
   updateApplicant: Applicant;
   updateAsset: Asset;
   updateAttendance: Attendance;
@@ -883,6 +894,7 @@ export type Mutation = {
   updatePurchaseOrder: PurchaseOrder;
   updateRawMaterialRequisition: RawMaterialRequisition;
   updateRecruitment: Recruitment;
+  updateRole: Role;
   updateSalaryProcessing: SalaryProcessing;
   updateSalesEnquiry: SalesEnquiry;
   updateSalesOrder: SalesOrder;
@@ -1053,6 +1065,11 @@ export type MutationCreateRawMaterialRequisitionArgs = {
 
 export type MutationCreateRecruitmentArgs = {
   input: RecruitmentInput;
+};
+
+
+export type MutationCreateRoleArgs = {
+  input: CreateRoleInput;
 };
 
 
@@ -1237,6 +1254,11 @@ export type MutationDeleteProjectArgs = {
 
 
 export type MutationDeletePurchaseOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteRoleArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1474,6 +1496,12 @@ export type MutationUpdateRecruitmentArgs = {
 };
 
 
+export type MutationUpdateRoleArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateRoleInput;
+};
+
+
 export type MutationUpdateSalaryProcessingArgs = {
   id: Scalars['ID']['input'];
   input: SalaryProcessingInput;
@@ -1572,6 +1600,17 @@ export type PayrollManagementInput = {
   docDate: Scalars['String']['input'];
   organizationId: Scalars['String']['input'];
   status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Permission = {
+  __typename?: 'Permission';
+  actions: Array<Scalars['String']['output']>;
+  resource: Scalars['String']['output'];
+};
+
+export type PermissionInput = {
+  actions: Array<Scalars['String']['input']>;
+  resource: Scalars['String']['input'];
 };
 
 export type ProductionPlanning = {
@@ -1680,6 +1719,9 @@ export type Query = {
   rawMaterialRequisitions: Array<RawMaterialRequisition>;
   recruitment: Maybe<Recruitment>;
   recruitments: Array<Recruitment>;
+  role: Maybe<Role>;
+  roles: Array<Role>;
+  rolesByOrganization: Array<Role>;
   salaryprocessing: Maybe<SalaryProcessing>;
   salaryprocessings: Array<SalaryProcessing>;
   salesEnquiries: Array<SalesEnquiry>;
@@ -1697,6 +1739,7 @@ export type Query = {
   stockadjustments: Array<StockAdjustment>;
   stocktransfer: Maybe<StockTransfer>;
   stocktransfers: Array<StockTransfer>;
+  systemRoles: Array<Role>;
   user: Maybe<User>;
   userByEmail: Maybe<User>;
   usersByOrganization: UserList;
@@ -2096,6 +2139,16 @@ export type QueryRecruitmentsArgs = {
 };
 
 
+export type QueryRoleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryRolesByOrganizationArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
 export type QuerySalaryprocessingArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2351,6 +2404,19 @@ export type RegisterInput = {
   password: Scalars['String']['input'];
 };
 
+export type Role = {
+  __typename?: 'Role';
+  createdAt: Scalars['String']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isSystemRole: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  organizationId: Maybe<Scalars['ID']['output']>;
+  permissions: Array<Permission>;
+  updatedAt: Scalars['String']['output'];
+};
+
 export type SalaryProcessing = {
   __typename?: 'SalaryProcessing';
   createdAt: Scalars['String']['output'];
@@ -2540,6 +2606,12 @@ export type UpdatePurchaseOrderInput = {
   status: InputMaybe<Scalars['String']['input']>;
   totalAmount: InputMaybe<Scalars['Float']['input']>;
   vendorId: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateRoleInput = {
+  description: InputMaybe<Scalars['String']['input']>;
+  displayName: InputMaybe<Scalars['String']['input']>;
+  permissions: InputMaybe<Array<PermissionInput>>;
 };
 
 export type UpdateSalesEnquiryInput = {
@@ -2795,6 +2867,7 @@ export type ResolversTypes = ResolversObject<{
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
   CreatePurchaseOrderInput: ResolverTypeWrapper<Partial<CreatePurchaseOrderInput>>;
+  CreateRoleInput: ResolverTypeWrapper<Partial<CreateRoleInput>>;
   CreateSalesEnquiryInput: ResolverTypeWrapper<Partial<CreateSalesEnquiryInput>>;
   CreateSalesOrderInput: ResolverTypeWrapper<Partial<CreateSalesOrderInput>>;
   CreateUserInput: ResolverTypeWrapper<Partial<CreateUserInput>>;
@@ -2843,6 +2916,8 @@ export type ResolversTypes = ResolversObject<{
   Organization: ResolverTypeWrapper<Partial<Organization>>;
   PayrollManagement: ResolverTypeWrapper<Partial<PayrollManagement>>;
   PayrollManagementInput: ResolverTypeWrapper<Partial<PayrollManagementInput>>;
+  Permission: ResolverTypeWrapper<Partial<Permission>>;
+  PermissionInput: ResolverTypeWrapper<Partial<PermissionInput>>;
   ProductionPlanning: ResolverTypeWrapper<Partial<ProductionPlanning>>;
   ProductionPlanningInput: ResolverTypeWrapper<Partial<ProductionPlanningInput>>;
   Project: ResolverTypeWrapper<Partial<Project>>;
@@ -2853,6 +2928,7 @@ export type ResolversTypes = ResolversObject<{
   Recruitment: ResolverTypeWrapper<Partial<Recruitment>>;
   RecruitmentInput: ResolverTypeWrapper<Partial<RecruitmentInput>>;
   RegisterInput: ResolverTypeWrapper<Partial<RegisterInput>>;
+  Role: ResolverTypeWrapper<Partial<Role>>;
   SalaryProcessing: ResolverTypeWrapper<Partial<SalaryProcessing>>;
   SalaryProcessingInput: ResolverTypeWrapper<Partial<SalaryProcessingInput>>;
   SalaryRange: ResolverTypeWrapper<Partial<SalaryRange>>;
@@ -2874,6 +2950,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
   UpdateProjectInput: ResolverTypeWrapper<Partial<UpdateProjectInput>>;
   UpdatePurchaseOrderInput: ResolverTypeWrapper<Partial<UpdatePurchaseOrderInput>>;
+  UpdateRoleInput: ResolverTypeWrapper<Partial<UpdateRoleInput>>;
   UpdateSalesEnquiryInput: ResolverTypeWrapper<Partial<UpdateSalesEnquiryInput>>;
   UpdateSalesOrderInput: ResolverTypeWrapper<Partial<UpdateSalesOrderInput>>;
   UpdateUserInput: ResolverTypeWrapper<Partial<UpdateUserInput>>;
@@ -2918,6 +2995,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
   CreatePurchaseOrderInput: Partial<CreatePurchaseOrderInput>;
+  CreateRoleInput: Partial<CreateRoleInput>;
   CreateSalesEnquiryInput: Partial<CreateSalesEnquiryInput>;
   CreateSalesOrderInput: Partial<CreateSalesOrderInput>;
   CreateUserInput: Partial<CreateUserInput>;
@@ -2966,6 +3044,8 @@ export type ResolversParentTypes = ResolversObject<{
   Organization: Partial<Organization>;
   PayrollManagement: Partial<PayrollManagement>;
   PayrollManagementInput: Partial<PayrollManagementInput>;
+  Permission: Partial<Permission>;
+  PermissionInput: Partial<PermissionInput>;
   ProductionPlanning: Partial<ProductionPlanning>;
   ProductionPlanningInput: Partial<ProductionPlanningInput>;
   Project: Partial<Project>;
@@ -2976,6 +3056,7 @@ export type ResolversParentTypes = ResolversObject<{
   Recruitment: Partial<Recruitment>;
   RecruitmentInput: Partial<RecruitmentInput>;
   RegisterInput: Partial<RegisterInput>;
+  Role: Partial<Role>;
   SalaryProcessing: Partial<SalaryProcessing>;
   SalaryProcessingInput: Partial<SalaryProcessingInput>;
   SalaryRange: Partial<SalaryRange>;
@@ -2997,6 +3078,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
   UpdateProjectInput: Partial<UpdateProjectInput>;
   UpdatePurchaseOrderInput: Partial<UpdatePurchaseOrderInput>;
+  UpdateRoleInput: Partial<UpdateRoleInput>;
   UpdateSalesEnquiryInput: Partial<UpdateSalesEnquiryInput>;
   UpdateSalesOrderInput: Partial<UpdateSalesOrderInput>;
   UpdateUserInput: Partial<UpdateUserInput>;
@@ -3446,6 +3528,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createPurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationCreatePurchaseOrderArgs, 'input'>>;
   createRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationCreateRawMaterialRequisitionArgs, 'input'>>;
   createRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationCreateRecruitmentArgs, 'input'>>;
+  createRole: Resolver<ResolversTypes['Role'], ParentType, ContextType, RequireFields<MutationCreateRoleArgs, 'input'>>;
   createSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationCreateSalaryProcessingArgs, 'input'>>;
   createSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationCreateSalesEnquiryArgs, 'input'>>;
   createSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationCreateSalesOrderArgs, 'input'>>;
@@ -3483,6 +3566,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteProductionPlanning: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductionPlanningArgs, 'id'>>;
   deleteProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deletePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationDeletePurchaseOrderArgs, 'id'>>;
+  deleteRole: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   deleteSalaryProcessing: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalaryProcessingArgs, 'id'>>;
   deleteSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationDeleteSalesEnquiryArgs, 'id'>>;
   deleteSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationDeleteSalesOrderArgs, 'id'>>;
@@ -3496,6 +3580,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   login: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   reconcileCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationReconcileCashBankArgs, 'id'>>;
   register: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  seedSystemRoles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
   updateApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationUpdateApplicantArgs, 'id' | 'input'>>;
   updateAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationUpdateAssetArgs, 'id' | 'input'>>;
   updateAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationUpdateAttendanceArgs, 'id' | 'input'>>;
@@ -3524,6 +3609,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updatePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationUpdatePurchaseOrderArgs, 'id' | 'input'>>;
   updateRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationUpdateRawMaterialRequisitionArgs, 'id' | 'input'>>;
   updateRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationUpdateRecruitmentArgs, 'id' | 'input'>>;
+  updateRole: Resolver<ResolversTypes['Role'], ParentType, ContextType, RequireFields<MutationUpdateRoleArgs, 'id' | 'input'>>;
   updateSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationUpdateSalaryProcessingArgs, 'id' | 'input'>>;
   updateSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationUpdateSalesEnquiryArgs, 'id' | 'input'>>;
   updateSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationUpdateSalesOrderArgs, 'id' | 'input'>>;
@@ -3558,6 +3644,12 @@ export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType 
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PermissionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Permission'] = ResolversParentTypes['Permission']> = ResolversObject<{
+  actions: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  resource: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3660,6 +3752,9 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   rawMaterialRequisitions: Resolver<Array<ResolversTypes['RawMaterialRequisition']>, ParentType, ContextType, RequireFields<QueryRawMaterialRequisitionsArgs, 'organizationId'>>;
   recruitment: Resolver<Maybe<ResolversTypes['Recruitment']>, ParentType, ContextType, RequireFields<QueryRecruitmentArgs, 'id'>>;
   recruitments: Resolver<Array<ResolversTypes['Recruitment']>, ParentType, ContextType, RequireFields<QueryRecruitmentsArgs, 'organizationId'>>;
+  role: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType, RequireFields<QueryRoleArgs, 'id'>>;
+  roles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
+  rolesByOrganization: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType, RequireFields<QueryRolesByOrganizationArgs, 'organizationId'>>;
   salaryprocessing: Resolver<Maybe<ResolversTypes['SalaryProcessing']>, ParentType, ContextType, RequireFields<QuerySalaryprocessingArgs, 'id'>>;
   salaryprocessings: Resolver<Array<ResolversTypes['SalaryProcessing']>, ParentType, ContextType, RequireFields<QuerySalaryprocessingsArgs, 'organizationId'>>;
   salesEnquiries: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesArgs, 'organizationId'>>;
@@ -3677,6 +3772,7 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   stockadjustments: Resolver<Array<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<QueryStockadjustmentsArgs, 'organizationId'>>;
   stocktransfer: Resolver<Maybe<ResolversTypes['StockTransfer']>, ParentType, ContextType, RequireFields<QueryStocktransferArgs, 'id'>>;
   stocktransfers: Resolver<Array<ResolversTypes['StockTransfer']>, ParentType, ContextType, RequireFields<QueryStocktransfersArgs, 'organizationId'>>;
+  systemRoles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
   user: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userByEmail: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>;
   usersByOrganization: Resolver<ResolversTypes['UserList'], ParentType, ContextType, RequireFields<QueryUsersByOrganizationArgs, 'organizationId'>>;
@@ -3725,6 +3821,19 @@ export type RecruitmentResolvers<ContextType = GraphQLContext, ParentType extend
   source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   stage: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RoleResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Role'] = ResolversParentTypes['Role']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  displayName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isSystemRole: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  permissions: Resolver<Array<ResolversTypes['Permission']>, ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -3950,12 +4059,14 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Mutation: MutationResolvers<ContextType>;
   Organization: OrganizationResolvers<ContextType>;
   PayrollManagement: PayrollManagementResolvers<ContextType>;
+  Permission: PermissionResolvers<ContextType>;
   ProductionPlanning: ProductionPlanningResolvers<ContextType>;
   Project: ProjectResolvers<ContextType>;
   PurchaseOrder: PurchaseOrderResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
   RawMaterialRequisition: RawMaterialRequisitionResolvers<ContextType>;
   Recruitment: RecruitmentResolvers<ContextType>;
+  Role: RoleResolvers<ContextType>;
   SalaryProcessing: SalaryProcessingResolvers<ContextType>;
   SalaryRange: SalaryRangeResolvers<ContextType>;
   SalesEnquiry: SalesEnquiryResolvers<ContextType>;
