@@ -1,0 +1,70 @@
+type SalesEnquiry {
+	id: ID!
+	seqNo: String
+	enquiryNumber: String!
+	clientId: ID!
+	enquirySource: String
+	subject: String
+	projectType: String
+	projectScope: String
+	location: String
+	estimatedStartDate: String
+	estimatedEndDate: String
+	budget: Float
+	currency: String
+	status: String!
+	assignedTo: ID
+	priority: String!
+	notes: String
+	organizationId: ID!
+	createdBy: ID
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateSalesEnquiryInput {
+	clientId: ID
+	enquirySource: String
+	subject: String
+	projectType: String
+	projectScope: String
+	location: String
+	estimatedStartDate: String
+	estimatedEndDate: String
+	budget: Float
+	currency: String
+	assignedTo: ID
+	priority: String
+	notes: String
+}
+
+input UpdateSalesEnquiryInput {
+	clientId: ID
+	enquirySource: String
+	subject: String
+	projectType: String
+	projectScope: String
+	location: String
+	estimatedStartDate: String
+	estimatedEndDate: String
+	budget: Float
+	currency: String
+	status: String
+	assignedTo: ID
+	priority: String
+	notes: String
+}
+
+extend type Query {
+	salesEnquiry(id: ID!): SalesEnquiry
+	salesEnquiries(organizationId: ID!, page: Int, limit: Int, status: String, search: String): [SalesEnquiry!]!
+	salesEnquiriesByClient(clientId: ID!): [SalesEnquiry!]!
+	salesEnquiriesByStatus(status: String!): [SalesEnquiry!]!
+	salesEnquiriesByAssignedTo(userId: ID!): [SalesEnquiry!]!
+}
+
+extend type Mutation {
+	createSalesEnquiry(input: CreateSalesEnquiryInput!): SalesEnquiry!
+	updateSalesEnquiry(id: ID!, input: UpdateSalesEnquiryInput!): SalesEnquiry!
+	deleteSalesEnquiry(id: ID!): SalesEnquiry!
+}
