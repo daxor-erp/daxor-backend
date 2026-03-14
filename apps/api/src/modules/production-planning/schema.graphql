@@ -1,0 +1,25 @@
+type ProductionPlanning {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input ProductionPlanningInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  productionplanning(id: ID!): ProductionPlanning
+  productionplannings(organizationId: String!, page: Int, limit: Int): [ProductionPlanning!]!
+}
+
+extend type Mutation {
+  createProductionPlanning(input: ProductionPlanningInput!): ProductionPlanning!
+  updateProductionPlanning(id: ID!, input: ProductionPlanningInput!): ProductionPlanning!
+  deleteProductionPlanning(id: ID!): Boolean!
+}

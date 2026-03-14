@@ -17,6 +17,111 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type Address = {
+  __typename?: 'Address';
+  city: Scalars['String']['output'];
+  country: Scalars['String']['output'];
+  postalCode: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+  street: Scalars['String']['output'];
+};
+
+export type AddressInput = {
+  city: Scalars['String']['input'];
+  country: Scalars['String']['input'];
+  postalCode: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+  street: Scalars['String']['input'];
+};
+
+export type Applicant = {
+  __typename?: 'Applicant';
+  address: Address;
+  alternatePhone: Maybe<Scalars['String']['output']>;
+  applicantNumber: Scalars['String']['output'];
+  applicationStatus: Scalars['String']['output'];
+  coverLetterUrl: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  dateOfBirth: Scalars['String']['output'];
+  education: Array<Education>;
+  email: Scalars['String']['output'];
+  experience: Maybe<Array<Experience>>;
+  firstName: Scalars['String']['output'];
+  gender: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastName: Scalars['String']['output'];
+  nationality: Scalars['String']['output'];
+  organizationId: Scalars['String']['output'];
+  phone: Scalars['String']['output'];
+  resumeUrl: Maybe<Scalars['String']['output']>;
+  skills: Array<Scalars['String']['output']>;
+  source: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type ApplicantInput = {
+  address: AddressInput;
+  alternatePhone: InputMaybe<Scalars['String']['input']>;
+  applicantNumber: Scalars['String']['input'];
+  applicationStatus: InputMaybe<Scalars['String']['input']>;
+  coverLetterUrl: InputMaybe<Scalars['String']['input']>;
+  dateOfBirth: Scalars['String']['input'];
+  education: Array<EducationInput>;
+  email: Scalars['String']['input'];
+  experience: InputMaybe<Array<ExperienceInput>>;
+  firstName: Scalars['String']['input'];
+  gender: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  nationality: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+  resumeUrl: InputMaybe<Scalars['String']['input']>;
+  skills: Array<Scalars['String']['input']>;
+  source: Scalars['String']['input'];
+};
+
+export type Asset = {
+  __typename?: 'Asset';
+  assetName: Scalars['String']['output'];
+  assetNumber: Scalars['String']['output'];
+  assetType: Scalars['String']['output'];
+  assignedTo: Maybe<Scalars['String']['output']>;
+  category: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  currentValue: Scalars['Float']['output'];
+  depreciationMethod: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  location: Scalars['String']['output'];
+  manufacturer: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  purchaseDate: Scalars['String']['output'];
+  purchasePrice: Scalars['Float']['output'];
+  serialNumber: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  usefulLife: Scalars['Int']['output'];
+  warrantyExpiry: Maybe<Scalars['String']['output']>;
+};
+
+export type AssetInput = {
+  assetName: Scalars['String']['input'];
+  assetNumber: Scalars['String']['input'];
+  assetType: Scalars['String']['input'];
+  assignedTo: InputMaybe<Scalars['String']['input']>;
+  category: Scalars['String']['input'];
+  currentValue: Scalars['Float']['input'];
+  depreciationMethod: Scalars['String']['input'];
+  location: Scalars['String']['input'];
+  manufacturer: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  purchaseDate: Scalars['String']['input'];
+  purchasePrice: Scalars['Float']['input'];
+  serialNumber: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  usefulLife: Scalars['Int']['input'];
+  warrantyExpiry: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Attendance = {
   __typename?: 'Attendance';
   checkIn: Maybe<Scalars['String']['output']>;
@@ -33,6 +138,142 @@ export type AuthPayload = {
   __typename?: 'AuthPayload';
   token: Scalars['String']['output'];
   user: User;
+};
+
+export type BankAccount = {
+  __typename?: 'BankAccount';
+  accountName: Scalars['String']['output'];
+  accountNumber: Scalars['String']['output'];
+  accountType: Scalars['String']['output'];
+  bankName: Scalars['String']['output'];
+  branchName: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  currency: Scalars['String']['output'];
+  currentBalance: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  organizationId: Scalars['String']['output'];
+};
+
+export type BankAccountInput = {
+  accountName: Scalars['String']['input'];
+  accountNumber: Scalars['String']['input'];
+  accountType: Scalars['String']['input'];
+  bankName: Scalars['String']['input'];
+  branchName: Scalars['String']['input'];
+  currency: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+};
+
+export type Career = {
+  __typename?: 'Career';
+  closingDate: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  department: Scalars['String']['output'];
+  employmentType: Scalars['String']['output'];
+  experienceRequired: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  jobCode: Scalars['String']['output'];
+  jobDescription: Scalars['String']['output'];
+  jobTitle: Scalars['String']['output'];
+  location: Scalars['String']['output'];
+  openings: Scalars['Int']['output'];
+  organizationId: Scalars['String']['output'];
+  postedDate: Scalars['String']['output'];
+  qualifications: Scalars['String']['output'];
+  responsibilities: Scalars['String']['output'];
+  salaryRange: SalaryRange;
+  skills: Array<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type CareerInput = {
+  closingDate: Scalars['String']['input'];
+  department: Scalars['String']['input'];
+  employmentType: Scalars['String']['input'];
+  experienceRequired: Scalars['String']['input'];
+  jobCode: Scalars['String']['input'];
+  jobDescription: Scalars['String']['input'];
+  jobTitle: Scalars['String']['input'];
+  location: Scalars['String']['input'];
+  openings: Scalars['Int']['input'];
+  organizationId: Scalars['String']['input'];
+  postedDate: Scalars['String']['input'];
+  qualifications: Scalars['String']['input'];
+  responsibilities: Scalars['String']['input'];
+  salaryRange: SalaryRangeInput;
+  skills: Array<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CashBank = {
+  __typename?: 'CashBank';
+  amount: Scalars['Float']['output'];
+  bankAccount: Scalars['String']['output'];
+  chequeNumber: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  currency: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  paymentMethod: Scalars['String']['output'];
+  reconciliationDate: Maybe<Scalars['String']['output']>;
+  reconciliationStatus: Scalars['String']['output'];
+  referenceId: Scalars['String']['output'];
+  referenceModule: Scalars['String']['output'];
+  transactionDate: Scalars['String']['output'];
+  transactionNumber: Scalars['String']['output'];
+  transactionType: Scalars['String']['output'];
+};
+
+export type CashBankInput = {
+  amount: Scalars['Float']['input'];
+  bankAccount: Scalars['String']['input'];
+  chequeNumber: InputMaybe<Scalars['String']['input']>;
+  currency: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  paymentMethod: Scalars['String']['input'];
+  referenceId: Scalars['String']['input'];
+  referenceModule: Scalars['String']['input'];
+  transactionDate: Scalars['String']['input'];
+  transactionType: Scalars['String']['input'];
+};
+
+export type ChartOfAccounts = {
+  __typename?: 'ChartOfAccounts';
+  accountCode: Scalars['String']['output'];
+  accountName: Scalars['String']['output'];
+  accountType: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  level: Scalars['Int']['output'];
+  organizationId: Scalars['String']['output'];
+  parentAccount: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type ChartOfAccountsInput = {
+  accountCode: Scalars['String']['input'];
+  accountName: Scalars['String']['input'];
+  accountType: Scalars['String']['input'];
+  isActive: InputMaybe<Scalars['Boolean']['input']>;
+  level: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  parentAccount: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Competency = {
+  __typename?: 'Competency';
+  competency: Scalars['String']['output'];
+  rating: Scalars['Float']['output'];
+};
+
+export type CompetencyInput = {
+  competency: Scalars['String']['input'];
+  rating: Scalars['Float']['input'];
 };
 
 export type CreateAttendanceInput = {
@@ -85,6 +326,22 @@ export type CreatePurchaseOrderInput = {
   vendorId: Scalars['ID']['input'];
 };
 
+export type CreateSalesEnquiryInput = {
+  assignedTo: InputMaybe<Scalars['ID']['input']>;
+  budget: InputMaybe<Scalars['Float']['input']>;
+  clientId: InputMaybe<Scalars['ID']['input']>;
+  currency: InputMaybe<Scalars['String']['input']>;
+  enquirySource: InputMaybe<Scalars['String']['input']>;
+  estimatedEndDate: InputMaybe<Scalars['String']['input']>;
+  estimatedStartDate: InputMaybe<Scalars['String']['input']>;
+  location: InputMaybe<Scalars['String']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  priority: InputMaybe<Scalars['String']['input']>;
+  projectScope: InputMaybe<Scalars['String']['input']>;
+  projectType: InputMaybe<Scalars['String']['input']>;
+  subject: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateSalesOrderInput = {
   customerId: Scalars['ID']['input'];
   orderDate: Scalars['String']['input'];
@@ -112,6 +369,22 @@ export type CreateVendorInput = {
   phone: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Customer = {
+  __typename?: 'Customer';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type CustomerInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CustomerInvoice = {
   __typename?: 'CustomerInvoice';
   createdAt: Scalars['String']['output'];
@@ -125,6 +398,343 @@ export type CustomerInvoice = {
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
   totalAmount: Scalars['Float']['output'];
+};
+
+export type Dvs = {
+  __typename?: 'DVS';
+  applicantId: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  documentName: Scalars['String']['output'];
+  documentNumber: Maybe<Scalars['String']['output']>;
+  documentType: Scalars['String']['output'];
+  documentUrl: Maybe<Scalars['String']['output']>;
+  expiryDate: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  issueDate: Maybe<Scalars['String']['output']>;
+  issuingAuthority: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  verificationDate: Maybe<Scalars['String']['output']>;
+  verificationNotes: Maybe<Scalars['String']['output']>;
+  verificationStatus: Scalars['String']['output'];
+  verifiedBy: Maybe<Scalars['String']['output']>;
+};
+
+export type DvsInput = {
+  applicantId: Scalars['String']['input'];
+  documentName: Scalars['String']['input'];
+  documentNumber: InputMaybe<Scalars['String']['input']>;
+  documentType: Scalars['String']['input'];
+  documentUrl: InputMaybe<Scalars['String']['input']>;
+  expiryDate: InputMaybe<Scalars['String']['input']>;
+  issueDate: InputMaybe<Scalars['String']['input']>;
+  issuingAuthority: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  verificationNotes: InputMaybe<Scalars['String']['input']>;
+  verificationStatus: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DeliveryChallan = {
+  __typename?: 'DeliveryChallan';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type DeliveryChallanInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Epm = {
+  __typename?: 'EPM';
+  areasOfImprovement: Maybe<Scalars['String']['output']>;
+  comments: Maybe<Scalars['String']['output']>;
+  competencies: Array<Competency>;
+  createdAt: Scalars['String']['output'];
+  employeeId: Scalars['String']['output'];
+  goals: Array<Goal>;
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  overallRating: Scalars['Float']['output'];
+  reviewDate: Scalars['String']['output'];
+  reviewPeriod: Scalars['String']['output'];
+  reviewType: Scalars['String']['output'];
+  reviewYear: Scalars['Int']['output'];
+  reviewerId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  strengths: Maybe<Scalars['String']['output']>;
+  trainingRecommendations: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type EpmInput = {
+  areasOfImprovement: InputMaybe<Scalars['String']['input']>;
+  comments: InputMaybe<Scalars['String']['input']>;
+  competencies: Array<CompetencyInput>;
+  employeeId: Scalars['String']['input'];
+  goals: Array<GoalInput>;
+  organizationId: Scalars['String']['input'];
+  overallRating: Scalars['Float']['input'];
+  reviewDate: Scalars['String']['input'];
+  reviewPeriod: Scalars['String']['input'];
+  reviewType: Scalars['String']['input'];
+  reviewYear: Scalars['Int']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  strengths: InputMaybe<Scalars['String']['input']>;
+  trainingRecommendations: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Education = {
+  __typename?: 'Education';
+  degree: Scalars['String']['output'];
+  grade: Maybe<Scalars['String']['output']>;
+  institution: Scalars['String']['output'];
+  year: Scalars['Int']['output'];
+};
+
+export type EducationInput = {
+  degree: Scalars['String']['input'];
+  grade: InputMaybe<Scalars['String']['input']>;
+  institution: Scalars['String']['input'];
+  year: Scalars['Int']['input'];
+};
+
+export type ExciseInvoice = {
+  __typename?: 'ExciseInvoice';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type ExciseInvoiceInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Experience = {
+  __typename?: 'Experience';
+  company: Scalars['String']['output'];
+  current: Scalars['Boolean']['output'];
+  from: Scalars['String']['output'];
+  position: Scalars['String']['output'];
+  to: Maybe<Scalars['String']['output']>;
+};
+
+export type ExperienceInput = {
+  company: Scalars['String']['input'];
+  current: InputMaybe<Scalars['Boolean']['input']>;
+  from: Scalars['String']['input'];
+  position: Scalars['String']['input'];
+  to: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Extraction = {
+  __typename?: 'Extraction';
+  createdAt: Scalars['String']['output'];
+  createdBy: Scalars['String']['output'];
+  destinationLocation: Maybe<Scalars['String']['output']>;
+  extractionDate: Scalars['String']['output'];
+  extractionNumber: Scalars['String']['output'];
+  extractionType: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  productionOrderId: Maybe<Scalars['String']['output']>;
+  quantity: Scalars['Float']['output'];
+  rawMaterialId: Scalars['String']['output'];
+  rawMaterialName: Scalars['String']['output'];
+  requisitionId: Maybe<Scalars['String']['output']>;
+  sourceLocation: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  unit: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type ExtractionInput = {
+  destinationLocation: InputMaybe<Scalars['String']['input']>;
+  extractionDate: Scalars['String']['input'];
+  extractionNumber: Scalars['String']['input'];
+  extractionType: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  productionOrderId: InputMaybe<Scalars['String']['input']>;
+  quantity: Scalars['Float']['input'];
+  rawMaterialId: Scalars['String']['input'];
+  rawMaterialName: Scalars['String']['input'];
+  requisitionId: InputMaybe<Scalars['String']['input']>;
+  sourceLocation: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  unit: Scalars['String']['input'];
+};
+
+export type Grn = {
+  __typename?: 'GRN';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type GrnInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GeneralLedger = {
+  __typename?: 'GeneralLedger';
+  amount: Scalars['Float']['output'];
+  createdAt: Scalars['String']['output'];
+  createdBy: Scalars['String']['output'];
+  creditAccount: Scalars['String']['output'];
+  currency: Scalars['String']['output'];
+  debitAccount: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  fiscalPeriod: Scalars['String']['output'];
+  fiscalYear: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  referenceId: Scalars['String']['output'];
+  referenceModule: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  transactionDate: Scalars['String']['output'];
+  transactionNumber: Scalars['String']['output'];
+  transactionType: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type GeneralLedgerInput = {
+  amount: Scalars['Float']['input'];
+  creditAccount: Scalars['String']['input'];
+  currency: InputMaybe<Scalars['String']['input']>;
+  debitAccount: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  fiscalPeriod: Scalars['String']['input'];
+  fiscalYear: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  referenceId: Scalars['String']['input'];
+  referenceModule: Scalars['String']['input'];
+  transactionDate: Scalars['String']['input'];
+  transactionType: Scalars['String']['input'];
+};
+
+export type Goal = {
+  __typename?: 'Goal';
+  achievement: Maybe<Scalars['Float']['output']>;
+  goal: Scalars['String']['output'];
+  weight: Scalars['Float']['output'];
+};
+
+export type GoalInput = {
+  achievement: InputMaybe<Scalars['Float']['input']>;
+  goal: Scalars['String']['input'];
+  weight: Scalars['Float']['input'];
+};
+
+export type GoodsReceipt = {
+  __typename?: 'GoodsReceipt';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type GoodsReceiptInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IpInspection = {
+  __typename?: 'IPInspection';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type IpInspectionInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InternalOrder = {
+  __typename?: 'InternalOrder';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type InternalOrderInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InventoryControl = {
+  __typename?: 'InventoryControl';
+  binLocation: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  itemId: Scalars['String']['output'];
+  itemName: Scalars['String']['output'];
+  lastStockDate: Scalars['String']['output'];
+  maxStockLevel: Scalars['Float']['output'];
+  minStockLevel: Scalars['Float']['output'];
+  organizationId: Scalars['String']['output'];
+  quantity: Scalars['Float']['output'];
+  reorderPoint: Scalars['Float']['output'];
+  stockStatus: Scalars['String']['output'];
+  unit: Scalars['String']['output'];
+  warehouseId: Scalars['String']['output'];
+};
+
+export type InventoryControlInput = {
+  binLocation: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+  itemName: Scalars['String']['input'];
+  maxStockLevel: InputMaybe<Scalars['Float']['input']>;
+  minStockLevel: InputMaybe<Scalars['Float']['input']>;
+  organizationId: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
+  reorderPoint: InputMaybe<Scalars['Float']['input']>;
+  unit: Scalars['String']['input'];
+  warehouseId: Scalars['String']['input'];
+};
+
+export type InventoryReturn = {
+  __typename?: 'InventoryReturn';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type InventoryReturnInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Item = {
@@ -146,37 +756,163 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type MaterialReceipt = {
+  __typename?: 'MaterialReceipt';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type MaterialReceiptInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  adjustStock: InventoryControl;
+  createApplicant: Applicant;
+  createAsset: Asset;
   createAttendance: Attendance;
+  createBankAccount: BankAccount;
+  createCareer: Career;
+  createCashBank: CashBank;
+  createChartOfAccount: ChartOfAccounts;
+  createCustomer: Customer;
   createCustomerInvoice: CustomerInvoice;
+  createDVS: Dvs;
+  createDeliveryChallan: DeliveryChallan;
+  createEPM: Epm;
+  createExciseInvoice: ExciseInvoice;
+  createExtraction: Extraction;
+  createGRN: Grn;
+  createGeneralLedger: GeneralLedger;
+  createGoodsReceipt: GoodsReceipt;
+  createIPInspection: IpInspection;
+  createInternalOrder: InternalOrder;
+  createInventoryControl: InventoryControl;
+  createInventoryReturn: InventoryReturn;
   createItem: Item;
+  createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
+  createPayrollManagement: PayrollManagement;
+  createProductionPlanning: ProductionPlanning;
   createProject: Project;
   createPurchaseOrder: PurchaseOrder;
+  createRawMaterialRequisition: RawMaterialRequisition;
+  createRecruitment: Recruitment;
+  createSalaryProcessing: SalaryProcessing;
+  createSalesEnquiry: SalesEnquiry;
   createSalesOrder: SalesOrder;
+  createSalesReturn: SalesReturn;
+  createStockAdjustment: StockAdjustment;
+  createStockMovement: StockMovement;
+  createStockTransfer: StockTransfer;
   createUser: User;
   createVendor: Vendor;
+  createVendorPayment: VendorPayment;
+  createWarehouse: Warehouse;
+  createWarehouseBin: WarehouseBin;
+  createWorkOrder: WorkOrder;
+  deleteApplicant: Scalars['Boolean']['output'];
+  deleteAsset: Scalars['Boolean']['output'];
   deleteAttendance: Attendance;
+  deleteCareer: Scalars['Boolean']['output'];
+  deleteChartOfAccount: Scalars['Boolean']['output'];
+  deleteCustomer: Scalars['Boolean']['output'];
   deleteCustomerInvoice: CustomerInvoice;
+  deleteDVS: Scalars['Boolean']['output'];
+  deleteDeliveryChallan: Scalars['Boolean']['output'];
+  deleteEPM: Scalars['Boolean']['output'];
+  deleteExciseInvoice: Scalars['Boolean']['output'];
+  deleteExtraction: Scalars['Boolean']['output'];
+  deleteGRN: Scalars['Boolean']['output'];
+  deleteGoodsReceipt: Scalars['Boolean']['output'];
+  deleteIPInspection: Scalars['Boolean']['output'];
+  deleteInternalOrder: Scalars['Boolean']['output'];
+  deleteInventoryReturn: Scalars['Boolean']['output'];
   deleteItem: Item;
+  deleteMaterialReceipt: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
+  deletePayrollManagement: Scalars['Boolean']['output'];
+  deleteProductionPlanning: Scalars['Boolean']['output'];
   deleteProject: Project;
   deletePurchaseOrder: PurchaseOrder;
+  deleteSalaryProcessing: Scalars['Boolean']['output'];
+  deleteSalesEnquiry: SalesEnquiry;
   deleteSalesOrder: SalesOrder;
+  deleteSalesReturn: Scalars['Boolean']['output'];
+  deleteStockAdjustment: Scalars['Boolean']['output'];
+  deleteStockTransfer: Scalars['Boolean']['output'];
   deleteUser: User;
   deleteVendor: Vendor;
+  deleteVendorPayment: Scalars['Boolean']['output'];
+  deleteWorkOrder: Scalars['Boolean']['output'];
   login: AuthPayload;
+  reconcileCashBank: CashBank;
   register: AuthPayload;
+  updateApplicant: Applicant;
+  updateAsset: Asset;
   updateAttendance: Attendance;
+  updateBankAccount: BankAccount;
+  updateCareer: Career;
+  updateChartOfAccount: ChartOfAccounts;
+  updateCustomer: Customer;
   updateCustomerInvoice: CustomerInvoice;
+  updateDVS: Dvs;
+  updateDeliveryChallan: DeliveryChallan;
+  updateEPM: Epm;
+  updateExciseInvoice: ExciseInvoice;
+  updateExtraction: Extraction;
+  updateGRN: Grn;
+  updateGoodsReceipt: GoodsReceipt;
+  updateIPInspection: IpInspection;
+  updateInternalOrder: InternalOrder;
+  updateInventoryControl: InventoryControl;
+  updateInventoryReturn: InventoryReturn;
   updateItem: Item;
+  updateMaterialReceipt: MaterialReceipt;
   updateOrganization: Organization;
+  updatePayrollManagement: PayrollManagement;
+  updateProductionPlanning: ProductionPlanning;
   updateProject: Project;
   updatePurchaseOrder: PurchaseOrder;
+  updateRawMaterialRequisition: RawMaterialRequisition;
+  updateRecruitment: Recruitment;
+  updateSalaryProcessing: SalaryProcessing;
+  updateSalesEnquiry: SalesEnquiry;
   updateSalesOrder: SalesOrder;
+  updateSalesReturn: SalesReturn;
+  updateStockAdjustment: StockAdjustment;
+  updateStockTransfer: StockTransfer;
   updateUser: User;
   updateVendor: Vendor;
+  updateVendorPayment: VendorPayment;
+  updateWarehouse: Warehouse;
+  updateWarehouseBin: WarehouseBin;
+  updateWorkOrder: WorkOrder;
+};
+
+
+export type MutationAdjustStockArgs = {
+  binLocation: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
+  reason: Scalars['String']['input'];
+};
+
+
+export type MutationCreateApplicantArgs = {
+  input: ApplicantInput;
+};
+
+
+export type MutationCreateAssetArgs = {
+  input: AssetInput;
 };
 
 
@@ -185,8 +921,93 @@ export type MutationCreateAttendanceArgs = {
 };
 
 
+export type MutationCreateBankAccountArgs = {
+  input: BankAccountInput;
+};
+
+
+export type MutationCreateCareerArgs = {
+  input: CareerInput;
+};
+
+
+export type MutationCreateCashBankArgs = {
+  input: CashBankInput;
+};
+
+
+export type MutationCreateChartOfAccountArgs = {
+  input: ChartOfAccountsInput;
+};
+
+
+export type MutationCreateCustomerArgs = {
+  input: CustomerInput;
+};
+
+
 export type MutationCreateCustomerInvoiceArgs = {
   input: CreateCustomerInvoiceInput;
+};
+
+
+export type MutationCreateDvsArgs = {
+  input: DvsInput;
+};
+
+
+export type MutationCreateDeliveryChallanArgs = {
+  input: DeliveryChallanInput;
+};
+
+
+export type MutationCreateEpmArgs = {
+  input: EpmInput;
+};
+
+
+export type MutationCreateExciseInvoiceArgs = {
+  input: ExciseInvoiceInput;
+};
+
+
+export type MutationCreateExtractionArgs = {
+  input: ExtractionInput;
+};
+
+
+export type MutationCreateGrnArgs = {
+  input: GrnInput;
+};
+
+
+export type MutationCreateGeneralLedgerArgs = {
+  input: GeneralLedgerInput;
+};
+
+
+export type MutationCreateGoodsReceiptArgs = {
+  input: GoodsReceiptInput;
+};
+
+
+export type MutationCreateIpInspectionArgs = {
+  input: IpInspectionInput;
+};
+
+
+export type MutationCreateInternalOrderArgs = {
+  input: InternalOrderInput;
+};
+
+
+export type MutationCreateInventoryControlArgs = {
+  input: InventoryControlInput;
+};
+
+
+export type MutationCreateInventoryReturnArgs = {
+  input: InventoryReturnInput;
 };
 
 
@@ -195,8 +1016,23 @@ export type MutationCreateItemArgs = {
 };
 
 
+export type MutationCreateMaterialReceiptArgs = {
+  input: MaterialReceiptInput;
+};
+
+
 export type MutationCreateOrganizationArgs = {
   input: CreateOrganizationInput;
+};
+
+
+export type MutationCreatePayrollManagementArgs = {
+  input: PayrollManagementInput;
+};
+
+
+export type MutationCreateProductionPlanningArgs = {
+  input: ProductionPlanningInput;
 };
 
 
@@ -210,8 +1046,48 @@ export type MutationCreatePurchaseOrderArgs = {
 };
 
 
+export type MutationCreateRawMaterialRequisitionArgs = {
+  input: RawMaterialRequisitionInput;
+};
+
+
+export type MutationCreateRecruitmentArgs = {
+  input: RecruitmentInput;
+};
+
+
+export type MutationCreateSalaryProcessingArgs = {
+  input: SalaryProcessingInput;
+};
+
+
+export type MutationCreateSalesEnquiryArgs = {
+  input: CreateSalesEnquiryInput;
+};
+
+
 export type MutationCreateSalesOrderArgs = {
   input: CreateSalesOrderInput;
+};
+
+
+export type MutationCreateSalesReturnArgs = {
+  input: SalesReturnInput;
+};
+
+
+export type MutationCreateStockAdjustmentArgs = {
+  input: StockAdjustmentInput;
+};
+
+
+export type MutationCreateStockMovementArgs = {
+  input: StockMovementInput;
+};
+
+
+export type MutationCreateStockTransferArgs = {
+  input: StockTransferInput;
 };
 
 
@@ -225,7 +1101,52 @@ export type MutationCreateVendorArgs = {
 };
 
 
+export type MutationCreateVendorPaymentArgs = {
+  input: VendorPaymentInput;
+};
+
+
+export type MutationCreateWarehouseArgs = {
+  input: WarehouseInput;
+};
+
+
+export type MutationCreateWarehouseBinArgs = {
+  input: WarehouseBinInput;
+};
+
+
+export type MutationCreateWorkOrderArgs = {
+  input: WorkOrderInput;
+};
+
+
+export type MutationDeleteApplicantArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteAssetArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteAttendanceArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteCareerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteChartOfAccountArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteCustomerArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -235,12 +1156,77 @@ export type MutationDeleteCustomerInvoiceArgs = {
 };
 
 
+export type MutationDeleteDvsArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteDeliveryChallanArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteEpmArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteExciseInvoiceArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteExtractionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteGrnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteGoodsReceiptArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteIpInspectionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteInternalOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteInventoryReturnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteItemArgs = {
   id: Scalars['ID']['input'];
 };
 
 
+export type MutationDeleteMaterialReceiptArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteOrganizationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeletePayrollManagementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteProductionPlanningArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -255,7 +1241,32 @@ export type MutationDeletePurchaseOrderArgs = {
 };
 
 
+export type MutationDeleteSalaryProcessingArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSalesEnquiryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteSalesOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSalesReturnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteStockAdjustmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteStockTransferArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -270,13 +1281,40 @@ export type MutationDeleteVendorArgs = {
 };
 
 
+export type MutationDeleteVendorPaymentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteWorkOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
 
 
+export type MutationReconcileCashBankArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationUpdateApplicantArgs = {
+  id: Scalars['ID']['input'];
+  input: ApplicantInput;
+};
+
+
+export type MutationUpdateAssetArgs = {
+  id: Scalars['ID']['input'];
+  input: AssetInput;
 };
 
 
@@ -286,9 +1324,99 @@ export type MutationUpdateAttendanceArgs = {
 };
 
 
+export type MutationUpdateBankAccountArgs = {
+  id: Scalars['ID']['input'];
+  input: BankAccountInput;
+};
+
+
+export type MutationUpdateCareerArgs = {
+  id: Scalars['ID']['input'];
+  input: CareerInput;
+};
+
+
+export type MutationUpdateChartOfAccountArgs = {
+  id: Scalars['ID']['input'];
+  input: ChartOfAccountsInput;
+};
+
+
+export type MutationUpdateCustomerArgs = {
+  id: Scalars['ID']['input'];
+  input: CustomerInput;
+};
+
+
 export type MutationUpdateCustomerInvoiceArgs = {
   id: Scalars['ID']['input'];
   input: UpdateCustomerInvoiceInput;
+};
+
+
+export type MutationUpdateDvsArgs = {
+  id: Scalars['ID']['input'];
+  input: DvsInput;
+};
+
+
+export type MutationUpdateDeliveryChallanArgs = {
+  id: Scalars['ID']['input'];
+  input: DeliveryChallanInput;
+};
+
+
+export type MutationUpdateEpmArgs = {
+  id: Scalars['ID']['input'];
+  input: EpmInput;
+};
+
+
+export type MutationUpdateExciseInvoiceArgs = {
+  id: Scalars['ID']['input'];
+  input: ExciseInvoiceInput;
+};
+
+
+export type MutationUpdateExtractionArgs = {
+  id: Scalars['ID']['input'];
+  input: ExtractionInput;
+};
+
+
+export type MutationUpdateGrnArgs = {
+  id: Scalars['ID']['input'];
+  input: GrnInput;
+};
+
+
+export type MutationUpdateGoodsReceiptArgs = {
+  id: Scalars['ID']['input'];
+  input: GoodsReceiptInput;
+};
+
+
+export type MutationUpdateIpInspectionArgs = {
+  id: Scalars['ID']['input'];
+  input: IpInspectionInput;
+};
+
+
+export type MutationUpdateInternalOrderArgs = {
+  id: Scalars['ID']['input'];
+  input: InternalOrderInput;
+};
+
+
+export type MutationUpdateInventoryControlArgs = {
+  id: Scalars['ID']['input'];
+  input: InventoryControlInput;
+};
+
+
+export type MutationUpdateInventoryReturnArgs = {
+  id: Scalars['ID']['input'];
+  input: InventoryReturnInput;
 };
 
 
@@ -298,9 +1426,27 @@ export type MutationUpdateItemArgs = {
 };
 
 
+export type MutationUpdateMaterialReceiptArgs = {
+  id: Scalars['ID']['input'];
+  input: MaterialReceiptInput;
+};
+
+
 export type MutationUpdateOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: UpdateOrganizationInput;
+};
+
+
+export type MutationUpdatePayrollManagementArgs = {
+  id: Scalars['ID']['input'];
+  input: PayrollManagementInput;
+};
+
+
+export type MutationUpdateProductionPlanningArgs = {
+  id: Scalars['ID']['input'];
+  input: ProductionPlanningInput;
 };
 
 
@@ -316,9 +1462,51 @@ export type MutationUpdatePurchaseOrderArgs = {
 };
 
 
+export type MutationUpdateRawMaterialRequisitionArgs = {
+  id: Scalars['ID']['input'];
+  input: RawMaterialRequisitionInput;
+};
+
+
+export type MutationUpdateRecruitmentArgs = {
+  id: Scalars['ID']['input'];
+  input: RecruitmentInput;
+};
+
+
+export type MutationUpdateSalaryProcessingArgs = {
+  id: Scalars['ID']['input'];
+  input: SalaryProcessingInput;
+};
+
+
+export type MutationUpdateSalesEnquiryArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateSalesEnquiryInput;
+};
+
+
 export type MutationUpdateSalesOrderArgs = {
   id: Scalars['ID']['input'];
   input: UpdateSalesOrderInput;
+};
+
+
+export type MutationUpdateSalesReturnArgs = {
+  id: Scalars['ID']['input'];
+  input: SalesReturnInput;
+};
+
+
+export type MutationUpdateStockAdjustmentArgs = {
+  id: Scalars['ID']['input'];
+  input: StockAdjustmentInput;
+};
+
+
+export type MutationUpdateStockTransferArgs = {
+  id: Scalars['ID']['input'];
+  input: StockTransferInput;
 };
 
 
@@ -333,6 +1521,30 @@ export type MutationUpdateVendorArgs = {
   input: UpdateVendorInput;
 };
 
+
+export type MutationUpdateVendorPaymentArgs = {
+  id: Scalars['ID']['input'];
+  input: VendorPaymentInput;
+};
+
+
+export type MutationUpdateWarehouseArgs = {
+  id: Scalars['ID']['input'];
+  input: WarehouseInput;
+};
+
+
+export type MutationUpdateWarehouseBinArgs = {
+  id: Scalars['ID']['input'];
+  input: WarehouseBinInput;
+};
+
+
+export type MutationUpdateWorkOrderArgs = {
+  id: Scalars['ID']['input'];
+  input: WorkOrderInput;
+};
+
 export type Organization = {
   __typename?: 'Organization';
   address: Maybe<Scalars['String']['output']>;
@@ -344,6 +1556,38 @@ export type Organization = {
   phone: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
+};
+
+export type PayrollManagement = {
+  __typename?: 'PayrollManagement';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type PayrollManagementInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProductionPlanning = {
+  __typename?: 'ProductionPlanning';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type ProductionPlanningInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Project = {
@@ -374,27 +1618,125 @@ export type PurchaseOrder = {
 
 export type Query = {
   __typename?: 'Query';
+  applicant: Maybe<Applicant>;
+  applicants: Array<Applicant>;
+  asset: Maybe<Asset>;
+  assets: Array<Asset>;
   attendance: Maybe<Attendance>;
   attendances: Array<Attendance>;
+  bankAccount: Maybe<BankAccount>;
+  bankAccounts: Array<BankAccount>;
+  career: Maybe<Career>;
+  careers: Array<Career>;
+  cashBank: Maybe<CashBank>;
+  cashBanks: Array<CashBank>;
+  chartOfAccount: Maybe<ChartOfAccounts>;
+  chartOfAccounts: Array<ChartOfAccounts>;
+  customer: Maybe<Customer>;
   customerinvoice: Maybe<CustomerInvoice>;
   customerinvoices: Array<CustomerInvoice>;
+  customers: Array<Customer>;
+  deliverychallan: Maybe<DeliveryChallan>;
+  deliverychallans: Array<DeliveryChallan>;
+  dvs: Maybe<Dvs>;
+  dvsRecords: Array<Dvs>;
+  epm: Maybe<Epm>;
+  epms: Array<Epm>;
+  exciseinvoice: Maybe<ExciseInvoice>;
+  exciseinvoices: Array<ExciseInvoice>;
+  extraction: Maybe<Extraction>;
+  extractions: Array<Extraction>;
+  generalLedger: Maybe<GeneralLedger>;
+  generalLedgers: Array<GeneralLedger>;
+  goodsreceipt: Maybe<GoodsReceipt>;
+  goodsreceipts: Array<GoodsReceipt>;
+  grn: Maybe<Grn>;
+  grns: Array<Grn>;
+  internalorder: Maybe<InternalOrder>;
+  internalorders: Array<InternalOrder>;
+  inventoryControl: Maybe<InventoryControl>;
+  inventoryControls: Array<InventoryControl>;
+  inventoryreturn: Maybe<InventoryReturn>;
+  inventoryreturns: Array<InventoryReturn>;
+  ipinspection: Maybe<IpInspection>;
+  ipinspections: Array<IpInspection>;
   item: Maybe<Item>;
   items: Array<Item>;
+  lowStockItems: Array<InventoryControl>;
+  materialreceipt: Maybe<MaterialReceipt>;
+  materialreceipts: Array<MaterialReceipt>;
   me: Maybe<User>;
   organization: Maybe<Organization>;
   organizations: Array<Organization>;
+  payrollmanagement: Maybe<PayrollManagement>;
+  payrollmanagements: Array<PayrollManagement>;
+  productionplanning: Maybe<ProductionPlanning>;
+  productionplannings: Array<ProductionPlanning>;
   project: Maybe<Project>;
   projects: Array<Project>;
   purchaseorder: Maybe<PurchaseOrder>;
   purchaseorders: Array<PurchaseOrder>;
+  rawMaterialRequisition: Maybe<RawMaterialRequisition>;
+  rawMaterialRequisitions: Array<RawMaterialRequisition>;
+  recruitment: Maybe<Recruitment>;
+  recruitments: Array<Recruitment>;
+  salaryprocessing: Maybe<SalaryProcessing>;
+  salaryprocessings: Array<SalaryProcessing>;
+  salesEnquiries: Array<SalesEnquiry>;
+  salesEnquiriesByAssignedTo: Array<SalesEnquiry>;
+  salesEnquiriesByClient: Array<SalesEnquiry>;
+  salesEnquiriesByStatus: Array<SalesEnquiry>;
+  salesEnquiry: Maybe<SalesEnquiry>;
   salesorder: Maybe<SalesOrder>;
   salesorders: Array<SalesOrder>;
+  salesreturn: Maybe<SalesReturn>;
+  salesreturns: Array<SalesReturn>;
+  stockMovement: Maybe<StockMovement>;
+  stockMovements: Array<StockMovement>;
+  stockadjustment: Maybe<StockAdjustment>;
+  stockadjustments: Array<StockAdjustment>;
+  stocktransfer: Maybe<StockTransfer>;
+  stocktransfers: Array<StockTransfer>;
   user: Maybe<User>;
   userByEmail: Maybe<User>;
   usersByOrganization: UserList;
   usersByRole: Array<User>;
   vendor: Maybe<Vendor>;
+  vendorpayment: Maybe<VendorPayment>;
+  vendorpayments: Array<VendorPayment>;
   vendors: Array<Vendor>;
+  warehouse: Maybe<Warehouse>;
+  warehouseBin: Maybe<WarehouseBin>;
+  warehouseBins: Array<WarehouseBin>;
+  warehouses: Array<Warehouse>;
+  workorder: Maybe<WorkOrder>;
+  workorders: Array<WorkOrder>;
+};
+
+
+export type QueryApplicantArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryApplicantsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryAssetArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryAssetsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -411,6 +1753,62 @@ export type QueryAttendancesArgs = {
 };
 
 
+export type QueryBankAccountArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryBankAccountsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryCareerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryCareersArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryCashBankArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryCashBanksArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  reconciliationStatus: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryChartOfAccountArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryChartOfAccountsArgs = {
+  accountType: InputMaybe<Scalars['String']['input']>;
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryCustomerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryCustomerinvoiceArgs = {
   id: Scalars['ID']['input'];
 };
@@ -421,6 +1819,162 @@ export type QueryCustomerinvoicesArgs = {
   organizationId: Scalars['ID']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryCustomersArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryDeliverychallanArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryDeliverychallansArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryDvsArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryDvsRecordsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryEpmArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryEpmsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryExciseinvoiceArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryExciseinvoicesArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryExtractionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryExtractionsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGeneralLedgerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGeneralLedgersArgs = {
+  fiscalYear: InputMaybe<Scalars['String']['input']>;
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGoodsreceiptArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGoodsreceiptsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGrnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGrnsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryInternalorderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryInternalordersArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryInventoryControlArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryInventoryControlsArgs = {
+  organizationId: Scalars['String']['input'];
+  stockStatus: InputMaybe<Scalars['String']['input']>;
+  warehouseId: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryInventoryreturnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryInventoryreturnsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryIpinspectionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryIpinspectionsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -437,6 +1991,23 @@ export type QueryItemsArgs = {
 };
 
 
+export type QueryLowStockItemsArgs = {
+  organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryMaterialreceiptArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryMaterialreceiptsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -446,6 +2017,30 @@ export type QueryOrganizationsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   page: InputMaybe<Scalars['Int']['input']>;
   search: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPayrollmanagementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryPayrollmanagementsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryProductionplanningArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryProductionplanningsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -475,6 +2070,73 @@ export type QueryPurchaseordersArgs = {
 };
 
 
+export type QueryRawMaterialRequisitionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryRawMaterialRequisitionsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryRecruitmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryRecruitmentsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySalaryprocessingArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySalaryprocessingsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerySalesEnquiriesArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['ID']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  search: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySalesEnquiriesByAssignedToArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesEnquiriesByClientArgs = {
+  clientId: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesEnquiriesByStatusArgs = {
+  status: Scalars['String']['input'];
+};
+
+
+export type QuerySalesEnquiryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QuerySalesorderArgs = {
   id: Scalars['ID']['input'];
 };
@@ -485,6 +2147,53 @@ export type QuerySalesordersArgs = {
   organizationId: Scalars['ID']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySalesreturnArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesreturnsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryStockMovementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryStockMovementsArgs = {
+  itemId: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryStockadjustmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryStockadjustmentsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryStocktransferArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryStocktransfersArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -518,11 +2227,120 @@ export type QueryVendorArgs = {
 };
 
 
+export type QueryVendorpaymentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryVendorpaymentsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryVendorsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['ID']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
   search: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWarehouseArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryWarehouseBinArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryWarehouseBinsArgs = {
+  organizationId: Scalars['String']['input'];
+  warehouseId: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryWarehousesArgs = {
+  isActive: InputMaybe<Scalars['Boolean']['input']>;
+  organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkorderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryWorkordersArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['String']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RawMaterialRequisition = {
+  __typename?: 'RawMaterialRequisition';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  purpose: Scalars['String']['output'];
+  rawMaterialId: Scalars['String']['output'];
+  requestedBy: Scalars['String']['output'];
+  requestedQuantity: Scalars['Float']['output'];
+  requiredDate: Scalars['String']['output'];
+  requisitionDate: Scalars['String']['output'];
+  requisitionNumber: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  unit: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type RawMaterialRequisitionInput = {
+  organizationId: Scalars['String']['input'];
+  purpose: Scalars['String']['input'];
+  rawMaterialId: Scalars['String']['input'];
+  requestedQuantity: Scalars['Float']['input'];
+  requiredDate: Scalars['String']['input'];
+  requisitionDate: Scalars['String']['input'];
+  requisitionNumber: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  unit: Scalars['String']['input'];
+};
+
+export type Recruitment = {
+  __typename?: 'Recruitment';
+  applicantId: Scalars['String']['output'];
+  applicationDate: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  feedback: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  interviewDate: Maybe<Scalars['String']['output']>;
+  interviewers: Maybe<Array<Scalars['String']['output']>>;
+  jobId: Scalars['String']['output'];
+  joiningDate: Maybe<Scalars['String']['output']>;
+  offerAmount: Maybe<Scalars['Float']['output']>;
+  organizationId: Scalars['String']['output'];
+  source: Scalars['String']['output'];
+  stage: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type RecruitmentInput = {
+  applicantId: Scalars['String']['input'];
+  applicationDate: Scalars['String']['input'];
+  feedback: InputMaybe<Scalars['String']['input']>;
+  interviewDate: InputMaybe<Scalars['String']['input']>;
+  interviewers: InputMaybe<Array<Scalars['String']['input']>>;
+  jobId: Scalars['String']['input'];
+  joiningDate: InputMaybe<Scalars['String']['input']>;
+  offerAmount: InputMaybe<Scalars['Float']['input']>;
+  organizationId: Scalars['String']['input'];
+  source: Scalars['String']['input'];
+  stage: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RegisterInput = {
@@ -531,6 +2349,58 @@ export type RegisterInput = {
   lastName: InputMaybe<Scalars['String']['input']>;
   organizationId: InputMaybe<Scalars['ID']['input']>;
   password: Scalars['String']['input'];
+};
+
+export type SalaryProcessing = {
+  __typename?: 'SalaryProcessing';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type SalaryProcessingInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SalaryRange = {
+  __typename?: 'SalaryRange';
+  max: Scalars['Float']['output'];
+  min: Scalars['Float']['output'];
+};
+
+export type SalaryRangeInput = {
+  max: Scalars['Float']['input'];
+  min: Scalars['Float']['input'];
+};
+
+export type SalesEnquiry = {
+  __typename?: 'SalesEnquiry';
+  assignedTo: Maybe<Scalars['ID']['output']>;
+  budget: Maybe<Scalars['Float']['output']>;
+  clientId: Scalars['ID']['output'];
+  createdAt: Scalars['String']['output'];
+  createdBy: Maybe<Scalars['ID']['output']>;
+  currency: Maybe<Scalars['String']['output']>;
+  enquiryNumber: Scalars['String']['output'];
+  enquirySource: Maybe<Scalars['String']['output']>;
+  estimatedEndDate: Maybe<Scalars['String']['output']>;
+  estimatedStartDate: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  location: Maybe<Scalars['String']['output']>;
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  priority: Scalars['String']['output'];
+  projectScope: Maybe<Scalars['String']['output']>;
+  projectType: Maybe<Scalars['String']['output']>;
+  seqNo: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  subject: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
 };
 
 export type SalesOrder = {
@@ -544,6 +2414,84 @@ export type SalesOrder = {
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
   totalAmount: Scalars['Float']['output'];
+};
+
+export type SalesReturn = {
+  __typename?: 'SalesReturn';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type SalesReturnInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StockAdjustment = {
+  __typename?: 'StockAdjustment';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type StockAdjustmentInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StockMovement = {
+  __typename?: 'StockMovement';
+  createdAt: Scalars['String']['output'];
+  fromLocation: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  itemId: Scalars['String']['output'];
+  movementDate: Scalars['String']['output'];
+  movementType: Scalars['String']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  quantity: Scalars['Float']['output'];
+  referenceId: Scalars['String']['output'];
+  referenceModule: Scalars['String']['output'];
+  toLocation: Scalars['String']['output'];
+  unit: Scalars['String']['output'];
+};
+
+export type StockMovementInput = {
+  fromLocation: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+  movementType: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
+  referenceId: Scalars['String']['input'];
+  referenceModule: Scalars['String']['input'];
+  toLocation: Scalars['String']['input'];
+  unit: Scalars['String']['input'];
+};
+
+export type StockTransfer = {
+  __typename?: 'StockTransfer';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type StockTransferInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateAttendanceInput = {
@@ -592,6 +2540,23 @@ export type UpdatePurchaseOrderInput = {
   status: InputMaybe<Scalars['String']['input']>;
   totalAmount: InputMaybe<Scalars['Float']['input']>;
   vendorId: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateSalesEnquiryInput = {
+  assignedTo: InputMaybe<Scalars['ID']['input']>;
+  budget: InputMaybe<Scalars['Float']['input']>;
+  clientId: InputMaybe<Scalars['ID']['input']>;
+  currency: InputMaybe<Scalars['String']['input']>;
+  enquirySource: InputMaybe<Scalars['String']['input']>;
+  estimatedEndDate: InputMaybe<Scalars['String']['input']>;
+  estimatedStartDate: InputMaybe<Scalars['String']['input']>;
+  location: InputMaybe<Scalars['String']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  priority: InputMaybe<Scalars['String']['input']>;
+  projectScope: InputMaybe<Scalars['String']['input']>;
+  projectType: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  subject: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSalesOrderInput = {
@@ -651,6 +2616,90 @@ export type Vendor = {
   phone: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
+};
+
+export type VendorPayment = {
+  __typename?: 'VendorPayment';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type VendorPaymentInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Warehouse = {
+  __typename?: 'Warehouse';
+  address: Scalars['String']['output'];
+  capacity: Scalars['Float']['output'];
+  contactNumber: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  currentUtilization: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  location: Scalars['String']['output'];
+  managerName: Scalars['String']['output'];
+  organizationId: Scalars['String']['output'];
+  warehouseCode: Scalars['String']['output'];
+  warehouseName: Scalars['String']['output'];
+  warehouseType: Scalars['String']['output'];
+};
+
+export type WarehouseBin = {
+  __typename?: 'WarehouseBin';
+  binCode: Scalars['String']['output'];
+  binLocation: Scalars['String']['output'];
+  binType: Scalars['String']['output'];
+  capacity: Scalars['Float']['output'];
+  createdAt: Scalars['String']['output'];
+  currentStock: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  isAvailable: Scalars['Boolean']['output'];
+  organizationId: Scalars['String']['output'];
+  warehouseId: Scalars['String']['output'];
+};
+
+export type WarehouseBinInput = {
+  binCode: Scalars['String']['input'];
+  binLocation: Scalars['String']['input'];
+  binType: Scalars['String']['input'];
+  capacity: Scalars['Float']['input'];
+  organizationId: Scalars['String']['input'];
+  warehouseId: Scalars['String']['input'];
+};
+
+export type WarehouseInput = {
+  address: Scalars['String']['input'];
+  capacity: Scalars['Float']['input'];
+  contactNumber: Scalars['String']['input'];
+  location: Scalars['String']['input'];
+  managerName: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  warehouseCode: Scalars['String']['input'];
+  warehouseName: Scalars['String']['input'];
+  warehouseType: Scalars['String']['input'];
+};
+
+export type WorkOrder = {
+  __typename?: 'WorkOrder';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type WorkOrderInput = {
+  docDate: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -721,31 +2770,103 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Address: ResolverTypeWrapper<Partial<Address>>;
+  AddressInput: ResolverTypeWrapper<Partial<AddressInput>>;
+  Applicant: ResolverTypeWrapper<Partial<Applicant>>;
+  ApplicantInput: ResolverTypeWrapper<Partial<ApplicantInput>>;
+  Asset: ResolverTypeWrapper<Partial<Asset>>;
+  AssetInput: ResolverTypeWrapper<Partial<AssetInput>>;
   Attendance: ResolverTypeWrapper<Partial<Attendance>>;
   AuthPayload: ResolverTypeWrapper<Partial<AuthPayload>>;
+  BankAccount: ResolverTypeWrapper<Partial<BankAccount>>;
+  BankAccountInput: ResolverTypeWrapper<Partial<BankAccountInput>>;
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']['output']>>;
+  Career: ResolverTypeWrapper<Partial<Career>>;
+  CareerInput: ResolverTypeWrapper<Partial<CareerInput>>;
+  CashBank: ResolverTypeWrapper<Partial<CashBank>>;
+  CashBankInput: ResolverTypeWrapper<Partial<CashBankInput>>;
+  ChartOfAccounts: ResolverTypeWrapper<Partial<ChartOfAccounts>>;
+  ChartOfAccountsInput: ResolverTypeWrapper<Partial<ChartOfAccountsInput>>;
+  Competency: ResolverTypeWrapper<Partial<Competency>>;
+  CompetencyInput: ResolverTypeWrapper<Partial<CompetencyInput>>;
   CreateAttendanceInput: ResolverTypeWrapper<Partial<CreateAttendanceInput>>;
   CreateCustomerInvoiceInput: ResolverTypeWrapper<Partial<CreateCustomerInvoiceInput>>;
   CreateItemInput: ResolverTypeWrapper<Partial<CreateItemInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
   CreatePurchaseOrderInput: ResolverTypeWrapper<Partial<CreatePurchaseOrderInput>>;
+  CreateSalesEnquiryInput: ResolverTypeWrapper<Partial<CreateSalesEnquiryInput>>;
   CreateSalesOrderInput: ResolverTypeWrapper<Partial<CreateSalesOrderInput>>;
   CreateUserInput: ResolverTypeWrapper<Partial<CreateUserInput>>;
   CreateVendorInput: ResolverTypeWrapper<Partial<CreateVendorInput>>;
+  Customer: ResolverTypeWrapper<Partial<Customer>>;
+  CustomerInput: ResolverTypeWrapper<Partial<CustomerInput>>;
   CustomerInvoice: ResolverTypeWrapper<Partial<CustomerInvoice>>;
+  DVS: ResolverTypeWrapper<Partial<Dvs>>;
+  DVSInput: ResolverTypeWrapper<Partial<DvsInput>>;
+  DeliveryChallan: ResolverTypeWrapper<Partial<DeliveryChallan>>;
+  DeliveryChallanInput: ResolverTypeWrapper<Partial<DeliveryChallanInput>>;
+  EPM: ResolverTypeWrapper<Partial<Epm>>;
+  EPMInput: ResolverTypeWrapper<Partial<EpmInput>>;
+  Education: ResolverTypeWrapper<Partial<Education>>;
+  EducationInput: ResolverTypeWrapper<Partial<EducationInput>>;
+  ExciseInvoice: ResolverTypeWrapper<Partial<ExciseInvoice>>;
+  ExciseInvoiceInput: ResolverTypeWrapper<Partial<ExciseInvoiceInput>>;
+  Experience: ResolverTypeWrapper<Partial<Experience>>;
+  ExperienceInput: ResolverTypeWrapper<Partial<ExperienceInput>>;
+  Extraction: ResolverTypeWrapper<Partial<Extraction>>;
+  ExtractionInput: ResolverTypeWrapper<Partial<ExtractionInput>>;
   Float: ResolverTypeWrapper<Partial<Scalars['Float']['output']>>;
+  GRN: ResolverTypeWrapper<Partial<Grn>>;
+  GRNInput: ResolverTypeWrapper<Partial<GrnInput>>;
+  GeneralLedger: ResolverTypeWrapper<Partial<GeneralLedger>>;
+  GeneralLedgerInput: ResolverTypeWrapper<Partial<GeneralLedgerInput>>;
+  Goal: ResolverTypeWrapper<Partial<Goal>>;
+  GoalInput: ResolverTypeWrapper<Partial<GoalInput>>;
+  GoodsReceipt: ResolverTypeWrapper<Partial<GoodsReceipt>>;
+  GoodsReceiptInput: ResolverTypeWrapper<Partial<GoodsReceiptInput>>;
   ID: ResolverTypeWrapper<Partial<Scalars['ID']['output']>>;
+  IPInspection: ResolverTypeWrapper<Partial<IpInspection>>;
+  IPInspectionInput: ResolverTypeWrapper<Partial<IpInspectionInput>>;
   Int: ResolverTypeWrapper<Partial<Scalars['Int']['output']>>;
+  InternalOrder: ResolverTypeWrapper<Partial<InternalOrder>>;
+  InternalOrderInput: ResolverTypeWrapper<Partial<InternalOrderInput>>;
+  InventoryControl: ResolverTypeWrapper<Partial<InventoryControl>>;
+  InventoryControlInput: ResolverTypeWrapper<Partial<InventoryControlInput>>;
+  InventoryReturn: ResolverTypeWrapper<Partial<InventoryReturn>>;
+  InventoryReturnInput: ResolverTypeWrapper<Partial<InventoryReturnInput>>;
   Item: ResolverTypeWrapper<Partial<Item>>;
   LoginInput: ResolverTypeWrapper<Partial<LoginInput>>;
+  MaterialReceipt: ResolverTypeWrapper<Partial<MaterialReceipt>>;
+  MaterialReceiptInput: ResolverTypeWrapper<Partial<MaterialReceiptInput>>;
   Mutation: ResolverTypeWrapper<{}>;
   Organization: ResolverTypeWrapper<Partial<Organization>>;
+  PayrollManagement: ResolverTypeWrapper<Partial<PayrollManagement>>;
+  PayrollManagementInput: ResolverTypeWrapper<Partial<PayrollManagementInput>>;
+  ProductionPlanning: ResolverTypeWrapper<Partial<ProductionPlanning>>;
+  ProductionPlanningInput: ResolverTypeWrapper<Partial<ProductionPlanningInput>>;
   Project: ResolverTypeWrapper<Partial<Project>>;
   PurchaseOrder: ResolverTypeWrapper<Partial<PurchaseOrder>>;
   Query: ResolverTypeWrapper<{}>;
+  RawMaterialRequisition: ResolverTypeWrapper<Partial<RawMaterialRequisition>>;
+  RawMaterialRequisitionInput: ResolverTypeWrapper<Partial<RawMaterialRequisitionInput>>;
+  Recruitment: ResolverTypeWrapper<Partial<Recruitment>>;
+  RecruitmentInput: ResolverTypeWrapper<Partial<RecruitmentInput>>;
   RegisterInput: ResolverTypeWrapper<Partial<RegisterInput>>;
+  SalaryProcessing: ResolverTypeWrapper<Partial<SalaryProcessing>>;
+  SalaryProcessingInput: ResolverTypeWrapper<Partial<SalaryProcessingInput>>;
+  SalaryRange: ResolverTypeWrapper<Partial<SalaryRange>>;
+  SalaryRangeInput: ResolverTypeWrapper<Partial<SalaryRangeInput>>;
+  SalesEnquiry: ResolverTypeWrapper<Partial<SalesEnquiry>>;
   SalesOrder: ResolverTypeWrapper<Partial<SalesOrder>>;
+  SalesReturn: ResolverTypeWrapper<Partial<SalesReturn>>;
+  SalesReturnInput: ResolverTypeWrapper<Partial<SalesReturnInput>>;
+  StockAdjustment: ResolverTypeWrapper<Partial<StockAdjustment>>;
+  StockAdjustmentInput: ResolverTypeWrapper<Partial<StockAdjustmentInput>>;
+  StockMovement: ResolverTypeWrapper<Partial<StockMovement>>;
+  StockMovementInput: ResolverTypeWrapper<Partial<StockMovementInput>>;
+  StockTransfer: ResolverTypeWrapper<Partial<StockTransfer>>;
+  StockTransferInput: ResolverTypeWrapper<Partial<StockTransferInput>>;
   String: ResolverTypeWrapper<Partial<Scalars['String']['output']>>;
   UpdateAttendanceInput: ResolverTypeWrapper<Partial<UpdateAttendanceInput>>;
   UpdateCustomerInvoiceInput: ResolverTypeWrapper<Partial<UpdateCustomerInvoiceInput>>;
@@ -753,41 +2874,122 @@ export type ResolversTypes = ResolversObject<{
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
   UpdateProjectInput: ResolverTypeWrapper<Partial<UpdateProjectInput>>;
   UpdatePurchaseOrderInput: ResolverTypeWrapper<Partial<UpdatePurchaseOrderInput>>;
+  UpdateSalesEnquiryInput: ResolverTypeWrapper<Partial<UpdateSalesEnquiryInput>>;
   UpdateSalesOrderInput: ResolverTypeWrapper<Partial<UpdateSalesOrderInput>>;
   UpdateUserInput: ResolverTypeWrapper<Partial<UpdateUserInput>>;
   UpdateVendorInput: ResolverTypeWrapper<Partial<UpdateVendorInput>>;
   User: ResolverTypeWrapper<Partial<User>>;
   UserList: ResolverTypeWrapper<Partial<UserList>>;
   Vendor: ResolverTypeWrapper<Partial<Vendor>>;
+  VendorPayment: ResolverTypeWrapper<Partial<VendorPayment>>;
+  VendorPaymentInput: ResolverTypeWrapper<Partial<VendorPaymentInput>>;
+  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>;
+  WarehouseBin: ResolverTypeWrapper<Partial<WarehouseBin>>;
+  WarehouseBinInput: ResolverTypeWrapper<Partial<WarehouseBinInput>>;
+  WarehouseInput: ResolverTypeWrapper<Partial<WarehouseInput>>;
+  WorkOrder: ResolverTypeWrapper<Partial<WorkOrder>>;
+  WorkOrderInput: ResolverTypeWrapper<Partial<WorkOrderInput>>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  Address: Partial<Address>;
+  AddressInput: Partial<AddressInput>;
+  Applicant: Partial<Applicant>;
+  ApplicantInput: Partial<ApplicantInput>;
+  Asset: Partial<Asset>;
+  AssetInput: Partial<AssetInput>;
   Attendance: Partial<Attendance>;
   AuthPayload: Partial<AuthPayload>;
+  BankAccount: Partial<BankAccount>;
+  BankAccountInput: Partial<BankAccountInput>;
   Boolean: Partial<Scalars['Boolean']['output']>;
+  Career: Partial<Career>;
+  CareerInput: Partial<CareerInput>;
+  CashBank: Partial<CashBank>;
+  CashBankInput: Partial<CashBankInput>;
+  ChartOfAccounts: Partial<ChartOfAccounts>;
+  ChartOfAccountsInput: Partial<ChartOfAccountsInput>;
+  Competency: Partial<Competency>;
+  CompetencyInput: Partial<CompetencyInput>;
   CreateAttendanceInput: Partial<CreateAttendanceInput>;
   CreateCustomerInvoiceInput: Partial<CreateCustomerInvoiceInput>;
   CreateItemInput: Partial<CreateItemInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
   CreatePurchaseOrderInput: Partial<CreatePurchaseOrderInput>;
+  CreateSalesEnquiryInput: Partial<CreateSalesEnquiryInput>;
   CreateSalesOrderInput: Partial<CreateSalesOrderInput>;
   CreateUserInput: Partial<CreateUserInput>;
   CreateVendorInput: Partial<CreateVendorInput>;
+  Customer: Partial<Customer>;
+  CustomerInput: Partial<CustomerInput>;
   CustomerInvoice: Partial<CustomerInvoice>;
+  DVS: Partial<Dvs>;
+  DVSInput: Partial<DvsInput>;
+  DeliveryChallan: Partial<DeliveryChallan>;
+  DeliveryChallanInput: Partial<DeliveryChallanInput>;
+  EPM: Partial<Epm>;
+  EPMInput: Partial<EpmInput>;
+  Education: Partial<Education>;
+  EducationInput: Partial<EducationInput>;
+  ExciseInvoice: Partial<ExciseInvoice>;
+  ExciseInvoiceInput: Partial<ExciseInvoiceInput>;
+  Experience: Partial<Experience>;
+  ExperienceInput: Partial<ExperienceInput>;
+  Extraction: Partial<Extraction>;
+  ExtractionInput: Partial<ExtractionInput>;
   Float: Partial<Scalars['Float']['output']>;
+  GRN: Partial<Grn>;
+  GRNInput: Partial<GrnInput>;
+  GeneralLedger: Partial<GeneralLedger>;
+  GeneralLedgerInput: Partial<GeneralLedgerInput>;
+  Goal: Partial<Goal>;
+  GoalInput: Partial<GoalInput>;
+  GoodsReceipt: Partial<GoodsReceipt>;
+  GoodsReceiptInput: Partial<GoodsReceiptInput>;
   ID: Partial<Scalars['ID']['output']>;
+  IPInspection: Partial<IpInspection>;
+  IPInspectionInput: Partial<IpInspectionInput>;
   Int: Partial<Scalars['Int']['output']>;
+  InternalOrder: Partial<InternalOrder>;
+  InternalOrderInput: Partial<InternalOrderInput>;
+  InventoryControl: Partial<InventoryControl>;
+  InventoryControlInput: Partial<InventoryControlInput>;
+  InventoryReturn: Partial<InventoryReturn>;
+  InventoryReturnInput: Partial<InventoryReturnInput>;
   Item: Partial<Item>;
   LoginInput: Partial<LoginInput>;
+  MaterialReceipt: Partial<MaterialReceipt>;
+  MaterialReceiptInput: Partial<MaterialReceiptInput>;
   Mutation: {};
   Organization: Partial<Organization>;
+  PayrollManagement: Partial<PayrollManagement>;
+  PayrollManagementInput: Partial<PayrollManagementInput>;
+  ProductionPlanning: Partial<ProductionPlanning>;
+  ProductionPlanningInput: Partial<ProductionPlanningInput>;
   Project: Partial<Project>;
   PurchaseOrder: Partial<PurchaseOrder>;
   Query: {};
+  RawMaterialRequisition: Partial<RawMaterialRequisition>;
+  RawMaterialRequisitionInput: Partial<RawMaterialRequisitionInput>;
+  Recruitment: Partial<Recruitment>;
+  RecruitmentInput: Partial<RecruitmentInput>;
   RegisterInput: Partial<RegisterInput>;
+  SalaryProcessing: Partial<SalaryProcessing>;
+  SalaryProcessingInput: Partial<SalaryProcessingInput>;
+  SalaryRange: Partial<SalaryRange>;
+  SalaryRangeInput: Partial<SalaryRangeInput>;
+  SalesEnquiry: Partial<SalesEnquiry>;
   SalesOrder: Partial<SalesOrder>;
+  SalesReturn: Partial<SalesReturn>;
+  SalesReturnInput: Partial<SalesReturnInput>;
+  StockAdjustment: Partial<StockAdjustment>;
+  StockAdjustmentInput: Partial<StockAdjustmentInput>;
+  StockMovement: Partial<StockMovement>;
+  StockMovementInput: Partial<StockMovementInput>;
+  StockTransfer: Partial<StockTransfer>;
+  StockTransferInput: Partial<StockTransferInput>;
   String: Partial<Scalars['String']['output']>;
   UpdateAttendanceInput: Partial<UpdateAttendanceInput>;
   UpdateCustomerInvoiceInput: Partial<UpdateCustomerInvoiceInput>;
@@ -795,12 +2997,78 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
   UpdateProjectInput: Partial<UpdateProjectInput>;
   UpdatePurchaseOrderInput: Partial<UpdatePurchaseOrderInput>;
+  UpdateSalesEnquiryInput: Partial<UpdateSalesEnquiryInput>;
   UpdateSalesOrderInput: Partial<UpdateSalesOrderInput>;
   UpdateUserInput: Partial<UpdateUserInput>;
   UpdateVendorInput: Partial<UpdateVendorInput>;
   User: Partial<User>;
   UserList: Partial<UserList>;
   Vendor: Partial<Vendor>;
+  VendorPayment: Partial<VendorPayment>;
+  VendorPaymentInput: Partial<VendorPaymentInput>;
+  Warehouse: Partial<Warehouse>;
+  WarehouseBin: Partial<WarehouseBin>;
+  WarehouseBinInput: Partial<WarehouseBinInput>;
+  WarehouseInput: Partial<WarehouseInput>;
+  WorkOrder: Partial<WorkOrder>;
+  WorkOrderInput: Partial<WorkOrderInput>;
+}>;
+
+export type AddressResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = ResolversObject<{
+  city: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  postalCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  state: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  street: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ApplicantResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Applicant'] = ResolversParentTypes['Applicant']> = ResolversObject<{
+  address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  alternatePhone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  applicantNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  applicationStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  coverLetterUrl: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  dateOfBirth: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  education: Resolver<Array<ResolversTypes['Education']>, ParentType, ContextType>;
+  email: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  experience: Resolver<Maybe<Array<ResolversTypes['Experience']>>, ParentType, ContextType>;
+  firstName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gender: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lastName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nationality: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  phone: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  resumeUrl: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  skills: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type AssetResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Asset'] = ResolversParentTypes['Asset']> = ResolversObject<{
+  assetName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  assetNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  assetType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  assignedTo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  category: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currentValue: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  depreciationMethod: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  manufacturer: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  purchaseDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  purchasePrice: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  serialNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  usefulLife: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  warrantyExpiry: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type AttendanceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Attendance'] = ResolversParentTypes['Attendance']> = ResolversObject<{
@@ -821,6 +3089,94 @@ export type AuthPayloadResolvers<ContextType = GraphQLContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type BankAccountResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['BankAccount'] = ResolversParentTypes['BankAccount']> = ResolversObject<{
+  accountName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  accountNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  accountType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bankName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  branchName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currentBalance: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isActive: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CareerResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Career'] = ResolversParentTypes['Career']> = ResolversObject<{
+  closingDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  department: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  employmentType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  experienceRequired: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  jobCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  jobDescription: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  jobTitle: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  location: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  openings: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  postedDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  qualifications: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  responsibilities: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  salaryRange: Resolver<ResolversTypes['SalaryRange'], ParentType, ContextType>;
+  skills: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CashBankResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CashBank'] = ResolversParentTypes['CashBank']> = ResolversObject<{
+  amount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  bankAccount: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  chequeNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  paymentMethod: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reconciliationDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  reconciliationStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referenceId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referenceModule: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ChartOfAccountsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ChartOfAccounts'] = ResolversParentTypes['ChartOfAccounts']> = ResolversObject<{
+  accountCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  accountName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  accountType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isActive: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  level: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentAccount: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompetencyResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Competency'] = ResolversParentTypes['Competency']> = ResolversObject<{
+  competency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  rating: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CustomerResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Customer'] = ResolversParentTypes['Customer']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CustomerInvoiceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['CustomerInvoice'] = ResolversParentTypes['CustomerInvoice']> = ResolversObject<{
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   customerId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -833,6 +3189,204 @@ export type CustomerInvoiceResolvers<ContextType = GraphQLContext, ParentType ex
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DvsResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DVS'] = ResolversParentTypes['DVS']> = ResolversObject<{
+  applicantId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  documentName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  documentNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  documentType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  documentUrl: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expiryDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  issueDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  issuingAuthority: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verificationDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  verificationNotes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  verificationStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verifiedBy: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DeliveryChallanResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeliveryChallan'] = ResolversParentTypes['DeliveryChallan']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EpmResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['EPM'] = ResolversParentTypes['EPM']> = ResolversObject<{
+  areasOfImprovement: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  comments: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  competencies: Resolver<Array<ResolversTypes['Competency']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  employeeId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  goals: Resolver<Array<ResolversTypes['Goal']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  overallRating: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  reviewDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reviewPeriod: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reviewType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reviewYear: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  reviewerId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  strengths: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  trainingRecommendations: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EducationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Education'] = ResolversParentTypes['Education']> = ResolversObject<{
+  degree: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  grade: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  institution: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  year: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ExciseInvoiceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ExciseInvoice'] = ResolversParentTypes['ExciseInvoice']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ExperienceResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Experience'] = ResolversParentTypes['Experience']> = ResolversObject<{
+  company: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  current: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  from: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  position: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ExtractionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Extraction'] = ResolversParentTypes['Extraction']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  destinationLocation: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  extractionDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  extractionNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  extractionType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  productionOrderId: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  rawMaterialId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  rawMaterialName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requisitionId: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sourceLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GrnResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GRN'] = ResolversParentTypes['GRN']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GeneralLedgerResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GeneralLedger'] = ResolversParentTypes['GeneralLedger']> = ResolversObject<{
+  amount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  creditAccount: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  debitAccount: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fiscalPeriod: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fiscalYear: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referenceId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referenceModule: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GoalResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Goal'] = ResolversParentTypes['Goal']> = ResolversObject<{
+  achievement: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  goal: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  weight: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GoodsReceiptResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GoodsReceipt'] = ResolversParentTypes['GoodsReceipt']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IpInspectionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['IPInspection'] = ResolversParentTypes['IPInspection']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type InternalOrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['InternalOrder'] = ResolversParentTypes['InternalOrder']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type InventoryControlResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['InventoryControl'] = ResolversParentTypes['InventoryControl']> = ResolversObject<{
+  binLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  itemId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  itemName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastStockDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  maxStockLevel: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  minStockLevel: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  reorderPoint: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stockStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  warehouseId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type InventoryReturnResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['InventoryReturn'] = ResolversParentTypes['InventoryReturn']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -850,36 +3404,138 @@ export type ItemResolvers<ContextType = GraphQLContext, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MaterialReceiptResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MaterialReceipt'] = ResolversParentTypes['MaterialReceipt']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  adjustStock: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationAdjustStockArgs, 'binLocation' | 'itemId' | 'quantity' | 'reason'>>;
+  createApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationCreateApplicantArgs, 'input'>>;
+  createAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationCreateAssetArgs, 'input'>>;
   createAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationCreateAttendanceArgs, 'input'>>;
+  createBankAccount: Resolver<ResolversTypes['BankAccount'], ParentType, ContextType, RequireFields<MutationCreateBankAccountArgs, 'input'>>;
+  createCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationCreateCareerArgs, 'input'>>;
+  createCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationCreateCashBankArgs, 'input'>>;
+  createChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationCreateChartOfAccountArgs, 'input'>>;
+  createCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationCreateCustomerArgs, 'input'>>;
   createCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationCreateCustomerInvoiceArgs, 'input'>>;
+  createDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationCreateDvsArgs, 'input'>>;
+  createDeliveryChallan: Resolver<ResolversTypes['DeliveryChallan'], ParentType, ContextType, RequireFields<MutationCreateDeliveryChallanArgs, 'input'>>;
+  createEPM: Resolver<ResolversTypes['EPM'], ParentType, ContextType, RequireFields<MutationCreateEpmArgs, 'input'>>;
+  createExciseInvoice: Resolver<ResolversTypes['ExciseInvoice'], ParentType, ContextType, RequireFields<MutationCreateExciseInvoiceArgs, 'input'>>;
+  createExtraction: Resolver<ResolversTypes['Extraction'], ParentType, ContextType, RequireFields<MutationCreateExtractionArgs, 'input'>>;
+  createGRN: Resolver<ResolversTypes['GRN'], ParentType, ContextType, RequireFields<MutationCreateGrnArgs, 'input'>>;
+  createGeneralLedger: Resolver<ResolversTypes['GeneralLedger'], ParentType, ContextType, RequireFields<MutationCreateGeneralLedgerArgs, 'input'>>;
+  createGoodsReceipt: Resolver<ResolversTypes['GoodsReceipt'], ParentType, ContextType, RequireFields<MutationCreateGoodsReceiptArgs, 'input'>>;
+  createIPInspection: Resolver<ResolversTypes['IPInspection'], ParentType, ContextType, RequireFields<MutationCreateIpInspectionArgs, 'input'>>;
+  createInternalOrder: Resolver<ResolversTypes['InternalOrder'], ParentType, ContextType, RequireFields<MutationCreateInternalOrderArgs, 'input'>>;
+  createInventoryControl: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationCreateInventoryControlArgs, 'input'>>;
+  createInventoryReturn: Resolver<ResolversTypes['InventoryReturn'], ParentType, ContextType, RequireFields<MutationCreateInventoryReturnArgs, 'input'>>;
   createItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationCreateItemArgs, 'input'>>;
+  createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
+  createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
+  createProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationCreateProductionPlanningArgs, 'input'>>;
   createProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createPurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationCreatePurchaseOrderArgs, 'input'>>;
+  createRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationCreateRawMaterialRequisitionArgs, 'input'>>;
+  createRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationCreateRecruitmentArgs, 'input'>>;
+  createSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationCreateSalaryProcessingArgs, 'input'>>;
+  createSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationCreateSalesEnquiryArgs, 'input'>>;
   createSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationCreateSalesOrderArgs, 'input'>>;
+  createSalesReturn: Resolver<ResolversTypes['SalesReturn'], ParentType, ContextType, RequireFields<MutationCreateSalesReturnArgs, 'input'>>;
+  createStockAdjustment: Resolver<ResolversTypes['StockAdjustment'], ParentType, ContextType, RequireFields<MutationCreateStockAdjustmentArgs, 'input'>>;
+  createStockMovement: Resolver<ResolversTypes['StockMovement'], ParentType, ContextType, RequireFields<MutationCreateStockMovementArgs, 'input'>>;
+  createStockTransfer: Resolver<ResolversTypes['StockTransfer'], ParentType, ContextType, RequireFields<MutationCreateStockTransferArgs, 'input'>>;
   createUser: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   createVendor: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationCreateVendorArgs, 'input'>>;
+  createVendorPayment: Resolver<ResolversTypes['VendorPayment'], ParentType, ContextType, RequireFields<MutationCreateVendorPaymentArgs, 'input'>>;
+  createWarehouse: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationCreateWarehouseArgs, 'input'>>;
+  createWarehouseBin: Resolver<ResolversTypes['WarehouseBin'], ParentType, ContextType, RequireFields<MutationCreateWarehouseBinArgs, 'input'>>;
+  createWorkOrder: Resolver<ResolversTypes['WorkOrder'], ParentType, ContextType, RequireFields<MutationCreateWorkOrderArgs, 'input'>>;
+  deleteApplicant: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteApplicantArgs, 'id'>>;
+  deleteAsset: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAssetArgs, 'id'>>;
   deleteAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationDeleteAttendanceArgs, 'id'>>;
+  deleteCareer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCareerArgs, 'id'>>;
+  deleteChartOfAccount: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteChartOfAccountArgs, 'id'>>;
+  deleteCustomer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCustomerArgs, 'id'>>;
   deleteCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationDeleteCustomerInvoiceArgs, 'id'>>;
+  deleteDVS: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteDvsArgs, 'id'>>;
+  deleteDeliveryChallan: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteDeliveryChallanArgs, 'id'>>;
+  deleteEPM: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEpmArgs, 'id'>>;
+  deleteExciseInvoice: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteExciseInvoiceArgs, 'id'>>;
+  deleteExtraction: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteExtractionArgs, 'id'>>;
+  deleteGRN: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteGrnArgs, 'id'>>;
+  deleteGoodsReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteGoodsReceiptArgs, 'id'>>;
+  deleteIPInspection: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteIpInspectionArgs, 'id'>>;
+  deleteInternalOrder: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteInternalOrderArgs, 'id'>>;
+  deleteInventoryReturn: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteInventoryReturnArgs, 'id'>>;
   deleteItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationDeleteItemArgs, 'id'>>;
+  deleteMaterialReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMaterialReceiptArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
+  deleteProductionPlanning: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductionPlanningArgs, 'id'>>;
   deleteProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deletePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationDeletePurchaseOrderArgs, 'id'>>;
+  deleteSalaryProcessing: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalaryProcessingArgs, 'id'>>;
+  deleteSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationDeleteSalesEnquiryArgs, 'id'>>;
   deleteSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationDeleteSalesOrderArgs, 'id'>>;
+  deleteSalesReturn: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalesReturnArgs, 'id'>>;
+  deleteStockAdjustment: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteStockAdjustmentArgs, 'id'>>;
+  deleteStockTransfer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteStockTransferArgs, 'id'>>;
   deleteUser: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteVendor: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationDeleteVendorArgs, 'id'>>;
+  deleteVendorPayment: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteVendorPaymentArgs, 'id'>>;
+  deleteWorkOrder: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteWorkOrderArgs, 'id'>>;
   login: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
+  reconcileCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationReconcileCashBankArgs, 'id'>>;
   register: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  updateApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationUpdateApplicantArgs, 'id' | 'input'>>;
+  updateAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationUpdateAssetArgs, 'id' | 'input'>>;
   updateAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationUpdateAttendanceArgs, 'id' | 'input'>>;
+  updateBankAccount: Resolver<ResolversTypes['BankAccount'], ParentType, ContextType, RequireFields<MutationUpdateBankAccountArgs, 'id' | 'input'>>;
+  updateCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationUpdateCareerArgs, 'id' | 'input'>>;
+  updateChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationUpdateChartOfAccountArgs, 'id' | 'input'>>;
+  updateCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationUpdateCustomerArgs, 'id' | 'input'>>;
   updateCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationUpdateCustomerInvoiceArgs, 'id' | 'input'>>;
+  updateDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationUpdateDvsArgs, 'id' | 'input'>>;
+  updateDeliveryChallan: Resolver<ResolversTypes['DeliveryChallan'], ParentType, ContextType, RequireFields<MutationUpdateDeliveryChallanArgs, 'id' | 'input'>>;
+  updateEPM: Resolver<ResolversTypes['EPM'], ParentType, ContextType, RequireFields<MutationUpdateEpmArgs, 'id' | 'input'>>;
+  updateExciseInvoice: Resolver<ResolversTypes['ExciseInvoice'], ParentType, ContextType, RequireFields<MutationUpdateExciseInvoiceArgs, 'id' | 'input'>>;
+  updateExtraction: Resolver<ResolversTypes['Extraction'], ParentType, ContextType, RequireFields<MutationUpdateExtractionArgs, 'id' | 'input'>>;
+  updateGRN: Resolver<ResolversTypes['GRN'], ParentType, ContextType, RequireFields<MutationUpdateGrnArgs, 'id' | 'input'>>;
+  updateGoodsReceipt: Resolver<ResolversTypes['GoodsReceipt'], ParentType, ContextType, RequireFields<MutationUpdateGoodsReceiptArgs, 'id' | 'input'>>;
+  updateIPInspection: Resolver<ResolversTypes['IPInspection'], ParentType, ContextType, RequireFields<MutationUpdateIpInspectionArgs, 'id' | 'input'>>;
+  updateInternalOrder: Resolver<ResolversTypes['InternalOrder'], ParentType, ContextType, RequireFields<MutationUpdateInternalOrderArgs, 'id' | 'input'>>;
+  updateInventoryControl: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationUpdateInventoryControlArgs, 'id' | 'input'>>;
+  updateInventoryReturn: Resolver<ResolversTypes['InventoryReturn'], ParentType, ContextType, RequireFields<MutationUpdateInventoryReturnArgs, 'id' | 'input'>>;
   updateItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationUpdateItemArgs, 'id' | 'input'>>;
+  updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
+  updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
+  updateProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationUpdateProductionPlanningArgs, 'id' | 'input'>>;
   updateProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'id' | 'input'>>;
   updatePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationUpdatePurchaseOrderArgs, 'id' | 'input'>>;
+  updateRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationUpdateRawMaterialRequisitionArgs, 'id' | 'input'>>;
+  updateRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationUpdateRecruitmentArgs, 'id' | 'input'>>;
+  updateSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationUpdateSalaryProcessingArgs, 'id' | 'input'>>;
+  updateSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationUpdateSalesEnquiryArgs, 'id' | 'input'>>;
   updateSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationUpdateSalesOrderArgs, 'id' | 'input'>>;
+  updateSalesReturn: Resolver<ResolversTypes['SalesReturn'], ParentType, ContextType, RequireFields<MutationUpdateSalesReturnArgs, 'id' | 'input'>>;
+  updateStockAdjustment: Resolver<ResolversTypes['StockAdjustment'], ParentType, ContextType, RequireFields<MutationUpdateStockAdjustmentArgs, 'id' | 'input'>>;
+  updateStockTransfer: Resolver<ResolversTypes['StockTransfer'], ParentType, ContextType, RequireFields<MutationUpdateStockTransferArgs, 'id' | 'input'>>;
   updateUser: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'input'>>;
   updateVendor: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationUpdateVendorArgs, 'id' | 'input'>>;
+  updateVendorPayment: Resolver<ResolversTypes['VendorPayment'], ParentType, ContextType, RequireFields<MutationUpdateVendorPaymentArgs, 'id' | 'input'>>;
+  updateWarehouse: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'input'>>;
+  updateWarehouseBin: Resolver<ResolversTypes['WarehouseBin'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseBinArgs, 'id' | 'input'>>;
+  updateWorkOrder: Resolver<ResolversTypes['WorkOrder'], ParentType, ContextType, RequireFields<MutationUpdateWorkOrderArgs, 'id' | 'input'>>;
 }>;
 
 export type OrganizationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = ResolversObject<{
@@ -891,6 +3547,26 @@ export type OrganizationResolvers<ContextType = GraphQLContext, ParentType exten
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PayrollManagement'] = ResolversParentTypes['PayrollManagement']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProductionPlanningResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ProductionPlanning'] = ResolversParentTypes['ProductionPlanning']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -922,27 +3598,176 @@ export type PurchaseOrderResolvers<ContextType = GraphQLContext, ParentType exte
 }>;
 
 export type QueryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  applicant: Resolver<Maybe<ResolversTypes['Applicant']>, ParentType, ContextType, RequireFields<QueryApplicantArgs, 'id'>>;
+  applicants: Resolver<Array<ResolversTypes['Applicant']>, ParentType, ContextType, RequireFields<QueryApplicantsArgs, 'organizationId'>>;
+  asset: Resolver<Maybe<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryAssetArgs, 'id'>>;
+  assets: Resolver<Array<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryAssetsArgs, 'organizationId'>>;
   attendance: Resolver<Maybe<ResolversTypes['Attendance']>, ParentType, ContextType, RequireFields<QueryAttendanceArgs, 'id'>>;
   attendances: Resolver<Array<ResolversTypes['Attendance']>, ParentType, ContextType, RequireFields<QueryAttendancesArgs, 'organizationId'>>;
+  bankAccount: Resolver<Maybe<ResolversTypes['BankAccount']>, ParentType, ContextType, RequireFields<QueryBankAccountArgs, 'id'>>;
+  bankAccounts: Resolver<Array<ResolversTypes['BankAccount']>, ParentType, ContextType, RequireFields<QueryBankAccountsArgs, 'organizationId'>>;
+  career: Resolver<Maybe<ResolversTypes['Career']>, ParentType, ContextType, RequireFields<QueryCareerArgs, 'id'>>;
+  careers: Resolver<Array<ResolversTypes['Career']>, ParentType, ContextType, RequireFields<QueryCareersArgs, 'organizationId'>>;
+  cashBank: Resolver<Maybe<ResolversTypes['CashBank']>, ParentType, ContextType, RequireFields<QueryCashBankArgs, 'id'>>;
+  cashBanks: Resolver<Array<ResolversTypes['CashBank']>, ParentType, ContextType, RequireFields<QueryCashBanksArgs, 'organizationId'>>;
+  chartOfAccount: Resolver<Maybe<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountArgs, 'id'>>;
+  chartOfAccounts: Resolver<Array<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountsArgs, 'organizationId'>>;
+  customer: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomerArgs, 'id'>>;
   customerinvoice: Resolver<Maybe<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoiceArgs, 'id'>>;
   customerinvoices: Resolver<Array<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoicesArgs, 'organizationId'>>;
+  customers: Resolver<Array<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomersArgs, 'organizationId'>>;
+  deliverychallan: Resolver<Maybe<ResolversTypes['DeliveryChallan']>, ParentType, ContextType, RequireFields<QueryDeliverychallanArgs, 'id'>>;
+  deliverychallans: Resolver<Array<ResolversTypes['DeliveryChallan']>, ParentType, ContextType, RequireFields<QueryDeliverychallansArgs, 'organizationId'>>;
+  dvs: Resolver<Maybe<ResolversTypes['DVS']>, ParentType, ContextType, RequireFields<QueryDvsArgs, 'id'>>;
+  dvsRecords: Resolver<Array<ResolversTypes['DVS']>, ParentType, ContextType, RequireFields<QueryDvsRecordsArgs, 'organizationId'>>;
+  epm: Resolver<Maybe<ResolversTypes['EPM']>, ParentType, ContextType, RequireFields<QueryEpmArgs, 'id'>>;
+  epms: Resolver<Array<ResolversTypes['EPM']>, ParentType, ContextType, RequireFields<QueryEpmsArgs, 'organizationId'>>;
+  exciseinvoice: Resolver<Maybe<ResolversTypes['ExciseInvoice']>, ParentType, ContextType, RequireFields<QueryExciseinvoiceArgs, 'id'>>;
+  exciseinvoices: Resolver<Array<ResolversTypes['ExciseInvoice']>, ParentType, ContextType, RequireFields<QueryExciseinvoicesArgs, 'organizationId'>>;
+  extraction: Resolver<Maybe<ResolversTypes['Extraction']>, ParentType, ContextType, RequireFields<QueryExtractionArgs, 'id'>>;
+  extractions: Resolver<Array<ResolversTypes['Extraction']>, ParentType, ContextType, RequireFields<QueryExtractionsArgs, 'organizationId'>>;
+  generalLedger: Resolver<Maybe<ResolversTypes['GeneralLedger']>, ParentType, ContextType, RequireFields<QueryGeneralLedgerArgs, 'id'>>;
+  generalLedgers: Resolver<Array<ResolversTypes['GeneralLedger']>, ParentType, ContextType, RequireFields<QueryGeneralLedgersArgs, 'organizationId'>>;
+  goodsreceipt: Resolver<Maybe<ResolversTypes['GoodsReceipt']>, ParentType, ContextType, RequireFields<QueryGoodsreceiptArgs, 'id'>>;
+  goodsreceipts: Resolver<Array<ResolversTypes['GoodsReceipt']>, ParentType, ContextType, RequireFields<QueryGoodsreceiptsArgs, 'organizationId'>>;
+  grn: Resolver<Maybe<ResolversTypes['GRN']>, ParentType, ContextType, RequireFields<QueryGrnArgs, 'id'>>;
+  grns: Resolver<Array<ResolversTypes['GRN']>, ParentType, ContextType, RequireFields<QueryGrnsArgs, 'organizationId'>>;
+  internalorder: Resolver<Maybe<ResolversTypes['InternalOrder']>, ParentType, ContextType, RequireFields<QueryInternalorderArgs, 'id'>>;
+  internalorders: Resolver<Array<ResolversTypes['InternalOrder']>, ParentType, ContextType, RequireFields<QueryInternalordersArgs, 'organizationId'>>;
+  inventoryControl: Resolver<Maybe<ResolversTypes['InventoryControl']>, ParentType, ContextType, RequireFields<QueryInventoryControlArgs, 'id'>>;
+  inventoryControls: Resolver<Array<ResolversTypes['InventoryControl']>, ParentType, ContextType, RequireFields<QueryInventoryControlsArgs, 'organizationId'>>;
+  inventoryreturn: Resolver<Maybe<ResolversTypes['InventoryReturn']>, ParentType, ContextType, RequireFields<QueryInventoryreturnArgs, 'id'>>;
+  inventoryreturns: Resolver<Array<ResolversTypes['InventoryReturn']>, ParentType, ContextType, RequireFields<QueryInventoryreturnsArgs, 'organizationId'>>;
+  ipinspection: Resolver<Maybe<ResolversTypes['IPInspection']>, ParentType, ContextType, RequireFields<QueryIpinspectionArgs, 'id'>>;
+  ipinspections: Resolver<Array<ResolversTypes['IPInspection']>, ParentType, ContextType, RequireFields<QueryIpinspectionsArgs, 'organizationId'>>;
   item: Resolver<Maybe<ResolversTypes['Item']>, ParentType, ContextType, RequireFields<QueryItemArgs, 'id'>>;
   items: Resolver<Array<ResolversTypes['Item']>, ParentType, ContextType, RequireFields<QueryItemsArgs, 'organizationId'>>;
+  lowStockItems: Resolver<Array<ResolversTypes['InventoryControl']>, ParentType, ContextType, RequireFields<QueryLowStockItemsArgs, 'organizationId'>>;
+  materialreceipt: Resolver<Maybe<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptArgs, 'id'>>;
+  materialreceipts: Resolver<Array<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptsArgs, 'organizationId'>>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   organization: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
   organizations: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType, QueryOrganizationsArgs>;
+  payrollmanagement: Resolver<Maybe<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementArgs, 'id'>>;
+  payrollmanagements: Resolver<Array<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementsArgs, 'organizationId'>>;
+  productionplanning: Resolver<Maybe<ResolversTypes['ProductionPlanning']>, ParentType, ContextType, RequireFields<QueryProductionplanningArgs, 'id'>>;
+  productionplannings: Resolver<Array<ResolversTypes['ProductionPlanning']>, ParentType, ContextType, RequireFields<QueryProductionplanningsArgs, 'organizationId'>>;
   project: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
   projects: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectsArgs, 'organizationId'>>;
   purchaseorder: Resolver<Maybe<ResolversTypes['PurchaseOrder']>, ParentType, ContextType, RequireFields<QueryPurchaseorderArgs, 'id'>>;
   purchaseorders: Resolver<Array<ResolversTypes['PurchaseOrder']>, ParentType, ContextType, RequireFields<QueryPurchaseordersArgs, 'organizationId'>>;
+  rawMaterialRequisition: Resolver<Maybe<ResolversTypes['RawMaterialRequisition']>, ParentType, ContextType, RequireFields<QueryRawMaterialRequisitionArgs, 'id'>>;
+  rawMaterialRequisitions: Resolver<Array<ResolversTypes['RawMaterialRequisition']>, ParentType, ContextType, RequireFields<QueryRawMaterialRequisitionsArgs, 'organizationId'>>;
+  recruitment: Resolver<Maybe<ResolversTypes['Recruitment']>, ParentType, ContextType, RequireFields<QueryRecruitmentArgs, 'id'>>;
+  recruitments: Resolver<Array<ResolversTypes['Recruitment']>, ParentType, ContextType, RequireFields<QueryRecruitmentsArgs, 'organizationId'>>;
+  salaryprocessing: Resolver<Maybe<ResolversTypes['SalaryProcessing']>, ParentType, ContextType, RequireFields<QuerySalaryprocessingArgs, 'id'>>;
+  salaryprocessings: Resolver<Array<ResolversTypes['SalaryProcessing']>, ParentType, ContextType, RequireFields<QuerySalaryprocessingsArgs, 'organizationId'>>;
+  salesEnquiries: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesArgs, 'organizationId'>>;
+  salesEnquiriesByAssignedTo: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesByAssignedToArgs, 'userId'>>;
+  salesEnquiriesByClient: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesByClientArgs, 'clientId'>>;
+  salesEnquiriesByStatus: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesByStatusArgs, 'status'>>;
+  salesEnquiry: Resolver<Maybe<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiryArgs, 'id'>>;
   salesorder: Resolver<Maybe<ResolversTypes['SalesOrder']>, ParentType, ContextType, RequireFields<QuerySalesorderArgs, 'id'>>;
   salesorders: Resolver<Array<ResolversTypes['SalesOrder']>, ParentType, ContextType, RequireFields<QuerySalesordersArgs, 'organizationId'>>;
+  salesreturn: Resolver<Maybe<ResolversTypes['SalesReturn']>, ParentType, ContextType, RequireFields<QuerySalesreturnArgs, 'id'>>;
+  salesreturns: Resolver<Array<ResolversTypes['SalesReturn']>, ParentType, ContextType, RequireFields<QuerySalesreturnsArgs, 'organizationId'>>;
+  stockMovement: Resolver<Maybe<ResolversTypes['StockMovement']>, ParentType, ContextType, RequireFields<QueryStockMovementArgs, 'id'>>;
+  stockMovements: Resolver<Array<ResolversTypes['StockMovement']>, ParentType, ContextType, RequireFields<QueryStockMovementsArgs, 'organizationId'>>;
+  stockadjustment: Resolver<Maybe<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<QueryStockadjustmentArgs, 'id'>>;
+  stockadjustments: Resolver<Array<ResolversTypes['StockAdjustment']>, ParentType, ContextType, RequireFields<QueryStockadjustmentsArgs, 'organizationId'>>;
+  stocktransfer: Resolver<Maybe<ResolversTypes['StockTransfer']>, ParentType, ContextType, RequireFields<QueryStocktransferArgs, 'id'>>;
+  stocktransfers: Resolver<Array<ResolversTypes['StockTransfer']>, ParentType, ContextType, RequireFields<QueryStocktransfersArgs, 'organizationId'>>;
   user: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   userByEmail: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>;
   usersByOrganization: Resolver<ResolversTypes['UserList'], ParentType, ContextType, RequireFields<QueryUsersByOrganizationArgs, 'organizationId'>>;
   usersByRole: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersByRoleArgs, 'role'>>;
   vendor: Resolver<Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorArgs, 'id'>>;
+  vendorpayment: Resolver<Maybe<ResolversTypes['VendorPayment']>, ParentType, ContextType, RequireFields<QueryVendorpaymentArgs, 'id'>>;
+  vendorpayments: Resolver<Array<ResolversTypes['VendorPayment']>, ParentType, ContextType, RequireFields<QueryVendorpaymentsArgs, 'organizationId'>>;
   vendors: Resolver<Array<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorsArgs, 'organizationId'>>;
+  warehouse: Resolver<Maybe<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehouseArgs, 'id'>>;
+  warehouseBin: Resolver<Maybe<ResolversTypes['WarehouseBin']>, ParentType, ContextType, RequireFields<QueryWarehouseBinArgs, 'id'>>;
+  warehouseBins: Resolver<Array<ResolversTypes['WarehouseBin']>, ParentType, ContextType, RequireFields<QueryWarehouseBinsArgs, 'organizationId'>>;
+  warehouses: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehousesArgs, 'organizationId'>>;
+  workorder: Resolver<Maybe<ResolversTypes['WorkOrder']>, ParentType, ContextType, RequireFields<QueryWorkorderArgs, 'id'>>;
+  workorders: Resolver<Array<ResolversTypes['WorkOrder']>, ParentType, ContextType, RequireFields<QueryWorkordersArgs, 'organizationId'>>;
+}>;
+
+export type RawMaterialRequisitionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['RawMaterialRequisition'] = ResolversParentTypes['RawMaterialRequisition']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  purpose: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  rawMaterialId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requestedBy: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requestedQuantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  requiredDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requisitionDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requisitionNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RecruitmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Recruitment'] = ResolversParentTypes['Recruitment']> = ResolversObject<{
+  applicantId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  applicationDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  feedback: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  interviewDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  interviewers: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  jobId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  joiningDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  offerAmount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  stage: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalaryProcessingResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalaryProcessing'] = ResolversParentTypes['SalaryProcessing']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalaryRangeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalaryRange'] = ResolversParentTypes['SalaryRange']> = ResolversObject<{
+  max: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  min: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalesEnquiryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesEnquiry'] = ResolversParentTypes['SalesEnquiry']> = ResolversObject<{
+  assignedTo: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  budget: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  clientId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  currency: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enquiryNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enquirySource: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  estimatedEndDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  estimatedStartDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  priority: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  projectScope: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projectType: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subject: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesOrder'] = ResolversParentTypes['SalesOrder']> = ResolversObject<{
@@ -955,6 +3780,53 @@ export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalesReturnResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesReturn'] = ResolversParentTypes['SalesReturn']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type StockAdjustmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['StockAdjustment'] = ResolversParentTypes['StockAdjustment']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type StockMovementResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['StockMovement'] = ResolversParentTypes['StockMovement']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fromLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  itemId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  movementDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  movementType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  referenceId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  referenceModule: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  toLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type StockTransferResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['StockTransfer'] = ResolversParentTypes['StockTransfer']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -994,19 +3866,110 @@ export type VendorResolvers<ContextType = GraphQLContext, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VendorPaymentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['VendorPayment'] = ResolversParentTypes['VendorPayment']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type WarehouseResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Warehouse'] = ResolversParentTypes['Warehouse']> = ResolversObject<{
+  address: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  capacity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  contactNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currentUtilization: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isActive: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  location: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  managerName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  warehouseCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  warehouseName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  warehouseType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type WarehouseBinResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WarehouseBin'] = ResolversParentTypes['WarehouseBin']> = ResolversObject<{
+  binCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  binLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  binType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  capacity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currentStock: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isAvailable: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  warehouseId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type WorkOrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['WorkOrder'] = ResolversParentTypes['WorkOrder']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
+  Address: AddressResolvers<ContextType>;
+  Applicant: ApplicantResolvers<ContextType>;
+  Asset: AssetResolvers<ContextType>;
   Attendance: AttendanceResolvers<ContextType>;
   AuthPayload: AuthPayloadResolvers<ContextType>;
+  BankAccount: BankAccountResolvers<ContextType>;
+  Career: CareerResolvers<ContextType>;
+  CashBank: CashBankResolvers<ContextType>;
+  ChartOfAccounts: ChartOfAccountsResolvers<ContextType>;
+  Competency: CompetencyResolvers<ContextType>;
+  Customer: CustomerResolvers<ContextType>;
   CustomerInvoice: CustomerInvoiceResolvers<ContextType>;
+  DVS: DvsResolvers<ContextType>;
+  DeliveryChallan: DeliveryChallanResolvers<ContextType>;
+  EPM: EpmResolvers<ContextType>;
+  Education: EducationResolvers<ContextType>;
+  ExciseInvoice: ExciseInvoiceResolvers<ContextType>;
+  Experience: ExperienceResolvers<ContextType>;
+  Extraction: ExtractionResolvers<ContextType>;
+  GRN: GrnResolvers<ContextType>;
+  GeneralLedger: GeneralLedgerResolvers<ContextType>;
+  Goal: GoalResolvers<ContextType>;
+  GoodsReceipt: GoodsReceiptResolvers<ContextType>;
+  IPInspection: IpInspectionResolvers<ContextType>;
+  InternalOrder: InternalOrderResolvers<ContextType>;
+  InventoryControl: InventoryControlResolvers<ContextType>;
+  InventoryReturn: InventoryReturnResolvers<ContextType>;
   Item: ItemResolvers<ContextType>;
+  MaterialReceipt: MaterialReceiptResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;
   Organization: OrganizationResolvers<ContextType>;
+  PayrollManagement: PayrollManagementResolvers<ContextType>;
+  ProductionPlanning: ProductionPlanningResolvers<ContextType>;
   Project: ProjectResolvers<ContextType>;
   PurchaseOrder: PurchaseOrderResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
+  RawMaterialRequisition: RawMaterialRequisitionResolvers<ContextType>;
+  Recruitment: RecruitmentResolvers<ContextType>;
+  SalaryProcessing: SalaryProcessingResolvers<ContextType>;
+  SalaryRange: SalaryRangeResolvers<ContextType>;
+  SalesEnquiry: SalesEnquiryResolvers<ContextType>;
   SalesOrder: SalesOrderResolvers<ContextType>;
+  SalesReturn: SalesReturnResolvers<ContextType>;
+  StockAdjustment: StockAdjustmentResolvers<ContextType>;
+  StockMovement: StockMovementResolvers<ContextType>;
+  StockTransfer: StockTransferResolvers<ContextType>;
   User: UserResolvers<ContextType>;
   UserList: UserListResolvers<ContextType>;
   Vendor: VendorResolvers<ContextType>;
+  VendorPayment: VendorPaymentResolvers<ContextType>;
+  Warehouse: WarehouseResolvers<ContextType>;
+  WarehouseBin: WarehouseBinResolvers<ContextType>;
+  WorkOrder: WorkOrderResolvers<ContextType>;
 }>;
 

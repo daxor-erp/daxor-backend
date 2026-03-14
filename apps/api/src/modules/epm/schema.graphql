@@ -1,0 +1,70 @@
+type EPM {
+  id: ID!
+  employeeId: String!
+  reviewPeriod: String!
+  reviewYear: Int!
+  reviewType: String!
+  reviewDate: String!
+  reviewerId: String!
+  goals: [Goal!]!
+  competencies: [Competency!]!
+  overallRating: Float!
+  strengths: String
+  areasOfImprovement: String
+  trainingRecommendations: String
+  comments: String
+  status: String!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Goal {
+  goal: String!
+  weight: Float!
+  achievement: Float
+}
+
+type Competency {
+  competency: String!
+  rating: Float!
+}
+
+input GoalInput {
+  goal: String!
+  weight: Float!
+  achievement: Float
+}
+
+input CompetencyInput {
+  competency: String!
+  rating: Float!
+}
+
+input EPMInput {
+  employeeId: String!
+  reviewPeriod: String!
+  reviewYear: Int!
+  reviewType: String!
+  reviewDate: String!
+  goals: [GoalInput!]!
+  competencies: [CompetencyInput!]!
+  overallRating: Float!
+  strengths: String
+  areasOfImprovement: String
+  trainingRecommendations: String
+  comments: String
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  epm(id: ID!): EPM
+  epms(organizationId: String!, page: Int, limit: Int, status: String): [EPM!]!
+}
+
+extend type Mutation {
+  createEPM(input: EPMInput!): EPM!
+  updateEPM(id: ID!, input: EPMInput!): EPM!
+  deleteEPM(id: ID!): Boolean!
+}

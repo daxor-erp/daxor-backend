@@ -1,0 +1,25 @@
+type GoodsReceipt {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input GoodsReceiptInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  goodsreceipt(id: ID!): GoodsReceipt
+  goodsreceipts(organizationId: String!, page: Int, limit: Int): [GoodsReceipt!]!
+}
+
+extend type Mutation {
+  createGoodsReceipt(input: GoodsReceiptInput!): GoodsReceipt!
+  updateGoodsReceipt(id: ID!, input: GoodsReceiptInput!): GoodsReceipt!
+  deleteGoodsReceipt(id: ID!): Boolean!
+}

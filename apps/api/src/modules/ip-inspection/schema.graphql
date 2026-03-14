@@ -1,0 +1,25 @@
+type IPInspection {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input IPInspectionInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  ipinspection(id: ID!): IPInspection
+  ipinspections(organizationId: String!, page: Int, limit: Int): [IPInspection!]!
+}
+
+extend type Mutation {
+  createIPInspection(input: IPInspectionInput!): IPInspection!
+  updateIPInspection(id: ID!, input: IPInspectionInput!): IPInspection!
+  deleteIPInspection(id: ID!): Boolean!
+}

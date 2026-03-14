@@ -1,0 +1,25 @@
+type StockAdjustment {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input StockAdjustmentInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  stockadjustment(id: ID!): StockAdjustment
+  stockadjustments(organizationId: String!, page: Int, limit: Int): [StockAdjustment!]!
+}
+
+extend type Mutation {
+  createStockAdjustment(input: StockAdjustmentInput!): StockAdjustment!
+  updateStockAdjustment(id: ID!, input: StockAdjustmentInput!): StockAdjustment!
+  deleteStockAdjustment(id: ID!): Boolean!
+}

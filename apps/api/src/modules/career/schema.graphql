@@ -1,0 +1,98 @@
+type Career {
+  id: ID!
+  jobTitle: String!
+  jobCode: String!
+  department: String!
+  location: String!
+  employmentType: String!
+  experienceRequired: String!
+  qualifications: String!
+  skills: [String!]!
+  jobDescription: String!
+  responsibilities: String!
+  salaryRange: SalaryRange!
+  openings: Int!
+  postedDate: String!
+  closingDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type SalaryRange {
+  min: Float!
+  max: Float!
+}
+
+type Recruitment {
+  id: ID!
+  applicantId: String!
+  jobId: String!
+  applicationDate: String!
+  source: String!
+  stage: String!
+  interviewDate: String
+  interviewers: [String!]
+  feedback: String
+  offerAmount: Float
+  joiningDate: String
+  status: String!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input SalaryRangeInput {
+  min: Float!
+  max: Float!
+}
+
+input CareerInput {
+  jobTitle: String!
+  jobCode: String!
+  department: String!
+  location: String!
+  employmentType: String!
+  experienceRequired: String!
+  qualifications: String!
+  skills: [String!]!
+  jobDescription: String!
+  responsibilities: String!
+  salaryRange: SalaryRangeInput!
+  openings: Int!
+  postedDate: String!
+  closingDate: String!
+  status: String
+  organizationId: String!
+}
+
+input RecruitmentInput {
+  applicantId: String!
+  jobId: String!
+  applicationDate: String!
+  source: String!
+  stage: String
+  interviewDate: String
+  interviewers: [String!]
+  feedback: String
+  offerAmount: Float
+  joiningDate: String
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  career(id: ID!): Career
+  careers(organizationId: String!, page: Int, limit: Int, status: String): [Career!]!
+  recruitment(id: ID!): Recruitment
+  recruitments(organizationId: String!, page: Int, limit: Int, status: String): [Recruitment!]!
+}
+
+extend type Mutation {
+  createCareer(input: CareerInput!): Career!
+  updateCareer(id: ID!, input: CareerInput!): Career!
+  deleteCareer(id: ID!): Boolean!
+  createRecruitment(input: RecruitmentInput!): Recruitment!
+  updateRecruitment(id: ID!, input: RecruitmentInput!): Recruitment!
+}

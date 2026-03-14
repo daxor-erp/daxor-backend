@@ -1,0 +1,70 @@
+type CashBank {
+  id: ID!
+  transactionNumber: String!
+  transactionDate: String!
+  transactionType: String!
+  bankAccount: String!
+  referenceModule: String!
+  referenceId: String!
+  amount: Float!
+  currency: String!
+  paymentMethod: String!
+  chequeNumber: String
+  description: String!
+  reconciliationStatus: String!
+  reconciliationDate: String
+  organizationId: String!
+  createdAt: String!
+}
+
+type BankAccount {
+  id: ID!
+  accountNumber: String!
+  accountName: String!
+  bankName: String!
+  branchName: String!
+  accountType: String!
+  currency: String!
+  currentBalance: Float!
+  isActive: Boolean!
+  organizationId: String!
+  createdAt: String!
+}
+
+input CashBankInput {
+  transactionDate: String!
+  transactionType: String!
+  bankAccount: String!
+  referenceModule: String!
+  referenceId: String!
+  amount: Float!
+  currency: String
+  paymentMethod: String!
+  chequeNumber: String
+  description: String!
+  organizationId: String!
+}
+
+input BankAccountInput {
+  accountNumber: String!
+  accountName: String!
+  bankName: String!
+  branchName: String!
+  accountType: String!
+  currency: String
+  organizationId: String!
+}
+
+extend type Query {
+  cashBank(id: ID!): CashBank
+  cashBanks(organizationId: String!, page: Int, limit: Int, reconciliationStatus: String): [CashBank!]!
+  bankAccount(id: ID!): BankAccount
+  bankAccounts(organizationId: String!, page: Int, limit: Int): [BankAccount!]!
+}
+
+extend type Mutation {
+  createCashBank(input: CashBankInput!): CashBank!
+  reconcileCashBank(id: ID!): CashBank!
+  createBankAccount(input: BankAccountInput!): BankAccount!
+  updateBankAccount(id: ID!, input: BankAccountInput!): BankAccount!
+}

@@ -1,0 +1,25 @@
+type GRN {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input GRNInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  grn(id: ID!): GRN
+  grns(organizationId: String!, page: Int, limit: Int): [GRN!]!
+}
+
+extend type Mutation {
+  createGRN(input: GRNInput!): GRN!
+  updateGRN(id: ID!, input: GRNInput!): GRN!
+  deleteGRN(id: ID!): Boolean!
+}

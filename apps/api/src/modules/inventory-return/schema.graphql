@@ -1,0 +1,25 @@
+type InventoryReturn {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input InventoryReturnInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  inventoryreturn(id: ID!): InventoryReturn
+  inventoryreturns(organizationId: String!, page: Int, limit: Int): [InventoryReturn!]!
+}
+
+extend type Mutation {
+  createInventoryReturn(input: InventoryReturnInput!): InventoryReturn!
+  updateInventoryReturn(id: ID!, input: InventoryReturnInput!): InventoryReturn!
+  deleteInventoryReturn(id: ID!): Boolean!
+}

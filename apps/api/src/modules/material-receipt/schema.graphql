@@ -1,0 +1,25 @@
+type MaterialReceipt {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input MaterialReceiptInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  materialreceipt(id: ID!): MaterialReceipt
+  materialreceipts(organizationId: String!, page: Int, limit: Int): [MaterialReceipt!]!
+}
+
+extend type Mutation {
+  createMaterialReceipt(input: MaterialReceiptInput!): MaterialReceipt!
+  updateMaterialReceipt(id: ID!, input: MaterialReceiptInput!): MaterialReceipt!
+  deleteMaterialReceipt(id: ID!): Boolean!
+}

@@ -1,0 +1,25 @@
+type WorkOrder {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input WorkOrderInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  workorder(id: ID!): WorkOrder
+  workorders(organizationId: String!, page: Int, limit: Int): [WorkOrder!]!
+}
+
+extend type Mutation {
+  createWorkOrder(input: WorkOrderInput!): WorkOrder!
+  updateWorkOrder(id: ID!, input: WorkOrderInput!): WorkOrder!
+  deleteWorkOrder(id: ID!): Boolean!
+}

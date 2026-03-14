@@ -1,0 +1,25 @@
+type Customer {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input CustomerInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  customer(id: ID!): Customer
+  customers(organizationId: String!, page: Int, limit: Int): [Customer!]!
+}
+
+extend type Mutation {
+  createCustomer(input: CustomerInput!): Customer!
+  updateCustomer(id: ID!, input: CustomerInput!): Customer!
+  deleteCustomer(id: ID!): Boolean!
+}

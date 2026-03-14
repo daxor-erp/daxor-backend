@@ -1,0 +1,25 @@
+type StockTransfer {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input StockTransferInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  stocktransfer(id: ID!): StockTransfer
+  stocktransfers(organizationId: String!, page: Int, limit: Int): [StockTransfer!]!
+}
+
+extend type Mutation {
+  createStockTransfer(input: StockTransferInput!): StockTransfer!
+  updateStockTransfer(id: ID!, input: StockTransferInput!): StockTransfer!
+  deleteStockTransfer(id: ID!): Boolean!
+}
