@@ -1,0 +1,73 @@
+type InventoryControl {
+  id: ID!
+  itemId: String!
+  itemName: String!
+  binLocation: String!
+  quantity: Float!
+  unit: String!
+  minStockLevel: Float!
+  maxStockLevel: Float!
+  reorderPoint: Float!
+  warehouseId: String!
+  lastStockDate: String!
+  stockStatus: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+type StockMovement {
+  id: ID!
+  itemId: String!
+  movementType: String!
+  fromLocation: String!
+  toLocation: String!
+  quantity: Float!
+  unit: String!
+  referenceModule: String!
+  referenceId: String!
+  movementDate: String!
+  notes: String
+  organizationId: String!
+  createdAt: String!
+}
+
+input InventoryControlInput {
+  itemId: String!
+  itemName: String!
+  binLocation: String!
+  quantity: Float!
+  unit: String!
+  minStockLevel: Float
+  maxStockLevel: Float
+  reorderPoint: Float
+  warehouseId: String!
+  organizationId: String!
+}
+
+input StockMovementInput {
+  itemId: String!
+  movementType: String!
+  fromLocation: String!
+  toLocation: String!
+  quantity: Float!
+  unit: String!
+  referenceModule: String!
+  referenceId: String!
+  notes: String
+  organizationId: String!
+}
+
+extend type Query {
+  inventoryControl(id: ID!): InventoryControl
+  inventoryControls(organizationId: String!, warehouseId: String, stockStatus: String): [InventoryControl!]!
+  stockMovement(id: ID!): StockMovement
+  stockMovements(organizationId: String!, itemId: String): [StockMovement!]!
+  lowStockItems(organizationId: String!): [InventoryControl!]!
+}
+
+extend type Mutation {
+  createInventoryControl(input: InventoryControlInput!): InventoryControl!
+  updateInventoryControl(id: ID!, input: InventoryControlInput!): InventoryControl!
+  createStockMovement(input: StockMovementInput!): StockMovement!
+  adjustStock(itemId: String!, binLocation: String!, quantity: Float!, reason: String!): InventoryControl!
+}

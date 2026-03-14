@@ -1,0 +1,101 @@
+type Applicant {
+  id: ID!
+  applicantNumber: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  alternatePhone: String
+  dateOfBirth: String!
+  gender: String!
+  nationality: String!
+  address: Address!
+  education: [Education!]!
+  experience: [Experience!]
+  skills: [String!]!
+  resumeUrl: String
+  coverLetterUrl: String
+  applicationStatus: String!
+  source: String!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Address {
+  street: String!
+  city: String!
+  state: String!
+  country: String!
+  postalCode: String!
+}
+
+type Education {
+  degree: String!
+  institution: String!
+  year: Int!
+  grade: String
+}
+
+type Experience {
+  company: String!
+  position: String!
+  from: String!
+  to: String
+  current: Boolean!
+}
+
+input AddressInput {
+  street: String!
+  city: String!
+  state: String!
+  country: String!
+  postalCode: String!
+}
+
+input EducationInput {
+  degree: String!
+  institution: String!
+  year: Int!
+  grade: String
+}
+
+input ExperienceInput {
+  company: String!
+  position: String!
+  from: String!
+  to: String
+  current: Boolean
+}
+
+input ApplicantInput {
+  applicantNumber: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  alternatePhone: String
+  dateOfBirth: String!
+  gender: String!
+  nationality: String!
+  address: AddressInput!
+  education: [EducationInput!]!
+  experience: [ExperienceInput!]
+  skills: [String!]!
+  resumeUrl: String
+  coverLetterUrl: String
+  applicationStatus: String
+  source: String!
+  organizationId: String!
+}
+
+extend type Query {
+  applicant(id: ID!): Applicant
+  applicants(organizationId: String!, page: Int, limit: Int, status: String): [Applicant!]!
+}
+
+extend type Mutation {
+  createApplicant(input: ApplicantInput!): Applicant!
+  updateApplicant(id: ID!, input: ApplicantInput!): Applicant!
+  deleteApplicant(id: ID!): Boolean!
+}

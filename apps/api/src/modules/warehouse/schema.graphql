@@ -1,0 +1,63 @@
+type Warehouse {
+  id: ID!
+  warehouseCode: String!
+  warehouseName: String!
+  location: String!
+  address: String!
+  capacity: Float!
+  currentUtilization: Float!
+  managerName: String!
+  contactNumber: String!
+  warehouseType: String!
+  isActive: Boolean!
+  organizationId: String!
+  createdAt: String!
+}
+
+type WarehouseBin {
+  id: ID!
+  warehouseId: String!
+  binCode: String!
+  binLocation: String!
+  binType: String!
+  capacity: Float!
+  currentStock: Float!
+  isAvailable: Boolean!
+  organizationId: String!
+  createdAt: String!
+}
+
+input WarehouseInput {
+  warehouseCode: String!
+  warehouseName: String!
+  location: String!
+  address: String!
+  capacity: Float!
+  managerName: String!
+  contactNumber: String!
+  warehouseType: String!
+  organizationId: String!
+}
+
+input WarehouseBinInput {
+  warehouseId: String!
+  binCode: String!
+  binLocation: String!
+  binType: String!
+  capacity: Float!
+  organizationId: String!
+}
+
+extend type Query {
+  warehouse(id: ID!): Warehouse
+  warehouses(organizationId: String!, isActive: Boolean): [Warehouse!]!
+  warehouseBin(id: ID!): WarehouseBin
+  warehouseBins(organizationId: String!, warehouseId: String): [WarehouseBin!]!
+}
+
+extend type Mutation {
+  createWarehouse(input: WarehouseInput!): Warehouse!
+  updateWarehouse(id: ID!, input: WarehouseInput!): Warehouse!
+  createWarehouseBin(input: WarehouseBinInput!): WarehouseBin!
+  updateWarehouseBin(id: ID!, input: WarehouseBinInput!): WarehouseBin!
+}

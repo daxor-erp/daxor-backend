@@ -1,0 +1,25 @@
+type InternalOrder {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input InternalOrderInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  internalorder(id: ID!): InternalOrder
+  internalorders(organizationId: String!, page: Int, limit: Int): [InternalOrder!]!
+}
+
+extend type Mutation {
+  createInternalOrder(input: InternalOrderInput!): InternalOrder!
+  updateInternalOrder(id: ID!, input: InternalOrderInput!): InternalOrder!
+  deleteInternalOrder(id: ID!): Boolean!
+}

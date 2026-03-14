@@ -1,0 +1,25 @@
+type ExciseInvoice {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input ExciseInvoiceInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  exciseinvoice(id: ID!): ExciseInvoice
+  exciseinvoices(organizationId: String!, page: Int, limit: Int): [ExciseInvoice!]!
+}
+
+extend type Mutation {
+  createExciseInvoice(input: ExciseInvoiceInput!): ExciseInvoice!
+  updateExciseInvoice(id: ID!, input: ExciseInvoiceInput!): ExciseInvoice!
+  deleteExciseInvoice(id: ID!): Boolean!
+}

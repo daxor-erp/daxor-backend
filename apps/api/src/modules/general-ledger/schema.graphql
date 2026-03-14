@@ -1,0 +1,72 @@
+type GeneralLedger {
+  id: ID!
+  transactionNumber: String!
+  transactionDate: String!
+  transactionType: String!
+  referenceModule: String!
+  referenceId: String!
+  debitAccount: String!
+  creditAccount: String!
+  amount: Float!
+  currency: String!
+  description: String!
+  fiscalYear: String!
+  fiscalPeriod: String!
+  status: String!
+  organizationId: String!
+  createdBy: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ChartOfAccounts {
+  id: ID!
+  accountCode: String!
+  accountName: String!
+  accountType: String!
+  parentAccount: String
+  level: Int!
+  isActive: Boolean!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input GeneralLedgerInput {
+  transactionDate: String!
+  transactionType: String!
+  referenceModule: String!
+  referenceId: String!
+  debitAccount: String!
+  creditAccount: String!
+  amount: Float!
+  currency: String
+  description: String!
+  fiscalYear: String!
+  fiscalPeriod: String!
+  organizationId: String!
+}
+
+input ChartOfAccountsInput {
+  accountCode: String!
+  accountName: String!
+  accountType: String!
+  parentAccount: String
+  level: Int
+  isActive: Boolean
+  organizationId: String!
+}
+
+extend type Query {
+  generalLedger(id: ID!): GeneralLedger
+  generalLedgers(organizationId: String!, page: Int, limit: Int, fiscalYear: String, status: String): [GeneralLedger!]!
+  chartOfAccount(id: ID!): ChartOfAccounts
+  chartOfAccounts(organizationId: String!, page: Int, limit: Int, accountType: String): [ChartOfAccounts!]!
+}
+
+extend type Mutation {
+  createGeneralLedger(input: GeneralLedgerInput!): GeneralLedger!
+  createChartOfAccount(input: ChartOfAccountsInput!): ChartOfAccounts!
+  updateChartOfAccount(id: ID!, input: ChartOfAccountsInput!): ChartOfAccounts!
+  deleteChartOfAccount(id: ID!): Boolean!
+}

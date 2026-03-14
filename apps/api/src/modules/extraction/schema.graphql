@@ -1,0 +1,80 @@
+type Extraction {
+  id: ID!
+  extractionNumber: String!
+  extractionDate: String!
+  rawMaterialId: String!
+  rawMaterialName: String!
+  quantity: Float!
+  unit: String!
+  sourceLocation: String!
+  destinationLocation: String
+  extractionType: String!
+  status: String!
+  productionOrderId: String
+  requisitionId: String
+  notes: String
+  organizationId: String!
+  createdBy: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type RawMaterialRequisition {
+  id: ID!
+  requisitionNumber: String!
+  requisitionDate: String!
+  requiredDate: String!
+  rawMaterialId: String!
+  requestedQuantity: Float!
+  unit: String!
+  purpose: String!
+  requestedBy: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input ExtractionInput {
+  extractionNumber: String!
+  extractionDate: String!
+  rawMaterialId: String!
+  rawMaterialName: String!
+  quantity: Float!
+  unit: String!
+  sourceLocation: String!
+  destinationLocation: String
+  extractionType: String!
+  status: String
+  productionOrderId: String
+  requisitionId: String
+  notes: String
+  organizationId: String!
+}
+
+input RawMaterialRequisitionInput {
+  requisitionNumber: String!
+  requisitionDate: String!
+  requiredDate: String!
+  rawMaterialId: String!
+  requestedQuantity: Float!
+  unit: String!
+  purpose: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  extraction(id: ID!): Extraction
+  extractions(organizationId: String!, page: Int, limit: Int, status: String): [Extraction!]!
+  rawMaterialRequisition(id: ID!): RawMaterialRequisition
+  rawMaterialRequisitions(organizationId: String!, page: Int, limit: Int, status: String): [RawMaterialRequisition!]!
+}
+
+extend type Mutation {
+  createExtraction(input: ExtractionInput!): Extraction!
+  updateExtraction(id: ID!, input: ExtractionInput!): Extraction!
+  deleteExtraction(id: ID!): Boolean!
+  createRawMaterialRequisition(input: RawMaterialRequisitionInput!): RawMaterialRequisition!
+  updateRawMaterialRequisition(id: ID!, input: RawMaterialRequisitionInput!): RawMaterialRequisition!
+}

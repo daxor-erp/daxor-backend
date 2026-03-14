@@ -1,0 +1,25 @@
+type VendorPayment {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input VendorPaymentInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  vendorpayment(id: ID!): VendorPayment
+  vendorpayments(organizationId: String!, page: Int, limit: Int): [VendorPayment!]!
+}
+
+extend type Mutation {
+  createVendorPayment(input: VendorPaymentInput!): VendorPayment!
+  updateVendorPayment(id: ID!, input: VendorPaymentInput!): VendorPayment!
+  deleteVendorPayment(id: ID!): Boolean!
+}

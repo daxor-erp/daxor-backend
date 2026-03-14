@@ -1,0 +1,25 @@
+type PayrollManagement {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input PayrollManagementInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  payrollmanagement(id: ID!): PayrollManagement
+  payrollmanagements(organizationId: String!, page: Int, limit: Int): [PayrollManagement!]!
+}
+
+extend type Mutation {
+  createPayrollManagement(input: PayrollManagementInput!): PayrollManagement!
+  updatePayrollManagement(id: ID!, input: PayrollManagementInput!): PayrollManagement!
+  deletePayrollManagement(id: ID!): Boolean!
+}

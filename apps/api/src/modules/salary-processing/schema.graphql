@@ -1,0 +1,25 @@
+type SalaryProcessing {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input SalaryProcessingInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  salaryprocessing(id: ID!): SalaryProcessing
+  salaryprocessings(organizationId: String!, page: Int, limit: Int): [SalaryProcessing!]!
+}
+
+extend type Mutation {
+  createSalaryProcessing(input: SalaryProcessingInput!): SalaryProcessing!
+  updateSalaryProcessing(id: ID!, input: SalaryProcessingInput!): SalaryProcessing!
+  deleteSalaryProcessing(id: ID!): Boolean!
+}

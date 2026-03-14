@@ -1,0 +1,25 @@
+type SalesReturn {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input SalesReturnInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  salesreturn(id: ID!): SalesReturn
+  salesreturns(organizationId: String!, page: Int, limit: Int): [SalesReturn!]!
+}
+
+extend type Mutation {
+  createSalesReturn(input: SalesReturnInput!): SalesReturn!
+  updateSalesReturn(id: ID!, input: SalesReturnInput!): SalesReturn!
+  deleteSalesReturn(id: ID!): Boolean!
+}

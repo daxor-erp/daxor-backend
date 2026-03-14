@@ -1,0 +1,51 @@
+type Asset {
+  id: ID!
+  assetNumber: String!
+  assetName: String!
+  assetType: String!
+  category: String!
+  purchaseDate: String!
+  purchasePrice: Float!
+  currentValue: Float!
+  depreciationMethod: String!
+  usefulLife: Int!
+  location: String!
+  assignedTo: String
+  status: String!
+  serialNumber: String
+  manufacturer: String
+  warrantyExpiry: String
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input AssetInput {
+  assetNumber: String!
+  assetName: String!
+  assetType: String!
+  category: String!
+  purchaseDate: String!
+  purchasePrice: Float!
+  currentValue: Float!
+  depreciationMethod: String!
+  usefulLife: Int!
+  location: String!
+  assignedTo: String
+  status: String
+  serialNumber: String
+  manufacturer: String
+  warrantyExpiry: String
+  organizationId: String!
+}
+
+extend type Query {
+  asset(id: ID!): Asset
+  assets(organizationId: String!, page: Int, limit: Int, status: String): [Asset!]!
+}
+
+extend type Mutation {
+  createAsset(input: AssetInput!): Asset!
+  updateAsset(id: ID!, input: AssetInput!): Asset!
+  deleteAsset(id: ID!): Boolean!
+}

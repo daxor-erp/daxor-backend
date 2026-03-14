@@ -1,0 +1,43 @@
+type DVS {
+  id: ID!
+  applicantId: String!
+  documentType: String!
+  documentName: String!
+  documentNumber: String
+  issuingAuthority: String
+  issueDate: String
+  expiryDate: String
+  verificationStatus: String!
+  verifiedBy: String
+  verificationDate: String
+  verificationNotes: String
+  documentUrl: String
+  organizationId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input DVSInput {
+  applicantId: String!
+  documentType: String!
+  documentName: String!
+  documentNumber: String
+  issuingAuthority: String
+  issueDate: String
+  expiryDate: String
+  verificationStatus: String
+  verificationNotes: String
+  documentUrl: String
+  organizationId: String!
+}
+
+extend type Query {
+  dvs(id: ID!): DVS
+  dvsRecords(organizationId: String!, page: Int, limit: Int, status: String): [DVS!]!
+}
+
+extend type Mutation {
+  createDVS(input: DVSInput!): DVS!
+  updateDVS(id: ID!, input: DVSInput!): DVS!
+  deleteDVS(id: ID!): Boolean!
+}

@@ -1,0 +1,25 @@
+type DeliveryChallan {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input DeliveryChallanInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  deliverychallan(id: ID!): DeliveryChallan
+  deliverychallans(organizationId: String!, page: Int, limit: Int): [DeliveryChallan!]!
+}
+
+extend type Mutation {
+  createDeliveryChallan(input: DeliveryChallanInput!): DeliveryChallan!
+  updateDeliveryChallan(id: ID!, input: DeliveryChallanInput!): DeliveryChallan!
+  deleteDeliveryChallan(id: ID!): Boolean!
+}
