@@ -1,0 +1,93 @@
+type QuotationItem {
+	itemName: String!
+	description: String
+	quantity: Float!
+	unit: String!
+	unitPrice: Float!
+	discount: Float!
+	tax: Float!
+	amount: Float!
+}
+
+type SalesQuotation {
+	id: ID!
+	seqNo: String
+	quotationNumber: String!
+	enquiryId: ID
+	clientId: ID!
+	quotationDate: String!
+	validUntil: String!
+	subject: String!
+	items: [QuotationItem!]!
+	subtotal: Float!
+	totalDiscount: Float!
+	totalTax: Float!
+	grandTotal: Float!
+	currency: String!
+	paymentTerms: String
+	deliveryTerms: String
+	notes: String
+	termsAndConditions: String
+	status: String!
+	assignedTo: ID
+	organizationId: ID!
+	createdBy: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input QuotationItemInput {
+	itemName: String!
+	description: String
+	quantity: Float!
+	unit: String
+	unitPrice: Float!
+	discount: Float
+	tax: Float
+	amount: Float!
+}
+
+input CreateSalesQuotationInput {
+	enquiryId: ID
+	clientId: ID!
+	quotationDate: String
+	validUntil: String!
+	subject: String!
+	items: [QuotationItemInput!]!
+	currency: String
+	paymentTerms: String
+	deliveryTerms: String
+	notes: String
+	termsAndConditions: String
+	assignedTo: ID
+}
+
+input UpdateSalesQuotationInput {
+	enquiryId: ID
+	clientId: ID
+	quotationDate: String
+	validUntil: String
+	subject: String
+	items: [QuotationItemInput!]
+	currency: String
+	paymentTerms: String
+	deliveryTerms: String
+	notes: String
+	termsAndConditions: String
+	status: String
+	assignedTo: ID
+}
+
+extend type Query {
+	salesQuotation(id: ID!): SalesQuotation
+	salesQuotations(organizationId: ID!, page: Int, limit: Int, status: String, search: String): [SalesQuotation!]!
+	salesQuotationsByClient(clientId: ID!): [SalesQuotation!]!
+	salesQuotationsByStatus(status: String!): [SalesQuotation!]!
+	salesQuotationsByEnquiry(enquiryId: ID!): [SalesQuotation!]!
+}
+
+extend type Mutation {
+	createSalesQuotation(input: CreateSalesQuotationInput!): SalesQuotation!
+	updateSalesQuotation(id: ID!, input: UpdateSalesQuotationInput!): SalesQuotation!
+	deleteSalesQuotation(id: ID!): SalesQuotation!
+}
