@@ -20,7 +20,8 @@ export const createContext = async ({
 		const decoded = jwt.verify(token, config.jwtSecret) as {
 			id: string
 			email: string
-			role: string
+			role?: string
+			roles?: string[]
 			organizationId?: string
 		}
 		return { req, res, user: decoded }

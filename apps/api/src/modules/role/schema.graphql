@@ -1,0 +1,49 @@
+type Role {
+  id: ID!
+  name: String!
+  displayName: String!
+  description: String
+  permissions: [Permission!]!
+  organizationId: ID
+  isSystemRole: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Permission {
+  resource: String!
+  actions: [String!]!
+}
+
+input CreateRoleInput {
+  name: String!
+  displayName: String!
+  description: String
+  permissions: [PermissionInput!]!
+  organizationId: ID
+}
+
+input UpdateRoleInput {
+  displayName: String
+  description: String
+  permissions: [PermissionInput!]
+}
+
+input PermissionInput {
+  resource: String!
+  actions: [String!]!
+}
+
+type Query {
+  role(id: ID!): Role
+  roles: [Role!]!
+  rolesByOrganization(organizationId: ID!): [Role!]!
+  systemRoles: [Role!]!
+}
+
+type Mutation {
+  createRole(input: CreateRoleInput!): Role!
+  updateRole(id: ID!, input: UpdateRoleInput!): Role!
+  deleteRole(id: ID!): Boolean!
+  seedSystemRoles: [Role!]!
+}
