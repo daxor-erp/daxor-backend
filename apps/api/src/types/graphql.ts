@@ -265,6 +265,28 @@ export type ChartOfAccountsInput = {
   parentAccount: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Client = {
+  __typename?: 'Client';
+  address: Maybe<Scalars['String']['output']>;
+  city: Maybe<Scalars['String']['output']>;
+  company: Maybe<Scalars['String']['output']>;
+  country: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  industry: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  phone: Maybe<Scalars['String']['output']>;
+  seqNo: Maybe<Scalars['String']['output']>;
+  state: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  website: Maybe<Scalars['String']['output']>;
+  zipCode: Maybe<Scalars['String']['output']>;
+};
+
 export type Competency = {
   __typename?: 'Competency';
   competency: Scalars['String']['output'];
@@ -284,6 +306,23 @@ export type CreateAttendanceInput = {
   userId: Scalars['ID']['input'];
 };
 
+export type CreateClientInput = {
+  address: InputMaybe<Scalars['String']['input']>;
+  city: InputMaybe<Scalars['String']['input']>;
+  company: InputMaybe<Scalars['String']['input']>;
+  country: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  industry: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  phone: InputMaybe<Scalars['String']['input']>;
+  state: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  website: InputMaybe<Scalars['String']['input']>;
+  zipCode: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateCustomerInvoiceInput = {
   customerId: Scalars['ID']['input'];
   dueDate: InputMaybe<Scalars['String']['input']>;
@@ -299,6 +338,7 @@ export type CreateItemInput = {
   name: Scalars['String']['input'];
   organizationId: Scalars['ID']['input'];
   rate: InputMaybe<Scalars['Float']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
   unit: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -308,6 +348,25 @@ export type CreateOrganizationInput = {
   email: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   phone: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateProductInput = {
+  barcode: InputMaybe<Scalars['String']['input']>;
+  brand: InputMaybe<Scalars['String']['input']>;
+  category: InputMaybe<Scalars['String']['input']>;
+  costPrice: InputMaybe<Scalars['Float']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  images: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  maxStockLevel: InputMaybe<Scalars['Float']['input']>;
+  minStockLevel: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
+  price: Scalars['Float']['input'];
+  reorderPoint: InputMaybe<Scalars['Float']['input']>;
+  sku: Scalars['String']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  taxRate: InputMaybe<Scalars['Float']['input']>;
+  unit: Scalars['String']['input'];
 };
 
 export type CreateProjectInput = {
@@ -324,6 +383,23 @@ export type CreatePurchaseOrderInput = {
   projectId: InputMaybe<Scalars['ID']['input']>;
   totalAmount: Scalars['Float']['input'];
   vendorId: Scalars['ID']['input'];
+};
+
+export type CreateQuotationInput = {
+  clientId: Scalars['ID']['input'];
+  discountAmount: InputMaybe<Scalars['Float']['input']>;
+  lineItems: Array<QuotationLineItemInput>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  quotationDate: Scalars['String']['input'];
+  quotationNumber: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  subject: Scalars['String']['input'];
+  subtotal: Scalars['Float']['input'];
+  taxAmount: InputMaybe<Scalars['Float']['input']>;
+  terms: InputMaybe<Scalars['String']['input']>;
+  totalAmount: Scalars['Float']['input'];
+  validUntil: Scalars['String']['input'];
 };
 
 export type CreateRoleInput = {
@@ -356,6 +432,21 @@ export type CreateSalesOrderInput = {
   organizationId: Scalars['ID']['input'];
   projectId: InputMaybe<Scalars['ID']['input']>;
   totalAmount: Scalars['Float']['input'];
+};
+
+export type CreateSalesQuotationInput = {
+  assignedTo: InputMaybe<Scalars['ID']['input']>;
+  clientId: Scalars['ID']['input'];
+  currency: InputMaybe<Scalars['String']['input']>;
+  deliveryTerms: InputMaybe<Scalars['String']['input']>;
+  enquiryId: InputMaybe<Scalars['ID']['input']>;
+  items: Array<QuotationItemInput>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  paymentTerms: InputMaybe<Scalars['String']['input']>;
+  quotationDate: InputMaybe<Scalars['String']['input']>;
+  subject: Scalars['String']['input'];
+  termsAndConditions: InputMaybe<Scalars['String']['input']>;
+  validUntil: Scalars['String']['input'];
 };
 
 export type CreateUserInput = {
@@ -790,6 +881,7 @@ export type Mutation = {
   createCareer: Career;
   createCashBank: CashBank;
   createChartOfAccount: ChartOfAccounts;
+  createClient: Client;
   createCustomer: Customer;
   createCustomerInvoice: CustomerInvoice;
   createDVS: Dvs;
@@ -808,15 +900,18 @@ export type Mutation = {
   createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
   createPayrollManagement: PayrollManagement;
+  createProduct: Product;
   createProductionPlanning: ProductionPlanning;
   createProject: Project;
   createPurchaseOrder: PurchaseOrder;
+  createQuotation: Quotation;
   createRawMaterialRequisition: RawMaterialRequisition;
   createRecruitment: Recruitment;
   createRole: Role;
   createSalaryProcessing: SalaryProcessing;
   createSalesEnquiry: SalesEnquiry;
   createSalesOrder: SalesOrder;
+  createSalesQuotation: SalesQuotation;
   createSalesReturn: SalesReturn;
   createStockAdjustment: StockAdjustment;
   createStockMovement: StockMovement;
@@ -832,6 +927,7 @@ export type Mutation = {
   deleteAttendance: Attendance;
   deleteCareer: Scalars['Boolean']['output'];
   deleteChartOfAccount: Scalars['Boolean']['output'];
+  deleteClient: Scalars['Boolean']['output'];
   deleteCustomer: Scalars['Boolean']['output'];
   deleteCustomerInvoice: CustomerInvoice;
   deleteDVS: Scalars['Boolean']['output'];
@@ -848,13 +944,16 @@ export type Mutation = {
   deleteMaterialReceipt: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
   deletePayrollManagement: Scalars['Boolean']['output'];
+  deleteProduct: Scalars['Boolean']['output'];
   deleteProductionPlanning: Scalars['Boolean']['output'];
   deleteProject: Project;
   deletePurchaseOrder: PurchaseOrder;
+  deleteQuotation: Scalars['Boolean']['output'];
   deleteRole: Scalars['Boolean']['output'];
   deleteSalaryProcessing: Scalars['Boolean']['output'];
   deleteSalesEnquiry: SalesEnquiry;
   deleteSalesOrder: SalesOrder;
+  deleteSalesQuotation: SalesQuotation;
   deleteSalesReturn: Scalars['Boolean']['output'];
   deleteStockAdjustment: Scalars['Boolean']['output'];
   deleteStockTransfer: Scalars['Boolean']['output'];
@@ -866,12 +965,14 @@ export type Mutation = {
   reconcileCashBank: CashBank;
   register: AuthPayload;
   seedSystemRoles: Array<Role>;
+  sendQuotation: Quotation;
   updateApplicant: Applicant;
   updateAsset: Asset;
   updateAttendance: Attendance;
   updateBankAccount: BankAccount;
   updateCareer: Career;
   updateChartOfAccount: ChartOfAccounts;
+  updateClient: Client;
   updateCustomer: Customer;
   updateCustomerInvoice: CustomerInvoice;
   updateDVS: Dvs;
@@ -889,15 +990,18 @@ export type Mutation = {
   updateMaterialReceipt: MaterialReceipt;
   updateOrganization: Organization;
   updatePayrollManagement: PayrollManagement;
+  updateProduct: Product;
   updateProductionPlanning: ProductionPlanning;
   updateProject: Project;
   updatePurchaseOrder: PurchaseOrder;
+  updateQuotation: Quotation;
   updateRawMaterialRequisition: RawMaterialRequisition;
   updateRecruitment: Recruitment;
   updateRole: Role;
   updateSalaryProcessing: SalaryProcessing;
   updateSalesEnquiry: SalesEnquiry;
   updateSalesOrder: SalesOrder;
+  updateSalesQuotation: SalesQuotation;
   updateSalesReturn: SalesReturn;
   updateStockAdjustment: StockAdjustment;
   updateStockTransfer: StockTransfer;
@@ -950,6 +1054,11 @@ export type MutationCreateCashBankArgs = {
 
 export type MutationCreateChartOfAccountArgs = {
   input: ChartOfAccountsInput;
+};
+
+
+export type MutationCreateClientArgs = {
+  input: CreateClientInput;
 };
 
 
@@ -1043,6 +1152,11 @@ export type MutationCreatePayrollManagementArgs = {
 };
 
 
+export type MutationCreateProductArgs = {
+  input: CreateProductInput;
+};
+
+
 export type MutationCreateProductionPlanningArgs = {
   input: ProductionPlanningInput;
 };
@@ -1055,6 +1169,11 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreatePurchaseOrderArgs = {
   input: CreatePurchaseOrderInput;
+};
+
+
+export type MutationCreateQuotationArgs = {
+  input: CreateQuotationInput;
 };
 
 
@@ -1085,6 +1204,11 @@ export type MutationCreateSalesEnquiryArgs = {
 
 export type MutationCreateSalesOrderArgs = {
   input: CreateSalesOrderInput;
+};
+
+
+export type MutationCreateSalesQuotationArgs = {
+  input: CreateSalesQuotationInput;
 };
 
 
@@ -1159,6 +1283,11 @@ export type MutationDeleteCareerArgs = {
 
 
 export type MutationDeleteChartOfAccountArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteClientArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1243,6 +1372,11 @@ export type MutationDeletePayrollManagementArgs = {
 };
 
 
+export type MutationDeleteProductArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteProductionPlanningArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1254,6 +1388,11 @@ export type MutationDeleteProjectArgs = {
 
 
 export type MutationDeletePurchaseOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteQuotationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1274,6 +1413,11 @@ export type MutationDeleteSalesEnquiryArgs = {
 
 
 export type MutationDeleteSalesOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSalesQuotationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1328,6 +1472,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationSendQuotationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateApplicantArgs = {
   id: Scalars['ID']['input'];
   input: ApplicantInput;
@@ -1361,6 +1510,12 @@ export type MutationUpdateCareerArgs = {
 export type MutationUpdateChartOfAccountArgs = {
   id: Scalars['ID']['input'];
   input: ChartOfAccountsInput;
+};
+
+
+export type MutationUpdateClientArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateClientInput;
 };
 
 
@@ -1466,6 +1621,12 @@ export type MutationUpdatePayrollManagementArgs = {
 };
 
 
+export type MutationUpdateProductArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateProductInput;
+};
+
+
 export type MutationUpdateProductionPlanningArgs = {
   id: Scalars['ID']['input'];
   input: ProductionPlanningInput;
@@ -1481,6 +1642,12 @@ export type MutationUpdateProjectArgs = {
 export type MutationUpdatePurchaseOrderArgs = {
   id: Scalars['ID']['input'];
   input: UpdatePurchaseOrderInput;
+};
+
+
+export type MutationUpdateQuotationArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateQuotationInput;
 };
 
 
@@ -1517,6 +1684,12 @@ export type MutationUpdateSalesEnquiryArgs = {
 export type MutationUpdateSalesOrderArgs = {
   id: Scalars['ID']['input'];
   input: UpdateSalesOrderInput;
+};
+
+
+export type MutationUpdateSalesQuotationArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateSalesQuotationInput;
 };
 
 
@@ -1613,6 +1786,30 @@ export type PermissionInput = {
   resource: Scalars['String']['input'];
 };
 
+export type Product = {
+  __typename?: 'Product';
+  barcode: Maybe<Scalars['String']['output']>;
+  brand: Maybe<Scalars['String']['output']>;
+  category: Maybe<Scalars['String']['output']>;
+  costPrice: Maybe<Scalars['Float']['output']>;
+  createdAt: Scalars['String']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  images: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  maxStockLevel: Maybe<Scalars['Float']['output']>;
+  minStockLevel: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+  price: Scalars['Float']['output'];
+  reorderPoint: Maybe<Scalars['Float']['output']>;
+  seqNo: Maybe<Scalars['String']['output']>;
+  sku: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  taxRate: Maybe<Scalars['Float']['output']>;
+  unit: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
 export type ProductionPlanning = {
   __typename?: 'ProductionPlanning';
   createdAt: Scalars['String']['output'];
@@ -1671,6 +1868,10 @@ export type Query = {
   cashBanks: Array<CashBank>;
   chartOfAccount: Maybe<ChartOfAccounts>;
   chartOfAccounts: Array<ChartOfAccounts>;
+  client: Maybe<Client>;
+  clients: Array<Client>;
+  clientsByOrganization: Array<Client>;
+  clientsByStatus: Array<Client>;
   customer: Maybe<Customer>;
   customerinvoice: Maybe<CustomerInvoice>;
   customerinvoices: Array<CustomerInvoice>;
@@ -1709,12 +1910,22 @@ export type Query = {
   organizations: Array<Organization>;
   payrollmanagement: Maybe<PayrollManagement>;
   payrollmanagements: Array<PayrollManagement>;
+  product: Maybe<Product>;
   productionplanning: Maybe<ProductionPlanning>;
   productionplannings: Array<ProductionPlanning>;
+  products: Array<Product>;
+  productsByCategory: Array<Product>;
+  productsByOrganization: Array<Product>;
+  productsByStatus: Array<Product>;
   project: Maybe<Project>;
   projects: Array<Project>;
   purchaseorder: Maybe<PurchaseOrder>;
   purchaseorders: Array<PurchaseOrder>;
+  quotation: Maybe<Quotation>;
+  quotations: Array<Quotation>;
+  quotationsByClient: Array<Quotation>;
+  quotationsByOrganization: Array<Quotation>;
+  quotationsByStatus: Array<Quotation>;
   rawMaterialRequisition: Maybe<RawMaterialRequisition>;
   rawMaterialRequisitions: Array<RawMaterialRequisition>;
   recruitment: Maybe<Recruitment>;
@@ -1729,6 +1940,11 @@ export type Query = {
   salesEnquiriesByClient: Array<SalesEnquiry>;
   salesEnquiriesByStatus: Array<SalesEnquiry>;
   salesEnquiry: Maybe<SalesEnquiry>;
+  salesQuotation: Maybe<SalesQuotation>;
+  salesQuotations: Array<SalesQuotation>;
+  salesQuotationsByClient: Array<SalesQuotation>;
+  salesQuotationsByEnquiry: Array<SalesQuotation>;
+  salesQuotationsByStatus: Array<SalesQuotation>;
   salesorder: Maybe<SalesOrder>;
   salesorders: Array<SalesOrder>;
   salesreturn: Maybe<SalesReturn>;
@@ -1844,6 +2060,22 @@ export type QueryChartOfAccountsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryClientArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryClientsByOrganizationArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryClientsByStatusArgs = {
+  organizationId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
 };
 
 
@@ -2075,6 +2307,11 @@ export type QueryPayrollmanagementsArgs = {
 };
 
 
+export type QueryProductArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryProductionplanningArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2084,6 +2321,23 @@ export type QueryProductionplanningsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryProductsByCategoryArgs = {
+  category: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryProductsByOrganizationArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryProductsByStatusArgs = {
+  organizationId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
 };
 
 
@@ -2110,6 +2364,27 @@ export type QueryPurchaseordersArgs = {
   organizationId: Scalars['ID']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryQuotationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryQuotationsByClientArgs = {
+  clientId: Scalars['ID']['input'];
+};
+
+
+export type QueryQuotationsByOrganizationArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryQuotationsByStatusArgs = {
+  organizationId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
 };
 
 
@@ -2187,6 +2462,35 @@ export type QuerySalesEnquiriesByStatusArgs = {
 
 export type QuerySalesEnquiryArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesQuotationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesQuotationsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['ID']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  search: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySalesQuotationsByClientArgs = {
+  clientId: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesQuotationsByEnquiryArgs = {
+  enquiryId: Scalars['ID']['input'];
+};
+
+
+export type QuerySalesQuotationsByStatusArgs = {
+  status: Scalars['String']['input'];
 };
 
 
@@ -2331,6 +2635,74 @@ export type QueryWorkordersArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type Quotation = {
+  __typename?: 'Quotation';
+  clientId: Client;
+  createdAt: Scalars['String']['output'];
+  discountAmount: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  lineItems: Array<QuotationLineItem>;
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  quotationDate: Scalars['String']['output'];
+  quotationNumber: Scalars['String']['output'];
+  sentAt: Maybe<Scalars['String']['output']>;
+  sentBy: Maybe<User>;
+  seqNo: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  subject: Scalars['String']['output'];
+  subtotal: Scalars['Float']['output'];
+  taxAmount: Maybe<Scalars['Float']['output']>;
+  terms: Maybe<Scalars['String']['output']>;
+  totalAmount: Scalars['Float']['output'];
+  updatedAt: Scalars['String']['output'];
+  validUntil: Scalars['String']['output'];
+};
+
+export type QuotationItem = {
+  __typename?: 'QuotationItem';
+  amount: Scalars['Float']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  discount: Scalars['Float']['output'];
+  itemName: Scalars['String']['output'];
+  quantity: Scalars['Float']['output'];
+  tax: Scalars['Float']['output'];
+  unit: Scalars['String']['output'];
+  unitPrice: Scalars['Float']['output'];
+};
+
+export type QuotationItemInput = {
+  amount: Scalars['Float']['input'];
+  description: InputMaybe<Scalars['String']['input']>;
+  discount: InputMaybe<Scalars['Float']['input']>;
+  itemName: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
+  tax: InputMaybe<Scalars['Float']['input']>;
+  unit: InputMaybe<Scalars['String']['input']>;
+  unitPrice: Scalars['Float']['input'];
+};
+
+export type QuotationLineItem = {
+  __typename?: 'QuotationLineItem';
+  description: Scalars['String']['output'];
+  discount: Maybe<Scalars['Float']['output']>;
+  itemId: Maybe<Scalars['ID']['output']>;
+  quantity: Scalars['Float']['output'];
+  tax: Maybe<Scalars['Float']['output']>;
+  total: Scalars['Float']['output'];
+  unitPrice: Scalars['Float']['output'];
+};
+
+export type QuotationLineItemInput = {
+  description: Scalars['String']['input'];
+  discount: InputMaybe<Scalars['Float']['input']>;
+  itemId: InputMaybe<Scalars['ID']['input']>;
+  quantity: Scalars['Float']['input'];
+  tax: InputMaybe<Scalars['Float']['input']>;
+  total: Scalars['Float']['input'];
+  unitPrice: Scalars['Float']['input'];
 };
 
 export type RawMaterialRequisition = {
@@ -2482,6 +2854,34 @@ export type SalesOrder = {
   totalAmount: Scalars['Float']['output'];
 };
 
+export type SalesQuotation = {
+  __typename?: 'SalesQuotation';
+  assignedTo: Maybe<Scalars['ID']['output']>;
+  clientId: Scalars['ID']['output'];
+  createdAt: Scalars['String']['output'];
+  createdBy: Scalars['ID']['output'];
+  currency: Scalars['String']['output'];
+  deliveryTerms: Maybe<Scalars['String']['output']>;
+  enquiryId: Maybe<Scalars['ID']['output']>;
+  grandTotal: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  items: Array<QuotationItem>;
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  paymentTerms: Maybe<Scalars['String']['output']>;
+  quotationDate: Scalars['String']['output'];
+  quotationNumber: Scalars['String']['output'];
+  seqNo: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  subject: Scalars['String']['output'];
+  subtotal: Scalars['Float']['output'];
+  termsAndConditions: Maybe<Scalars['String']['output']>;
+  totalDiscount: Scalars['Float']['output'];
+  totalTax: Scalars['Float']['output'];
+  updatedAt: Scalars['String']['output'];
+  validUntil: Scalars['String']['output'];
+};
+
 export type SalesReturn = {
   __typename?: 'SalesReturn';
   createdAt: Scalars['String']['output'];
@@ -2566,6 +2966,22 @@ export type UpdateAttendanceInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateClientInput = {
+  address: InputMaybe<Scalars['String']['input']>;
+  city: InputMaybe<Scalars['String']['input']>;
+  company: InputMaybe<Scalars['String']['input']>;
+  country: InputMaybe<Scalars['String']['input']>;
+  email: InputMaybe<Scalars['String']['input']>;
+  industry: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  phone: InputMaybe<Scalars['String']['input']>;
+  state: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  website: InputMaybe<Scalars['String']['input']>;
+  zipCode: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateCustomerInvoiceInput = {
   customerId: InputMaybe<Scalars['ID']['input']>;
   dueDate: InputMaybe<Scalars['String']['input']>;
@@ -2593,6 +3009,24 @@ export type UpdateOrganizationInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateProductInput = {
+  barcode: InputMaybe<Scalars['String']['input']>;
+  brand: InputMaybe<Scalars['String']['input']>;
+  category: InputMaybe<Scalars['String']['input']>;
+  costPrice: InputMaybe<Scalars['Float']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  images: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  maxStockLevel: InputMaybe<Scalars['Float']['input']>;
+  minStockLevel: InputMaybe<Scalars['Float']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  price: InputMaybe<Scalars['Float']['input']>;
+  reorderPoint: InputMaybe<Scalars['Float']['input']>;
+  sku: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  taxRate: InputMaybe<Scalars['Float']['input']>;
+  unit: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateProjectInput = {
   description: InputMaybe<Scalars['String']['input']>;
   endDate: InputMaybe<Scalars['String']['input']>;
@@ -2606,6 +3040,21 @@ export type UpdatePurchaseOrderInput = {
   status: InputMaybe<Scalars['String']['input']>;
   totalAmount: InputMaybe<Scalars['Float']['input']>;
   vendorId: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateQuotationInput = {
+  clientId: InputMaybe<Scalars['ID']['input']>;
+  discountAmount: InputMaybe<Scalars['Float']['input']>;
+  lineItems: InputMaybe<Array<QuotationLineItemInput>>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  quotationDate: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  subject: InputMaybe<Scalars['String']['input']>;
+  subtotal: InputMaybe<Scalars['Float']['input']>;
+  taxAmount: InputMaybe<Scalars['Float']['input']>;
+  terms: InputMaybe<Scalars['String']['input']>;
+  totalAmount: InputMaybe<Scalars['Float']['input']>;
+  validUntil: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateRoleInput = {
@@ -2638,6 +3087,22 @@ export type UpdateSalesOrderInput = {
   totalAmount: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type UpdateSalesQuotationInput = {
+  assignedTo: InputMaybe<Scalars['ID']['input']>;
+  clientId: InputMaybe<Scalars['ID']['input']>;
+  currency: InputMaybe<Scalars['String']['input']>;
+  deliveryTerms: InputMaybe<Scalars['String']['input']>;
+  enquiryId: InputMaybe<Scalars['ID']['input']>;
+  items: InputMaybe<Array<QuotationItemInput>>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  paymentTerms: InputMaybe<Scalars['String']['input']>;
+  quotationDate: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  subject: InputMaybe<Scalars['String']['input']>;
+  termsAndConditions: InputMaybe<Scalars['String']['input']>;
+  validUntil: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateUserInput = {
   firstName: InputMaybe<Scalars['String']['input']>;
   lastName: InputMaybe<Scalars['String']['input']>;
@@ -2661,9 +3126,9 @@ export type User = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
-  organizationId: Scalars['ID']['output'];
+  organizationId: Maybe<Scalars['ID']['output']>;
   roles: Maybe<Array<Scalars['String']['output']>>;
-  seqNo: Scalars['String']['output'];
+  seqNo: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   userType: Maybe<Scalars['String']['output']>;
 };
@@ -2859,17 +3324,22 @@ export type ResolversTypes = ResolversObject<{
   CashBankInput: ResolverTypeWrapper<Partial<CashBankInput>>;
   ChartOfAccounts: ResolverTypeWrapper<Partial<ChartOfAccounts>>;
   ChartOfAccountsInput: ResolverTypeWrapper<Partial<ChartOfAccountsInput>>;
+  Client: ResolverTypeWrapper<Partial<Client>>;
   Competency: ResolverTypeWrapper<Partial<Competency>>;
   CompetencyInput: ResolverTypeWrapper<Partial<CompetencyInput>>;
   CreateAttendanceInput: ResolverTypeWrapper<Partial<CreateAttendanceInput>>;
+  CreateClientInput: ResolverTypeWrapper<Partial<CreateClientInput>>;
   CreateCustomerInvoiceInput: ResolverTypeWrapper<Partial<CreateCustomerInvoiceInput>>;
   CreateItemInput: ResolverTypeWrapper<Partial<CreateItemInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
+  CreateProductInput: ResolverTypeWrapper<Partial<CreateProductInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
   CreatePurchaseOrderInput: ResolverTypeWrapper<Partial<CreatePurchaseOrderInput>>;
+  CreateQuotationInput: ResolverTypeWrapper<Partial<CreateQuotationInput>>;
   CreateRoleInput: ResolverTypeWrapper<Partial<CreateRoleInput>>;
   CreateSalesEnquiryInput: ResolverTypeWrapper<Partial<CreateSalesEnquiryInput>>;
   CreateSalesOrderInput: ResolverTypeWrapper<Partial<CreateSalesOrderInput>>;
+  CreateSalesQuotationInput: ResolverTypeWrapper<Partial<CreateSalesQuotationInput>>;
   CreateUserInput: ResolverTypeWrapper<Partial<CreateUserInput>>;
   CreateVendorInput: ResolverTypeWrapper<Partial<CreateVendorInput>>;
   Customer: ResolverTypeWrapper<Partial<Customer>>;
@@ -2918,11 +3388,17 @@ export type ResolversTypes = ResolversObject<{
   PayrollManagementInput: ResolverTypeWrapper<Partial<PayrollManagementInput>>;
   Permission: ResolverTypeWrapper<Partial<Permission>>;
   PermissionInput: ResolverTypeWrapper<Partial<PermissionInput>>;
+  Product: ResolverTypeWrapper<Partial<Product>>;
   ProductionPlanning: ResolverTypeWrapper<Partial<ProductionPlanning>>;
   ProductionPlanningInput: ResolverTypeWrapper<Partial<ProductionPlanningInput>>;
   Project: ResolverTypeWrapper<Partial<Project>>;
   PurchaseOrder: ResolverTypeWrapper<Partial<PurchaseOrder>>;
   Query: ResolverTypeWrapper<{}>;
+  Quotation: ResolverTypeWrapper<Partial<Quotation>>;
+  QuotationItem: ResolverTypeWrapper<Partial<QuotationItem>>;
+  QuotationItemInput: ResolverTypeWrapper<Partial<QuotationItemInput>>;
+  QuotationLineItem: ResolverTypeWrapper<Partial<QuotationLineItem>>;
+  QuotationLineItemInput: ResolverTypeWrapper<Partial<QuotationLineItemInput>>;
   RawMaterialRequisition: ResolverTypeWrapper<Partial<RawMaterialRequisition>>;
   RawMaterialRequisitionInput: ResolverTypeWrapper<Partial<RawMaterialRequisitionInput>>;
   Recruitment: ResolverTypeWrapper<Partial<Recruitment>>;
@@ -2935,6 +3411,7 @@ export type ResolversTypes = ResolversObject<{
   SalaryRangeInput: ResolverTypeWrapper<Partial<SalaryRangeInput>>;
   SalesEnquiry: ResolverTypeWrapper<Partial<SalesEnquiry>>;
   SalesOrder: ResolverTypeWrapper<Partial<SalesOrder>>;
+  SalesQuotation: ResolverTypeWrapper<Partial<SalesQuotation>>;
   SalesReturn: ResolverTypeWrapper<Partial<SalesReturn>>;
   SalesReturnInput: ResolverTypeWrapper<Partial<SalesReturnInput>>;
   StockAdjustment: ResolverTypeWrapper<Partial<StockAdjustment>>;
@@ -2945,14 +3422,18 @@ export type ResolversTypes = ResolversObject<{
   StockTransferInput: ResolverTypeWrapper<Partial<StockTransferInput>>;
   String: ResolverTypeWrapper<Partial<Scalars['String']['output']>>;
   UpdateAttendanceInput: ResolverTypeWrapper<Partial<UpdateAttendanceInput>>;
+  UpdateClientInput: ResolverTypeWrapper<Partial<UpdateClientInput>>;
   UpdateCustomerInvoiceInput: ResolverTypeWrapper<Partial<UpdateCustomerInvoiceInput>>;
   UpdateItemInput: ResolverTypeWrapper<Partial<UpdateItemInput>>;
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
+  UpdateProductInput: ResolverTypeWrapper<Partial<UpdateProductInput>>;
   UpdateProjectInput: ResolverTypeWrapper<Partial<UpdateProjectInput>>;
   UpdatePurchaseOrderInput: ResolverTypeWrapper<Partial<UpdatePurchaseOrderInput>>;
+  UpdateQuotationInput: ResolverTypeWrapper<Partial<UpdateQuotationInput>>;
   UpdateRoleInput: ResolverTypeWrapper<Partial<UpdateRoleInput>>;
   UpdateSalesEnquiryInput: ResolverTypeWrapper<Partial<UpdateSalesEnquiryInput>>;
   UpdateSalesOrderInput: ResolverTypeWrapper<Partial<UpdateSalesOrderInput>>;
+  UpdateSalesQuotationInput: ResolverTypeWrapper<Partial<UpdateSalesQuotationInput>>;
   UpdateUserInput: ResolverTypeWrapper<Partial<UpdateUserInput>>;
   UpdateVendorInput: ResolverTypeWrapper<Partial<UpdateVendorInput>>;
   User: ResolverTypeWrapper<Partial<User>>;
@@ -2987,17 +3468,22 @@ export type ResolversParentTypes = ResolversObject<{
   CashBankInput: Partial<CashBankInput>;
   ChartOfAccounts: Partial<ChartOfAccounts>;
   ChartOfAccountsInput: Partial<ChartOfAccountsInput>;
+  Client: Partial<Client>;
   Competency: Partial<Competency>;
   CompetencyInput: Partial<CompetencyInput>;
   CreateAttendanceInput: Partial<CreateAttendanceInput>;
+  CreateClientInput: Partial<CreateClientInput>;
   CreateCustomerInvoiceInput: Partial<CreateCustomerInvoiceInput>;
   CreateItemInput: Partial<CreateItemInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
+  CreateProductInput: Partial<CreateProductInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
   CreatePurchaseOrderInput: Partial<CreatePurchaseOrderInput>;
+  CreateQuotationInput: Partial<CreateQuotationInput>;
   CreateRoleInput: Partial<CreateRoleInput>;
   CreateSalesEnquiryInput: Partial<CreateSalesEnquiryInput>;
   CreateSalesOrderInput: Partial<CreateSalesOrderInput>;
+  CreateSalesQuotationInput: Partial<CreateSalesQuotationInput>;
   CreateUserInput: Partial<CreateUserInput>;
   CreateVendorInput: Partial<CreateVendorInput>;
   Customer: Partial<Customer>;
@@ -3046,11 +3532,17 @@ export type ResolversParentTypes = ResolversObject<{
   PayrollManagementInput: Partial<PayrollManagementInput>;
   Permission: Partial<Permission>;
   PermissionInput: Partial<PermissionInput>;
+  Product: Partial<Product>;
   ProductionPlanning: Partial<ProductionPlanning>;
   ProductionPlanningInput: Partial<ProductionPlanningInput>;
   Project: Partial<Project>;
   PurchaseOrder: Partial<PurchaseOrder>;
   Query: {};
+  Quotation: Partial<Quotation>;
+  QuotationItem: Partial<QuotationItem>;
+  QuotationItemInput: Partial<QuotationItemInput>;
+  QuotationLineItem: Partial<QuotationLineItem>;
+  QuotationLineItemInput: Partial<QuotationLineItemInput>;
   RawMaterialRequisition: Partial<RawMaterialRequisition>;
   RawMaterialRequisitionInput: Partial<RawMaterialRequisitionInput>;
   Recruitment: Partial<Recruitment>;
@@ -3063,6 +3555,7 @@ export type ResolversParentTypes = ResolversObject<{
   SalaryRangeInput: Partial<SalaryRangeInput>;
   SalesEnquiry: Partial<SalesEnquiry>;
   SalesOrder: Partial<SalesOrder>;
+  SalesQuotation: Partial<SalesQuotation>;
   SalesReturn: Partial<SalesReturn>;
   SalesReturnInput: Partial<SalesReturnInput>;
   StockAdjustment: Partial<StockAdjustment>;
@@ -3073,14 +3566,18 @@ export type ResolversParentTypes = ResolversObject<{
   StockTransferInput: Partial<StockTransferInput>;
   String: Partial<Scalars['String']['output']>;
   UpdateAttendanceInput: Partial<UpdateAttendanceInput>;
+  UpdateClientInput: Partial<UpdateClientInput>;
   UpdateCustomerInvoiceInput: Partial<UpdateCustomerInvoiceInput>;
   UpdateItemInput: Partial<UpdateItemInput>;
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
+  UpdateProductInput: Partial<UpdateProductInput>;
   UpdateProjectInput: Partial<UpdateProjectInput>;
   UpdatePurchaseOrderInput: Partial<UpdatePurchaseOrderInput>;
+  UpdateQuotationInput: Partial<UpdateQuotationInput>;
   UpdateRoleInput: Partial<UpdateRoleInput>;
   UpdateSalesEnquiryInput: Partial<UpdateSalesEnquiryInput>;
   UpdateSalesOrderInput: Partial<UpdateSalesOrderInput>;
+  UpdateSalesQuotationInput: Partial<UpdateSalesQuotationInput>;
   UpdateUserInput: Partial<UpdateUserInput>;
   UpdateVendorInput: Partial<UpdateVendorInput>;
   User: Partial<User>;
@@ -3240,6 +3737,28 @@ export type ChartOfAccountsResolvers<ContextType = GraphQLContext, ParentType ex
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentAccount: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ClientResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = ResolversObject<{
+  address: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  company: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  country: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industry: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  state: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  website: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  zipCode: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3505,6 +4024,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationCreateCareerArgs, 'input'>>;
   createCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationCreateCashBankArgs, 'input'>>;
   createChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationCreateChartOfAccountArgs, 'input'>>;
+  createClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationCreateClientArgs, 'input'>>;
   createCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationCreateCustomerArgs, 'input'>>;
   createCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationCreateCustomerInvoiceArgs, 'input'>>;
   createDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationCreateDvsArgs, 'input'>>;
@@ -3523,15 +4043,18 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
+  createProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   createProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationCreateProductionPlanningArgs, 'input'>>;
   createProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createPurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationCreatePurchaseOrderArgs, 'input'>>;
+  createQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationCreateQuotationArgs, 'input'>>;
   createRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationCreateRawMaterialRequisitionArgs, 'input'>>;
   createRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationCreateRecruitmentArgs, 'input'>>;
   createRole: Resolver<ResolversTypes['Role'], ParentType, ContextType, RequireFields<MutationCreateRoleArgs, 'input'>>;
   createSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationCreateSalaryProcessingArgs, 'input'>>;
   createSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationCreateSalesEnquiryArgs, 'input'>>;
   createSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationCreateSalesOrderArgs, 'input'>>;
+  createSalesQuotation: Resolver<ResolversTypes['SalesQuotation'], ParentType, ContextType, RequireFields<MutationCreateSalesQuotationArgs, 'input'>>;
   createSalesReturn: Resolver<ResolversTypes['SalesReturn'], ParentType, ContextType, RequireFields<MutationCreateSalesReturnArgs, 'input'>>;
   createStockAdjustment: Resolver<ResolversTypes['StockAdjustment'], ParentType, ContextType, RequireFields<MutationCreateStockAdjustmentArgs, 'input'>>;
   createStockMovement: Resolver<ResolversTypes['StockMovement'], ParentType, ContextType, RequireFields<MutationCreateStockMovementArgs, 'input'>>;
@@ -3547,6 +4070,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationDeleteAttendanceArgs, 'id'>>;
   deleteCareer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCareerArgs, 'id'>>;
   deleteChartOfAccount: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteChartOfAccountArgs, 'id'>>;
+  deleteClient: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteClientArgs, 'id'>>;
   deleteCustomer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCustomerArgs, 'id'>>;
   deleteCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationDeleteCustomerInvoiceArgs, 'id'>>;
   deleteDVS: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteDvsArgs, 'id'>>;
@@ -3563,13 +4087,16 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteMaterialReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMaterialReceiptArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
+  deleteProduct: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
   deleteProductionPlanning: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductionPlanningArgs, 'id'>>;
   deleteProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deletePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationDeletePurchaseOrderArgs, 'id'>>;
+  deleteQuotation: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteQuotationArgs, 'id'>>;
   deleteRole: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   deleteSalaryProcessing: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalaryProcessingArgs, 'id'>>;
   deleteSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationDeleteSalesEnquiryArgs, 'id'>>;
   deleteSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationDeleteSalesOrderArgs, 'id'>>;
+  deleteSalesQuotation: Resolver<ResolversTypes['SalesQuotation'], ParentType, ContextType, RequireFields<MutationDeleteSalesQuotationArgs, 'id'>>;
   deleteSalesReturn: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalesReturnArgs, 'id'>>;
   deleteStockAdjustment: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteStockAdjustmentArgs, 'id'>>;
   deleteStockTransfer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteStockTransferArgs, 'id'>>;
@@ -3581,12 +4108,14 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   reconcileCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationReconcileCashBankArgs, 'id'>>;
   register: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
   seedSystemRoles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
+  sendQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
   updateApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationUpdateApplicantArgs, 'id' | 'input'>>;
   updateAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationUpdateAssetArgs, 'id' | 'input'>>;
   updateAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationUpdateAttendanceArgs, 'id' | 'input'>>;
   updateBankAccount: Resolver<ResolversTypes['BankAccount'], ParentType, ContextType, RequireFields<MutationUpdateBankAccountArgs, 'id' | 'input'>>;
   updateCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationUpdateCareerArgs, 'id' | 'input'>>;
   updateChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationUpdateChartOfAccountArgs, 'id' | 'input'>>;
+  updateClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationUpdateClientArgs, 'id' | 'input'>>;
   updateCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationUpdateCustomerArgs, 'id' | 'input'>>;
   updateCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationUpdateCustomerInvoiceArgs, 'id' | 'input'>>;
   updateDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationUpdateDvsArgs, 'id' | 'input'>>;
@@ -3604,15 +4133,18 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
+  updateProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'id' | 'input'>>;
   updateProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationUpdateProductionPlanningArgs, 'id' | 'input'>>;
   updateProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'id' | 'input'>>;
   updatePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationUpdatePurchaseOrderArgs, 'id' | 'input'>>;
+  updateQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationUpdateQuotationArgs, 'id' | 'input'>>;
   updateRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationUpdateRawMaterialRequisitionArgs, 'id' | 'input'>>;
   updateRecruitment: Resolver<ResolversTypes['Recruitment'], ParentType, ContextType, RequireFields<MutationUpdateRecruitmentArgs, 'id' | 'input'>>;
   updateRole: Resolver<ResolversTypes['Role'], ParentType, ContextType, RequireFields<MutationUpdateRoleArgs, 'id' | 'input'>>;
   updateSalaryProcessing: Resolver<ResolversTypes['SalaryProcessing'], ParentType, ContextType, RequireFields<MutationUpdateSalaryProcessingArgs, 'id' | 'input'>>;
   updateSalesEnquiry: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationUpdateSalesEnquiryArgs, 'id' | 'input'>>;
   updateSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationUpdateSalesOrderArgs, 'id' | 'input'>>;
+  updateSalesQuotation: Resolver<ResolversTypes['SalesQuotation'], ParentType, ContextType, RequireFields<MutationUpdateSalesQuotationArgs, 'id' | 'input'>>;
   updateSalesReturn: Resolver<ResolversTypes['SalesReturn'], ParentType, ContextType, RequireFields<MutationUpdateSalesReturnArgs, 'id' | 'input'>>;
   updateStockAdjustment: Resolver<ResolversTypes['StockAdjustment'], ParentType, ContextType, RequireFields<MutationUpdateStockAdjustmentArgs, 'id' | 'input'>>;
   updateStockTransfer: Resolver<ResolversTypes['StockTransfer'], ParentType, ContextType, RequireFields<MutationUpdateStockTransferArgs, 'id' | 'input'>>;
@@ -3650,6 +4182,30 @@ export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType 
 export type PermissionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Permission'] = ResolversParentTypes['Permission']> = ResolversObject<{
   actions: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   resource: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProductResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = ResolversObject<{
+  barcode: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  brand: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  category: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  costPrice: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  images: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  maxStockLevel: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  minStockLevel: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  price: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  reorderPoint: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sku: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  taxRate: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3704,6 +4260,10 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   cashBanks: Resolver<Array<ResolversTypes['CashBank']>, ParentType, ContextType, RequireFields<QueryCashBanksArgs, 'organizationId'>>;
   chartOfAccount: Resolver<Maybe<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountArgs, 'id'>>;
   chartOfAccounts: Resolver<Array<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountsArgs, 'organizationId'>>;
+  client: Resolver<Maybe<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientArgs, 'id'>>;
+  clients: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType>;
+  clientsByOrganization: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientsByOrganizationArgs, 'organizationId'>>;
+  clientsByStatus: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientsByStatusArgs, 'organizationId' | 'status'>>;
   customer: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomerArgs, 'id'>>;
   customerinvoice: Resolver<Maybe<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoiceArgs, 'id'>>;
   customerinvoices: Resolver<Array<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoicesArgs, 'organizationId'>>;
@@ -3742,12 +4302,22 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   organizations: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType, QueryOrganizationsArgs>;
   payrollmanagement: Resolver<Maybe<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementArgs, 'id'>>;
   payrollmanagements: Resolver<Array<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementsArgs, 'organizationId'>>;
+  product: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
   productionplanning: Resolver<Maybe<ResolversTypes['ProductionPlanning']>, ParentType, ContextType, RequireFields<QueryProductionplanningArgs, 'id'>>;
   productionplannings: Resolver<Array<ResolversTypes['ProductionPlanning']>, ParentType, ContextType, RequireFields<QueryProductionplanningsArgs, 'organizationId'>>;
+  products: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  productsByCategory: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductsByCategoryArgs, 'category' | 'organizationId'>>;
+  productsByOrganization: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductsByOrganizationArgs, 'organizationId'>>;
+  productsByStatus: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductsByStatusArgs, 'organizationId' | 'status'>>;
   project: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
   projects: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectsArgs, 'organizationId'>>;
   purchaseorder: Resolver<Maybe<ResolversTypes['PurchaseOrder']>, ParentType, ContextType, RequireFields<QueryPurchaseorderArgs, 'id'>>;
   purchaseorders: Resolver<Array<ResolversTypes['PurchaseOrder']>, ParentType, ContextType, RequireFields<QueryPurchaseordersArgs, 'organizationId'>>;
+  quotation: Resolver<Maybe<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationArgs, 'id'>>;
+  quotations: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType>;
+  quotationsByClient: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByClientArgs, 'clientId'>>;
+  quotationsByOrganization: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByOrganizationArgs, 'organizationId'>>;
+  quotationsByStatus: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByStatusArgs, 'organizationId' | 'status'>>;
   rawMaterialRequisition: Resolver<Maybe<ResolversTypes['RawMaterialRequisition']>, ParentType, ContextType, RequireFields<QueryRawMaterialRequisitionArgs, 'id'>>;
   rawMaterialRequisitions: Resolver<Array<ResolversTypes['RawMaterialRequisition']>, ParentType, ContextType, RequireFields<QueryRawMaterialRequisitionsArgs, 'organizationId'>>;
   recruitment: Resolver<Maybe<ResolversTypes['Recruitment']>, ParentType, ContextType, RequireFields<QueryRecruitmentArgs, 'id'>>;
@@ -3762,6 +4332,11 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   salesEnquiriesByClient: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesByClientArgs, 'clientId'>>;
   salesEnquiriesByStatus: Resolver<Array<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiriesByStatusArgs, 'status'>>;
   salesEnquiry: Resolver<Maybe<ResolversTypes['SalesEnquiry']>, ParentType, ContextType, RequireFields<QuerySalesEnquiryArgs, 'id'>>;
+  salesQuotation: Resolver<Maybe<ResolversTypes['SalesQuotation']>, ParentType, ContextType, RequireFields<QuerySalesQuotationArgs, 'id'>>;
+  salesQuotations: Resolver<Array<ResolversTypes['SalesQuotation']>, ParentType, ContextType, RequireFields<QuerySalesQuotationsArgs, 'organizationId'>>;
+  salesQuotationsByClient: Resolver<Array<ResolversTypes['SalesQuotation']>, ParentType, ContextType, RequireFields<QuerySalesQuotationsByClientArgs, 'clientId'>>;
+  salesQuotationsByEnquiry: Resolver<Array<ResolversTypes['SalesQuotation']>, ParentType, ContextType, RequireFields<QuerySalesQuotationsByEnquiryArgs, 'enquiryId'>>;
+  salesQuotationsByStatus: Resolver<Array<ResolversTypes['SalesQuotation']>, ParentType, ContextType, RequireFields<QuerySalesQuotationsByStatusArgs, 'status'>>;
   salesorder: Resolver<Maybe<ResolversTypes['SalesOrder']>, ParentType, ContextType, RequireFields<QuerySalesorderArgs, 'id'>>;
   salesorders: Resolver<Array<ResolversTypes['SalesOrder']>, ParentType, ContextType, RequireFields<QuerySalesordersArgs, 'organizationId'>>;
   salesreturn: Resolver<Maybe<ResolversTypes['SalesReturn']>, ParentType, ContextType, RequireFields<QuerySalesreturnArgs, 'id'>>;
@@ -3787,6 +4362,53 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   warehouses: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehousesArgs, 'organizationId'>>;
   workorder: Resolver<Maybe<ResolversTypes['WorkOrder']>, ParentType, ContextType, RequireFields<QueryWorkorderArgs, 'id'>>;
   workorders: Resolver<Array<ResolversTypes['WorkOrder']>, ParentType, ContextType, RequireFields<QueryWorkordersArgs, 'organizationId'>>;
+}>;
+
+export type QuotationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Quotation'] = ResolversParentTypes['Quotation']> = ResolversObject<{
+  clientId: Resolver<ResolversTypes['Client'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discountAmount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lineItems: Resolver<Array<ResolversTypes['QuotationLineItem']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  quotationDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quotationNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sentAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sentBy: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subject: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subtotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  taxAmount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  terms: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  totalAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  validUntil: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type QuotationItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['QuotationItem'] = ResolversParentTypes['QuotationItem']> = ResolversObject<{
+  amount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  discount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  itemName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tax: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unit: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unitPrice: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type QuotationLineItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['QuotationLineItem'] = ResolversParentTypes['QuotationLineItem']> = ResolversObject<{
+  description: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  itemId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tax: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  total: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unitPrice: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RawMaterialRequisitionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['RawMaterialRequisition'] = ResolversParentTypes['RawMaterialRequisition']> = ResolversObject<{
@@ -3892,6 +4514,34 @@ export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SalesQuotationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesQuotation'] = ResolversParentTypes['SalesQuotation']> = ResolversObject<{
+  assignedTo: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  clientId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  currency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  deliveryTerms: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enquiryId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  grandTotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  items: Resolver<Array<ResolversTypes['QuotationItem']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  paymentTerms: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quotationDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quotationNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subject: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subtotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  termsAndConditions: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  totalDiscount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  totalTax: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  validUntil: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SalesReturnResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesReturn'] = ResolversParentTypes['SalesReturn']> = ResolversObject<{
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3945,9 +4595,9 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   firstName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   roles: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userType: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -4036,6 +4686,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Career: CareerResolvers<ContextType>;
   CashBank: CashBankResolvers<ContextType>;
   ChartOfAccounts: ChartOfAccountsResolvers<ContextType>;
+  Client: ClientResolvers<ContextType>;
   Competency: CompetencyResolvers<ContextType>;
   Customer: CustomerResolvers<ContextType>;
   CustomerInvoice: CustomerInvoiceResolvers<ContextType>;
@@ -4060,10 +4711,14 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Organization: OrganizationResolvers<ContextType>;
   PayrollManagement: PayrollManagementResolvers<ContextType>;
   Permission: PermissionResolvers<ContextType>;
+  Product: ProductResolvers<ContextType>;
   ProductionPlanning: ProductionPlanningResolvers<ContextType>;
   Project: ProjectResolvers<ContextType>;
   PurchaseOrder: PurchaseOrderResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
+  Quotation: QuotationResolvers<ContextType>;
+  QuotationItem: QuotationItemResolvers<ContextType>;
+  QuotationLineItem: QuotationLineItemResolvers<ContextType>;
   RawMaterialRequisition: RawMaterialRequisitionResolvers<ContextType>;
   Recruitment: RecruitmentResolvers<ContextType>;
   Role: RoleResolvers<ContextType>;
@@ -4071,6 +4726,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   SalaryRange: SalaryRangeResolvers<ContextType>;
   SalesEnquiry: SalesEnquiryResolvers<ContextType>;
   SalesOrder: SalesOrderResolvers<ContextType>;
+  SalesQuotation: SalesQuotationResolvers<ContextType>;
   SalesReturn: SalesReturnResolvers<ContextType>;
   StockAdjustment: StockAdjustmentResolvers<ContextType>;
   StockMovement: StockMovementResolvers<ContextType>;

@@ -23,6 +23,7 @@
 		"packages/*"
 	],
 	"dependencies": {
+		"nodemailer": "^8.0.2",
 		"puppeteer": "^24.15.0"
 	},
 	"devDependencies": {

@@ -34,14 +34,14 @@ input PermissionInput {
   actions: [String!]!
 }
 
-type Query {
+extend type Query {
   role(id: ID!): Role
   roles: [Role!]!
   rolesByOrganization(organizationId: ID!): [Role!]!
   systemRoles: [Role!]!
 }
 
-type Mutation {
+extend type Mutation {
   createRole(input: CreateRoleInput!): Role!
   updateRole(id: ID!, input: UpdateRoleInput!): Role!
   deleteRole(id: ID!): Boolean!
