@@ -48,6 +48,10 @@ export class SalesEnquiryService {
 		return this.repository.findWithPagination(filter, options)
 	}
 
+	async findPaginated(filter: any, page: number, limit: number, sort: any): Promise<any> {
+		return this.repository.findPaginated(filter, page, limit, sort)
+	}
+
 	async softDelete(id: string, userId: string): Promise<any> {
 		return this.repository.update(id, { deletedAt: new Date(), deletedBy: userId })
 	}

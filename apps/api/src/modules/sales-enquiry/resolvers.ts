@@ -19,12 +19,7 @@ export const resolvers = {
 					{ projectType: { $regex: search, $options: 'i' } },
 				]
 			}
-			const result = await service.findWithPagination(filter, { 
-				page, 
-				limit, 
-				sortBy: 'createdAt', 
-				sortOrder: 'desc' 
-			})
+			const result = await service.findPaginated(filter, page, limit, { createdAt: -1 })
 			return result.data
 		},
 		
