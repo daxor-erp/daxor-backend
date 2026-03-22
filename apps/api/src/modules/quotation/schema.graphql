@@ -33,10 +33,17 @@ type Quotation {
 	terms: String
 	notes: String
 	status: String!
+	sentAt: String
+	sentBy: ID
 	organizationId: ID!
 	createdBy: ID
 	createdAt: String!
 	updatedAt: String!
+}
+
+type SendQuotationResult {
+	quotation: Quotation!
+	emailSent: Boolean!
 }
 
 type ClientRef {
@@ -85,4 +92,5 @@ extend type Mutation {
 	createQuotation(input: CreateQuotationInput!): Quotation!
 	updateQuotation(id: ID!, input: UpdateQuotationInput!): Quotation!
 	deleteQuotation(id: ID!): Quotation!
+	sendQuotation(id: ID!): SendQuotationResult!
 }

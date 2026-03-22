@@ -6,8 +6,11 @@ const service = new QuotationService()
 
 export const resolvers = {
 	Query: {
-		quotation: async (_: unknown, { id }: { id: string }) =>
-			service.findById(id),
+		quotation: async (_: unknown, { id }: { id: string }) => {
+			const doc = await service.findById(id)
+			if (!doc) return null
+			return Quotation.populate(doc, { path: 'clientId', select: 'id name email' })
+		},
 
 		quotations: async (_: unknown, args: any) => {
 			const { organizationId, page = 1, limit = 100, status } = args
@@ -37,8 +40,20 @@ export const resolvers = {
 			return Quotation.populate(doc, { path: 'clientId', select: 'id name email' })
 		},
 
-		deleteQuotation: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
-			service.softDelete(id, ctx.user?.id),
+		deleteQuotation: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const doc = await service.softDelete(id, ctx.user?.id)
+			if (!doc) throw new Error('Quotation not found')
+			return Quotation.populate(doc, { path: 'clientId', select: 'id name email' })
+		},
+
+		sendQuotation: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const { doc, emailSent } = await service.sendQuotation(id, ctx.user?.id ?? '', ctx.user?.organizationId)
+			return { quotation: doc, emailSent }
+		},
+	},
+
+	QuotationLineItem: {
+		itemId: (parent: any) => (parent.itemId != null ? String(parent.itemId) : null),
 	},
 
 	Quotation: {
@@ -52,5 +67,8 @@ export const resolvers = {
 			}
 			return { id: parent.clientId?.toString(), name: '', email: '' }
 		},
+		organizationId: (parent: any) => String(parent.organizationId?._id ?? parent.organizationId ?? ''),
+		sentAt: (parent: any) => (parent.sentAt ? new Date(parent.sentAt).toISOString() : null),
+		sentBy: (parent: any) => (parent.sentBy != null ? String(parent.sentBy) : null),
 	},
 }

@@ -30,6 +30,8 @@ const quotationSchema = new Schema({
 	},
 	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
+	sentAt: { type: Date },
+	sentBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	deletedAt: { type: Date },
 }, { timestamps: true })
 
