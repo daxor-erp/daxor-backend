@@ -1,0 +1,88 @@
+type QuotationLineItem {
+	itemId: ID
+	description: String!
+	quantity: Float!
+	unitPrice: Float!
+	discount: Float
+	tax: Float
+	total: Float!
+}
+
+input QuotationLineItemInput {
+	itemId: ID
+	description: String!
+	quantity: Float!
+	unitPrice: Float!
+	discount: Float
+	tax: Float
+	total: Float!
+}
+
+type Quotation {
+	id: ID!
+	quotationNumber: String!
+	clientId: ClientRef!
+	subject: String!
+	quotationDate: String!
+	validUntil: String!
+	lineItems: [QuotationLineItem!]!
+	subtotal: Float!
+	discountAmount: Float!
+	taxAmount: Float!
+	totalAmount: Float!
+	terms: String
+	notes: String
+	status: String!
+	organizationId: ID!
+	createdBy: ID
+	createdAt: String!
+	updatedAt: String!
+}
+
+type ClientRef {
+	id: ID!
+	name: String!
+	email: String
+}
+
+input CreateQuotationInput {
+	clientId: ID!
+	subject: String!
+	quotationDate: String!
+	validUntil: String!
+	lineItems: [QuotationLineItemInput!]!
+	subtotal: Float!
+	discountAmount: Float!
+	taxAmount: Float!
+	totalAmount: Float!
+	terms: String
+	notes: String
+	organizationId: ID!
+}
+
+input UpdateQuotationInput {
+	clientId: ID
+	subject: String
+	quotationDate: String
+	validUntil: String
+	lineItems: [QuotationLineItemInput!]
+	subtotal: Float
+	discountAmount: Float
+	taxAmount: Float
+	totalAmount: Float
+	terms: String
+	notes: String
+	status: String
+}
+
+extend type Query {
+	quotation(id: ID!): Quotation
+	quotations(organizationId: ID, page: Int, limit: Int, status: String): [Quotation!]!
+	quotationsByClient(clientId: ID!): [Quotation!]!
+}
+
+extend type Mutation {
+	createQuotation(input: CreateQuotationInput!): Quotation!
+	updateQuotation(id: ID!, input: UpdateQuotationInput!): Quotation!
+	deleteQuotation(id: ID!): Quotation!
+}

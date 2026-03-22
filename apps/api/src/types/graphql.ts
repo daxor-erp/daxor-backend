@@ -265,6 +265,27 @@ export type ChartOfAccountsInput = {
   parentAccount: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Client = {
+  __typename?: 'Client';
+  address: Maybe<Scalars['String']['output']>;
+  city: Maybe<Scalars['String']['output']>;
+  company: Maybe<Scalars['String']['output']>;
+  country: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  industry: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  phone: Maybe<Scalars['String']['output']>;
+  seqNo: Maybe<Scalars['String']['output']>;
+  state: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  website: Maybe<Scalars['String']['output']>;
+  zipCode: Maybe<Scalars['String']['output']>;
+};
+
 export type Competency = {
   __typename?: 'Competency';
   competency: Scalars['String']['output'];
@@ -282,6 +303,23 @@ export type CreateAttendanceInput = {
   date: Scalars['String']['input'];
   organizationId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
+};
+
+export type CreateClientInput = {
+  address: InputMaybe<Scalars['String']['input']>;
+  city: InputMaybe<Scalars['String']['input']>;
+  company: InputMaybe<Scalars['String']['input']>;
+  country: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  industry: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  phone: InputMaybe<Scalars['String']['input']>;
+  state: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  website: InputMaybe<Scalars['String']['input']>;
+  zipCode: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateCustomerInvoiceInput = {
@@ -790,6 +828,7 @@ export type Mutation = {
   createCareer: Career;
   createCashBank: CashBank;
   createChartOfAccount: ChartOfAccounts;
+  createClient: Client;
   createCustomer: Customer;
   createCustomerInvoice: CustomerInvoice;
   createDVS: Dvs;
@@ -832,6 +871,7 @@ export type Mutation = {
   deleteAttendance: Attendance;
   deleteCareer: Scalars['Boolean']['output'];
   deleteChartOfAccount: Scalars['Boolean']['output'];
+  deleteClient: Client;
   deleteCustomer: Scalars['Boolean']['output'];
   deleteCustomerInvoice: CustomerInvoice;
   deleteDVS: Scalars['Boolean']['output'];
@@ -872,6 +912,7 @@ export type Mutation = {
   updateBankAccount: BankAccount;
   updateCareer: Career;
   updateChartOfAccount: ChartOfAccounts;
+  updateClient: Client;
   updateCustomer: Customer;
   updateCustomerInvoice: CustomerInvoice;
   updateDVS: Dvs;
@@ -950,6 +991,11 @@ export type MutationCreateCashBankArgs = {
 
 export type MutationCreateChartOfAccountArgs = {
   input: ChartOfAccountsInput;
+};
+
+
+export type MutationCreateClientArgs = {
+  input: CreateClientInput;
 };
 
 
@@ -1163,6 +1209,11 @@ export type MutationDeleteChartOfAccountArgs = {
 };
 
 
+export type MutationDeleteClientArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteCustomerArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1361,6 +1412,12 @@ export type MutationUpdateCareerArgs = {
 export type MutationUpdateChartOfAccountArgs = {
   id: Scalars['ID']['input'];
   input: ChartOfAccountsInput;
+};
+
+
+export type MutationUpdateClientArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateClientInput;
 };
 
 
@@ -1671,6 +1728,8 @@ export type Query = {
   cashBanks: Array<CashBank>;
   chartOfAccount: Maybe<ChartOfAccounts>;
   chartOfAccounts: Array<ChartOfAccounts>;
+  client: Maybe<Client>;
+  clients: Array<Client>;
   customer: Maybe<Customer>;
   customerinvoice: Maybe<CustomerInvoice>;
   customerinvoices: Array<CustomerInvoice>;
@@ -1844,6 +1903,20 @@ export type QueryChartOfAccountsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryClientArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryClientsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: InputMaybe<Scalars['ID']['input']>;
+  page: InputMaybe<Scalars['Int']['input']>;
+  search: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2566,6 +2639,22 @@ export type UpdateAttendanceInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateClientInput = {
+  address: InputMaybe<Scalars['String']['input']>;
+  city: InputMaybe<Scalars['String']['input']>;
+  company: InputMaybe<Scalars['String']['input']>;
+  country: InputMaybe<Scalars['String']['input']>;
+  email: InputMaybe<Scalars['String']['input']>;
+  industry: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  phone: InputMaybe<Scalars['String']['input']>;
+  state: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  website: InputMaybe<Scalars['String']['input']>;
+  zipCode: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateCustomerInvoiceInput = {
   customerId: InputMaybe<Scalars['ID']['input']>;
   dueDate: InputMaybe<Scalars['String']['input']>;
@@ -2859,9 +2948,11 @@ export type ResolversTypes = ResolversObject<{
   CashBankInput: ResolverTypeWrapper<Partial<CashBankInput>>;
   ChartOfAccounts: ResolverTypeWrapper<Partial<ChartOfAccounts>>;
   ChartOfAccountsInput: ResolverTypeWrapper<Partial<ChartOfAccountsInput>>;
+  Client: ResolverTypeWrapper<Partial<Client>>;
   Competency: ResolverTypeWrapper<Partial<Competency>>;
   CompetencyInput: ResolverTypeWrapper<Partial<CompetencyInput>>;
   CreateAttendanceInput: ResolverTypeWrapper<Partial<CreateAttendanceInput>>;
+  CreateClientInput: ResolverTypeWrapper<Partial<CreateClientInput>>;
   CreateCustomerInvoiceInput: ResolverTypeWrapper<Partial<CreateCustomerInvoiceInput>>;
   CreateItemInput: ResolverTypeWrapper<Partial<CreateItemInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
@@ -2945,6 +3036,7 @@ export type ResolversTypes = ResolversObject<{
   StockTransferInput: ResolverTypeWrapper<Partial<StockTransferInput>>;
   String: ResolverTypeWrapper<Partial<Scalars['String']['output']>>;
   UpdateAttendanceInput: ResolverTypeWrapper<Partial<UpdateAttendanceInput>>;
+  UpdateClientInput: ResolverTypeWrapper<Partial<UpdateClientInput>>;
   UpdateCustomerInvoiceInput: ResolverTypeWrapper<Partial<UpdateCustomerInvoiceInput>>;
   UpdateItemInput: ResolverTypeWrapper<Partial<UpdateItemInput>>;
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
@@ -2987,9 +3079,11 @@ export type ResolversParentTypes = ResolversObject<{
   CashBankInput: Partial<CashBankInput>;
   ChartOfAccounts: Partial<ChartOfAccounts>;
   ChartOfAccountsInput: Partial<ChartOfAccountsInput>;
+  Client: Partial<Client>;
   Competency: Partial<Competency>;
   CompetencyInput: Partial<CompetencyInput>;
   CreateAttendanceInput: Partial<CreateAttendanceInput>;
+  CreateClientInput: Partial<CreateClientInput>;
   CreateCustomerInvoiceInput: Partial<CreateCustomerInvoiceInput>;
   CreateItemInput: Partial<CreateItemInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
@@ -3073,6 +3167,7 @@ export type ResolversParentTypes = ResolversObject<{
   StockTransferInput: Partial<StockTransferInput>;
   String: Partial<Scalars['String']['output']>;
   UpdateAttendanceInput: Partial<UpdateAttendanceInput>;
+  UpdateClientInput: Partial<UpdateClientInput>;
   UpdateCustomerInvoiceInput: Partial<UpdateCustomerInvoiceInput>;
   UpdateItemInput: Partial<UpdateItemInput>;
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
@@ -3240,6 +3335,27 @@ export type ChartOfAccountsResolvers<ContextType = GraphQLContext, ParentType ex
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentAccount: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ClientResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = ResolversObject<{
+  address: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  company: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  country: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industry: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  state: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  website: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  zipCode: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3505,6 +3621,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationCreateCareerArgs, 'input'>>;
   createCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationCreateCashBankArgs, 'input'>>;
   createChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationCreateChartOfAccountArgs, 'input'>>;
+  createClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationCreateClientArgs, 'input'>>;
   createCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationCreateCustomerArgs, 'input'>>;
   createCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationCreateCustomerInvoiceArgs, 'input'>>;
   createDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationCreateDvsArgs, 'input'>>;
@@ -3547,6 +3664,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationDeleteAttendanceArgs, 'id'>>;
   deleteCareer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCareerArgs, 'id'>>;
   deleteChartOfAccount: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteChartOfAccountArgs, 'id'>>;
+  deleteClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationDeleteClientArgs, 'id'>>;
   deleteCustomer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCustomerArgs, 'id'>>;
   deleteCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationDeleteCustomerInvoiceArgs, 'id'>>;
   deleteDVS: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteDvsArgs, 'id'>>;
@@ -3587,6 +3705,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateBankAccount: Resolver<ResolversTypes['BankAccount'], ParentType, ContextType, RequireFields<MutationUpdateBankAccountArgs, 'id' | 'input'>>;
   updateCareer: Resolver<ResolversTypes['Career'], ParentType, ContextType, RequireFields<MutationUpdateCareerArgs, 'id' | 'input'>>;
   updateChartOfAccount: Resolver<ResolversTypes['ChartOfAccounts'], ParentType, ContextType, RequireFields<MutationUpdateChartOfAccountArgs, 'id' | 'input'>>;
+  updateClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationUpdateClientArgs, 'id' | 'input'>>;
   updateCustomer: Resolver<ResolversTypes['Customer'], ParentType, ContextType, RequireFields<MutationUpdateCustomerArgs, 'id' | 'input'>>;
   updateCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationUpdateCustomerInvoiceArgs, 'id' | 'input'>>;
   updateDVS: Resolver<ResolversTypes['DVS'], ParentType, ContextType, RequireFields<MutationUpdateDvsArgs, 'id' | 'input'>>;
@@ -3704,6 +3823,8 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   cashBanks: Resolver<Array<ResolversTypes['CashBank']>, ParentType, ContextType, RequireFields<QueryCashBanksArgs, 'organizationId'>>;
   chartOfAccount: Resolver<Maybe<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountArgs, 'id'>>;
   chartOfAccounts: Resolver<Array<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountsArgs, 'organizationId'>>;
+  client: Resolver<Maybe<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientArgs, 'id'>>;
+  clients: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, QueryClientsArgs>;
   customer: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomerArgs, 'id'>>;
   customerinvoice: Resolver<Maybe<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoiceArgs, 'id'>>;
   customerinvoices: Resolver<Array<ResolversTypes['CustomerInvoice']>, ParentType, ContextType, RequireFields<QueryCustomerinvoicesArgs, 'organizationId'>>;
@@ -4036,6 +4157,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Career: CareerResolvers<ContextType>;
   CashBank: CashBankResolvers<ContextType>;
   ChartOfAccounts: ChartOfAccountsResolvers<ContextType>;
+  Client: ClientResolvers<ContextType>;
   Competency: CompetencyResolvers<ContextType>;
   Customer: CustomerResolvers<ContextType>;
   CustomerInvoice: CustomerInvoiceResolvers<ContextType>;
