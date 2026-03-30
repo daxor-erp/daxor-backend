@@ -1,0 +1,73 @@
+type Product {
+  id: ID!
+  seqNo: String
+  name: String!
+  sku: String!
+  description: String
+  category: String
+  brand: String
+  unit: String!
+  price: Float!
+  costPrice: Float
+  taxRate: Float
+  minStockLevel: Float
+  maxStockLevel: Float
+  reorderPoint: Float
+  barcode: String
+  images: [String]
+  status: String!
+  organizationId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input CreateProductInput {
+  name: String!
+  sku: String!
+  description: String
+  category: String
+  brand: String
+  unit: String!
+  price: Float!
+  costPrice: Float
+  taxRate: Float
+  minStockLevel: Float
+  maxStockLevel: Float
+  reorderPoint: Float
+  barcode: String
+  images: [String]
+  status: String
+  organizationId: ID!
+}
+
+input UpdateProductInput {
+  name: String
+  sku: String
+  description: String
+  category: String
+  brand: String
+  unit: String
+  price: Float
+  costPrice: Float
+  taxRate: Float
+  minStockLevel: Float
+  maxStockLevel: Float
+  reorderPoint: Float
+  barcode: String
+  images: [String]
+  status: String
+}
+
+extend type Query {
+  product(id: ID!): Product
+  products: [Product!]!
+  productsByOrganization(organizationId: ID!): [Product!]!
+  productsByCategory(category: String!, organizationId: ID!): [Product!]!
+  productsByStatus(status: String!, organizationId: ID!): [Product!]!
+}
+
+extend type Mutation {
+  createProduct(input: CreateProductInput!): Product!
+  updateProduct(id: ID!, input: UpdateProductInput!): Product!
+  deleteProduct(id: ID!): Boolean!
+}

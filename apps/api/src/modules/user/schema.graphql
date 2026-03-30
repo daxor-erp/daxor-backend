@@ -1,13 +1,13 @@
 type User {
 	id: ID!
-	seqNo: String!
+	seqNo: String
 	email: String!
 	firstName: String!
 	lastName: String!
 	userType: String
 	roles: [String!]
 	status: String!
-	organizationId: ID!
+	organizationId: ID
 	createdAt: String!
 }
 
