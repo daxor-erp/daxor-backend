@@ -1,4 +1,65 @@
 type Client {
+	id: ID!
+	seqNo: String
+	name: String!
+	email: String!
+	phone: String
+	company: String
+	address: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+	website: String
+	industry: String
+	notes: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+}
+
+input CreateClientInput {
+	name: String!
+	email: String!
+	phone: String
+	company: String
+	address: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+	website: String
+	industry: String
+	notes: String
+	status: String
+	organizationId: ID!
+}
+
+input UpdateClientInput {
+	name: String
+	email: String
+	phone: String
+	company: String
+	address: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+	website: String
+	industry: String
+	notes: String
+	status: String
+}
+
+extend type Query {
+	client(id: ID!): Client
+	clients(organizationId: ID, page: Int, limit: Int, status: String, search: String): [Client!]!
+}
+
+extend type Mutation {
+	createClient(input: CreateClientInput!): Client!
+	updateClient(id: ID!, input: UpdateClientInput!): Client!
+	deleteClient(id: ID!): Client!
   id: ID!
   seqNo: String
   name: String!

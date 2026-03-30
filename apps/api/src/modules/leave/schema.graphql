@@ -1,0 +1,162 @@
+type LeaveType {
+	id: ID!
+	code: String!
+	name: String!
+	paid: Boolean!
+	defaultDaysPerYear: Float!
+	allowCarryForward: Boolean!
+	maxCarryForwardDays: Float
+	organizationId: ID!
+	active: Boolean!
+	createdAt: String!
+	updatedAt: String!
+}
+
+type LeaveEnrollment {
+	id: ID!
+	userId: ID!
+	leaveTypeId: ID!
+	calendarYear: Int!
+	entitledDays: Float!
+	usedDays: Float!
+	carriedForward: Float!
+	organizationId: ID!
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+type LeaveApplication {
+	id: ID!
+	userId: ID!
+	leaveTypeId: ID!
+	startDate: String!
+	endDate: String!
+	totalDays: Float!
+	reason: String
+	status: String!
+	approvedBy: ID
+	approvedAt: String
+	rejectedReason: String
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+type LeaveReinstatement {
+	id: ID!
+	userId: ID!
+	leaveTypeId: ID!
+	calendarYear: Int!
+	daysRestored: Float!
+	reason: String!
+	leaveApplicationId: ID
+	status: String!
+	reviewedBy: ID
+	reviewedAt: String
+	reviewNotes: String
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateLeaveTypeInput {
+	code: String!
+	name: String!
+	paid: Boolean
+	defaultDaysPerYear: Float
+	allowCarryForward: Boolean
+	maxCarryForwardDays: Float
+	organizationId: ID!
+	active: Boolean
+}
+
+input UpdateLeaveTypeInput {
+	code: String
+	name: String
+	paid: Boolean
+	defaultDaysPerYear: Float
+	allowCarryForward: Boolean
+	maxCarryForwardDays: Float
+	active: Boolean
+}
+
+input CreateLeaveEnrollmentInput {
+	userId: ID!
+	leaveTypeId: ID!
+	calendarYear: Int!
+	entitledDays: Float!
+	carriedForward: Float
+	notes: String
+	organizationId: ID!
+}
+
+input UpdateLeaveEnrollmentInput {
+	entitledDays: Float
+	usedDays: Float
+	carriedForward: Float
+	notes: String
+}
+
+input CreateLeaveApplicationInput {
+	userId: ID!
+	leaveTypeId: ID!
+	startDate: String!
+	endDate: String!
+	reason: String
+	organizationId: ID!
+}
+
+input UpdateLeaveApplicationInput {
+	startDate: String
+	endDate: String
+	totalDays: Float
+	reason: String
+	status: String
+	rejectedReason: String
+}
+
+input CreateLeaveReinstatementInput {
+	userId: ID!
+	leaveTypeId: ID!
+	calendarYear: Int!
+	daysRestored: Float!
+	reason: String!
+	leaveApplicationId: ID
+	organizationId: ID!
+}
+
+input UpdateLeaveReinstatementInput {
+	status: String
+	reviewNotes: String
+}
+
+extend type Query {
+	leaveType(id: ID!): LeaveType
+	leaveTypes(organizationId: ID!, activeOnly: Boolean): [LeaveType!]!
+	leaveEnrollment(id: ID!): LeaveEnrollment
+	leaveEnrollments(organizationId: ID!, userId: ID, calendarYear: Int): [LeaveEnrollment!]!
+	leaveApplication(id: ID!): LeaveApplication
+	leaveApplications(organizationId: ID!, userId: ID, status: String): [LeaveApplication!]!
+	leaveReinstatement(id: ID!): LeaveReinstatement
+	leaveReinstatements(organizationId: ID!, userId: ID, status: String): [LeaveReinstatement!]!
+}
+
+extend type Mutation {
+	createLeaveType(input: CreateLeaveTypeInput!): LeaveType!
+	updateLeaveType(id: ID!, input: UpdateLeaveTypeInput!): LeaveType!
+	deleteLeaveType(id: ID!): LeaveType!
+	createLeaveEnrollment(input: CreateLeaveEnrollmentInput!): LeaveEnrollment!
+	updateLeaveEnrollment(id: ID!, input: UpdateLeaveEnrollmentInput!): LeaveEnrollment!
+	deleteLeaveEnrollment(id: ID!): LeaveEnrollment!
+	createLeaveApplication(input: CreateLeaveApplicationInput!): LeaveApplication!
+	updateLeaveApplication(id: ID!, input: UpdateLeaveApplicationInput!): LeaveApplication!
+	deleteLeaveApplication(id: ID!): LeaveApplication!
+	approveLeaveApplication(id: ID!): LeaveApplication!
+	rejectLeaveApplication(id: ID!, reason: String!): LeaveApplication!
+	createLeaveReinstatement(input: CreateLeaveReinstatementInput!): LeaveReinstatement!
+	updateLeaveReinstatement(id: ID!, input: UpdateLeaveReinstatementInput!): LeaveReinstatement!
+	approveLeaveReinstatement(id: ID!): LeaveReinstatement!
+	rejectLeaveReinstatement(id: ID!, reviewNotes: String): LeaveReinstatement!
+	deleteLeaveReinstatement(id: ID!): LeaveReinstatement!
+}
