@@ -1,18 +1,3 @@
-import { MongoBaseRepository } from '../base/mongo-repository'
-import { Quotation } from './model'
-
-export class QuotationRepository extends MongoBaseRepository<any> {
-	constructor() {
-		super(Quotation)
-	}
-
-	async findByOrganization(organizationId: string): Promise<any[]> {
-		return this.findAllActive({ organizationId })
-	}
-
-	async findByClient(clientId: string): Promise<any[]> {
-		return this.findAllActive({ clientId })
-	}
 import { MongoBaseRepository, IBaseEntity } from '../base/mongo-repository'
 import { Quotation } from './model'
 
@@ -42,18 +27,18 @@ export class QuotationRepository extends MongoBaseRepository<IQuotationDocument>
   }
 
   async findByOrganization(organizationId: string) {
-    return this.model.find({ organizationId, deletedAt: null }).populate('clientId').populate('sentBy')
+    return this.model.find({ organizationId, deletedAt: null }).populate('clientId', 'id name email').populate('sentBy')
   }
 
   async findByClient(clientId: string) {
-    return this.model.find({ clientId, deletedAt: null }).populate('clientId').populate('sentBy')
+    return this.model.find({ clientId, deletedAt: null }).populate('clientId', 'id name email').populate('sentBy')
   }
 
   async findByStatus(status: string, organizationId: string) {
-    return this.model.find({ status, organizationId, deletedAt: null }).populate('clientId').populate('sentBy')
+    return this.model.find({ status, organizationId, deletedAt: null }).populate('clientId', 'id name email').populate('sentBy')
   }
 
   async findByQuotationNumber(quotationNumber: string, organizationId: string) {
-    return this.model.findOne({ quotationNumber, organizationId, deletedAt: null }).populate('clientId').populate('sentBy')
+    return this.model.findOne({ quotationNumber, organizationId, deletedAt: null }).populate('clientId', 'id name email')
   }
 }

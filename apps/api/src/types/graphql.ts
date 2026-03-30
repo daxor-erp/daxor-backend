@@ -349,6 +349,46 @@ export type CreateItemInput = {
   unit: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateLeaveApplicationInput = {
+  endDate: Scalars['String']['input'];
+  leaveTypeId: Scalars['ID']['input'];
+  organizationId: Scalars['ID']['input'];
+  reason: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+export type CreateLeaveEnrollmentInput = {
+  calendarYear: Scalars['Int']['input'];
+  carriedForward: InputMaybe<Scalars['Float']['input']>;
+  entitledDays: Scalars['Float']['input'];
+  leaveTypeId: Scalars['ID']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+export type CreateLeaveReinstatementInput = {
+  calendarYear: Scalars['Int']['input'];
+  daysRestored: Scalars['Float']['input'];
+  leaveApplicationId: InputMaybe<Scalars['ID']['input']>;
+  leaveTypeId: Scalars['ID']['input'];
+  organizationId: Scalars['ID']['input'];
+  reason: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+export type CreateLeaveTypeInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  allowCarryForward: InputMaybe<Scalars['Boolean']['input']>;
+  code: Scalars['String']['input'];
+  defaultDaysPerYear: InputMaybe<Scalars['Float']['input']>;
+  maxCarryForwardDays: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
+  paid: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type CreateOrganizationInput = {
   address: InputMaybe<Scalars['String']['input']>;
   code: InputMaybe<Scalars['String']['input']>;
@@ -394,15 +434,11 @@ export type CreatePurchaseOrderInput = {
 
 export type CreateQuotationInput = {
   clientId: Scalars['ID']['input'];
-  discountAmount: Scalars['Float']['input'];
   discountAmount: InputMaybe<Scalars['Float']['input']>;
   lineItems: Array<QuotationLineItemInput>;
   notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['ID']['input'];
   quotationDate: Scalars['String']['input'];
-  subject: Scalars['String']['input'];
-  subtotal: Scalars['Float']['input'];
-  taxAmount: Scalars['Float']['input'];
   quotationNumber: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
   subject: Scalars['String']['input'];
@@ -861,6 +897,72 @@ export type Item = {
   unit: Maybe<Scalars['String']['output']>;
 };
 
+export type LeaveApplication = {
+  __typename?: 'LeaveApplication';
+  approvedAt: Maybe<Scalars['String']['output']>;
+  approvedBy: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['String']['output'];
+  endDate: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  leaveTypeId: Scalars['ID']['output'];
+  organizationId: Scalars['ID']['output'];
+  reason: Maybe<Scalars['String']['output']>;
+  rejectedReason: Maybe<Scalars['String']['output']>;
+  startDate: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  totalDays: Scalars['Float']['output'];
+  updatedAt: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type LeaveEnrollment = {
+  __typename?: 'LeaveEnrollment';
+  calendarYear: Scalars['Int']['output'];
+  carriedForward: Scalars['Float']['output'];
+  createdAt: Scalars['String']['output'];
+  entitledDays: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  leaveTypeId: Scalars['ID']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  updatedAt: Scalars['String']['output'];
+  usedDays: Scalars['Float']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type LeaveReinstatement = {
+  __typename?: 'LeaveReinstatement';
+  calendarYear: Scalars['Int']['output'];
+  createdAt: Scalars['String']['output'];
+  daysRestored: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  leaveApplicationId: Maybe<Scalars['ID']['output']>;
+  leaveTypeId: Scalars['ID']['output'];
+  organizationId: Scalars['ID']['output'];
+  reason: Scalars['String']['output'];
+  reviewNotes: Maybe<Scalars['String']['output']>;
+  reviewedAt: Maybe<Scalars['String']['output']>;
+  reviewedBy: Maybe<Scalars['ID']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type LeaveType = {
+  __typename?: 'LeaveType';
+  active: Scalars['Boolean']['output'];
+  allowCarryForward: Scalars['Boolean']['output'];
+  code: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  defaultDaysPerYear: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  maxCarryForwardDays: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+  paid: Scalars['Boolean']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -885,6 +987,8 @@ export type MaterialReceiptInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   adjustStock: InventoryControl;
+  approveLeaveApplication: LeaveApplication;
+  approveLeaveReinstatement: LeaveReinstatement;
   createApplicant: Applicant;
   createAsset: Asset;
   createAttendance: Attendance;
@@ -908,6 +1012,10 @@ export type Mutation = {
   createInventoryControl: InventoryControl;
   createInventoryReturn: InventoryReturn;
   createItem: Item;
+  createLeaveApplication: LeaveApplication;
+  createLeaveEnrollment: LeaveEnrollment;
+  createLeaveReinstatement: LeaveReinstatement;
+  createLeaveType: LeaveType;
   createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
   createPayrollManagement: PayrollManagement;
@@ -938,7 +1046,6 @@ export type Mutation = {
   deleteAttendance: Attendance;
   deleteCareer: Scalars['Boolean']['output'];
   deleteChartOfAccount: Scalars['Boolean']['output'];
-  deleteClient: Client;
   deleteClient: Scalars['Boolean']['output'];
   deleteCustomer: Scalars['Boolean']['output'];
   deleteCustomerInvoice: CustomerInvoice;
@@ -953,6 +1060,10 @@ export type Mutation = {
   deleteInternalOrder: Scalars['Boolean']['output'];
   deleteInventoryReturn: Scalars['Boolean']['output'];
   deleteItem: Item;
+  deleteLeaveApplication: LeaveApplication;
+  deleteLeaveEnrollment: LeaveEnrollment;
+  deleteLeaveReinstatement: LeaveReinstatement;
+  deleteLeaveType: LeaveType;
   deleteMaterialReceipt: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
   deletePayrollManagement: Scalars['Boolean']['output'];
@@ -960,7 +1071,6 @@ export type Mutation = {
   deleteProductionPlanning: Scalars['Boolean']['output'];
   deleteProject: Project;
   deletePurchaseOrder: PurchaseOrder;
-  deleteQuotation: Quotation;
   deleteQuotation: Scalars['Boolean']['output'];
   deleteRole: Scalars['Boolean']['output'];
   deleteSalaryProcessing: Scalars['Boolean']['output'];
@@ -977,8 +1087,10 @@ export type Mutation = {
   login: AuthPayload;
   reconcileCashBank: CashBank;
   register: AuthPayload;
+  rejectLeaveApplication: LeaveApplication;
+  rejectLeaveReinstatement: LeaveReinstatement;
   seedSystemRoles: Array<Role>;
-  sendQuotation: Quotation;
+  sendQuotation: SendQuotationResult;
   updateApplicant: Applicant;
   updateAsset: Asset;
   updateAttendance: Attendance;
@@ -1000,6 +1112,10 @@ export type Mutation = {
   updateInventoryControl: InventoryControl;
   updateInventoryReturn: InventoryReturn;
   updateItem: Item;
+  updateLeaveApplication: LeaveApplication;
+  updateLeaveEnrollment: LeaveEnrollment;
+  updateLeaveReinstatement: LeaveReinstatement;
+  updateLeaveType: LeaveType;
   updateMaterialReceipt: MaterialReceipt;
   updateOrganization: Organization;
   updatePayrollManagement: PayrollManagement;
@@ -1032,6 +1148,16 @@ export type MutationAdjustStockArgs = {
   itemId: Scalars['String']['input'];
   quantity: Scalars['Float']['input'];
   reason: Scalars['String']['input'];
+};
+
+
+export type MutationApproveLeaveApplicationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationApproveLeaveReinstatementArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1147,6 +1273,26 @@ export type MutationCreateInventoryReturnArgs = {
 
 export type MutationCreateItemArgs = {
   input: CreateItemInput;
+};
+
+
+export type MutationCreateLeaveApplicationArgs = {
+  input: CreateLeaveApplicationInput;
+};
+
+
+export type MutationCreateLeaveEnrollmentArgs = {
+  input: CreateLeaveEnrollmentInput;
+};
+
+
+export type MutationCreateLeaveReinstatementArgs = {
+  input: CreateLeaveReinstatementInput;
+};
+
+
+export type MutationCreateLeaveTypeArgs = {
+  input: CreateLeaveTypeInput;
 };
 
 
@@ -1370,6 +1516,26 @@ export type MutationDeleteItemArgs = {
 };
 
 
+export type MutationDeleteLeaveApplicationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteLeaveEnrollmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteLeaveReinstatementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteLeaveTypeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteMaterialReceiptArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1482,6 +1648,18 @@ export type MutationReconcileCashBankArgs = {
 
 export type MutationRegisterArgs = {
   input: RegisterInput;
+};
+
+
+export type MutationRejectLeaveApplicationArgs = {
+  id: Scalars['ID']['input'];
+  reason: Scalars['String']['input'];
+};
+
+
+export type MutationRejectLeaveReinstatementArgs = {
+  id: Scalars['ID']['input'];
+  reviewNotes: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1613,6 +1791,30 @@ export type MutationUpdateInventoryReturnArgs = {
 export type MutationUpdateItemArgs = {
   id: Scalars['ID']['input'];
   input: UpdateItemInput;
+};
+
+
+export type MutationUpdateLeaveApplicationArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateLeaveApplicationInput;
+};
+
+
+export type MutationUpdateLeaveEnrollmentArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateLeaveEnrollmentInput;
+};
+
+
+export type MutationUpdateLeaveReinstatementArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateLeaveReinstatementInput;
+};
+
+
+export type MutationUpdateLeaveTypeArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateLeaveTypeInput;
 };
 
 
@@ -1915,6 +2117,14 @@ export type Query = {
   ipinspections: Array<IpInspection>;
   item: Maybe<Item>;
   items: Array<Item>;
+  leaveApplication: Maybe<LeaveApplication>;
+  leaveApplications: Array<LeaveApplication>;
+  leaveEnrollment: Maybe<LeaveEnrollment>;
+  leaveEnrollments: Array<LeaveEnrollment>;
+  leaveReinstatement: Maybe<LeaveReinstatement>;
+  leaveReinstatements: Array<LeaveReinstatement>;
+  leaveType: Maybe<LeaveType>;
+  leaveTypes: Array<LeaveType>;
   lowStockItems: Array<InventoryControl>;
   materialreceipt: Maybe<MaterialReceipt>;
   materialreceipts: Array<MaterialReceipt>;
@@ -2087,6 +2297,9 @@ export type QueryClientsArgs = {
   page: InputMaybe<Scalars['Int']['input']>;
   search: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryClientsByOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
 };
@@ -2285,6 +2498,53 @@ export type QueryItemsArgs = {
 };
 
 
+export type QueryLeaveApplicationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLeaveApplicationsArgs = {
+  organizationId: Scalars['ID']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  userId: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryLeaveEnrollmentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLeaveEnrollmentsArgs = {
+  calendarYear: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['ID']['input'];
+  userId: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryLeaveReinstatementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLeaveReinstatementsArgs = {
+  organizationId: Scalars['ID']['input'];
+  status: InputMaybe<Scalars['String']['input']>;
+  userId: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryLeaveTypeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLeaveTypesArgs = {
+  activeOnly: InputMaybe<Scalars['Boolean']['input']>;
+  organizationId: Scalars['ID']['input'];
+};
+
+
 export type QueryLowStockItemsArgs = {
   organizationId: Scalars['String']['input'];
 };
@@ -2399,8 +2659,6 @@ export type QueryQuotationsArgs = {
 };
 
 
-export type QueryQuotationsByClientArgs = {
-  clientId: Scalars['ID']['input'];
 export type QueryQuotationsByClientArgs = {
   clientId: Scalars['ID']['input'];
 };
@@ -2671,9 +2929,6 @@ export type Quotation = {
   clientId: ClientRef;
   createdAt: Scalars['String']['output'];
   createdBy: Maybe<Scalars['ID']['output']>;
-  discountAmount: Scalars['Float']['output'];
-  clientId: Client;
-  createdAt: Scalars['String']['output'];
   discountAmount: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
   lineItems: Array<QuotationLineItem>;
@@ -2681,12 +2936,8 @@ export type Quotation = {
   organizationId: Scalars['ID']['output'];
   quotationDate: Scalars['String']['output'];
   quotationNumber: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  subject: Scalars['String']['output'];
-  subtotal: Scalars['Float']['output'];
-  taxAmount: Scalars['Float']['output'];
   sentAt: Maybe<Scalars['String']['output']>;
-  sentBy: Maybe<User>;
+  sentBy: Maybe<Scalars['ID']['output']>;
   seqNo: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   subject: Scalars['String']['output'];
@@ -2935,6 +3186,12 @@ export type SalesReturnInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type SendQuotationResult = {
+  __typename?: 'SendQuotationResult';
+  emailSent: Scalars['Boolean']['output'];
+  quotation: Quotation;
+};
+
 export type StockAdjustment = {
   __typename?: 'StockAdjustment';
   createdAt: Scalars['String']['output'];
@@ -3036,6 +3293,37 @@ export type UpdateItemInput = {
   rate: InputMaybe<Scalars['Float']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
   unit: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLeaveApplicationInput = {
+  endDate: InputMaybe<Scalars['String']['input']>;
+  reason: InputMaybe<Scalars['String']['input']>;
+  rejectedReason: InputMaybe<Scalars['String']['input']>;
+  startDate: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  totalDays: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateLeaveEnrollmentInput = {
+  carriedForward: InputMaybe<Scalars['Float']['input']>;
+  entitledDays: InputMaybe<Scalars['Float']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  usedDays: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateLeaveReinstatementInput = {
+  reviewNotes: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLeaveTypeInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  allowCarryForward: InputMaybe<Scalars['Boolean']['input']>;
+  code: InputMaybe<Scalars['String']['input']>;
+  defaultDaysPerYear: InputMaybe<Scalars['Float']['input']>;
+  maxCarryForwardDays: InputMaybe<Scalars['Float']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  paid: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateOrganizationInput = {
@@ -3369,6 +3657,10 @@ export type ResolversTypes = ResolversObject<{
   CreateClientInput: ResolverTypeWrapper<Partial<CreateClientInput>>;
   CreateCustomerInvoiceInput: ResolverTypeWrapper<Partial<CreateCustomerInvoiceInput>>;
   CreateItemInput: ResolverTypeWrapper<Partial<CreateItemInput>>;
+  CreateLeaveApplicationInput: ResolverTypeWrapper<Partial<CreateLeaveApplicationInput>>;
+  CreateLeaveEnrollmentInput: ResolverTypeWrapper<Partial<CreateLeaveEnrollmentInput>>;
+  CreateLeaveReinstatementInput: ResolverTypeWrapper<Partial<CreateLeaveReinstatementInput>>;
+  CreateLeaveTypeInput: ResolverTypeWrapper<Partial<CreateLeaveTypeInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
   CreateProductInput: ResolverTypeWrapper<Partial<CreateProductInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
@@ -3417,6 +3709,10 @@ export type ResolversTypes = ResolversObject<{
   InventoryReturn: ResolverTypeWrapper<Partial<InventoryReturn>>;
   InventoryReturnInput: ResolverTypeWrapper<Partial<InventoryReturnInput>>;
   Item: ResolverTypeWrapper<Partial<Item>>;
+  LeaveApplication: ResolverTypeWrapper<Partial<LeaveApplication>>;
+  LeaveEnrollment: ResolverTypeWrapper<Partial<LeaveEnrollment>>;
+  LeaveReinstatement: ResolverTypeWrapper<Partial<LeaveReinstatement>>;
+  LeaveType: ResolverTypeWrapper<Partial<LeaveType>>;
   LoginInput: ResolverTypeWrapper<Partial<LoginInput>>;
   MaterialReceipt: ResolverTypeWrapper<Partial<MaterialReceipt>>;
   MaterialReceiptInput: ResolverTypeWrapper<Partial<MaterialReceiptInput>>;
@@ -3452,6 +3748,7 @@ export type ResolversTypes = ResolversObject<{
   SalesQuotation: ResolverTypeWrapper<Partial<SalesQuotation>>;
   SalesReturn: ResolverTypeWrapper<Partial<SalesReturn>>;
   SalesReturnInput: ResolverTypeWrapper<Partial<SalesReturnInput>>;
+  SendQuotationResult: ResolverTypeWrapper<Partial<SendQuotationResult>>;
   StockAdjustment: ResolverTypeWrapper<Partial<StockAdjustment>>;
   StockAdjustmentInput: ResolverTypeWrapper<Partial<StockAdjustmentInput>>;
   StockMovement: ResolverTypeWrapper<Partial<StockMovement>>;
@@ -3463,6 +3760,10 @@ export type ResolversTypes = ResolversObject<{
   UpdateClientInput: ResolverTypeWrapper<Partial<UpdateClientInput>>;
   UpdateCustomerInvoiceInput: ResolverTypeWrapper<Partial<UpdateCustomerInvoiceInput>>;
   UpdateItemInput: ResolverTypeWrapper<Partial<UpdateItemInput>>;
+  UpdateLeaveApplicationInput: ResolverTypeWrapper<Partial<UpdateLeaveApplicationInput>>;
+  UpdateLeaveEnrollmentInput: ResolverTypeWrapper<Partial<UpdateLeaveEnrollmentInput>>;
+  UpdateLeaveReinstatementInput: ResolverTypeWrapper<Partial<UpdateLeaveReinstatementInput>>;
+  UpdateLeaveTypeInput: ResolverTypeWrapper<Partial<UpdateLeaveTypeInput>>;
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
   UpdateProductInput: ResolverTypeWrapper<Partial<UpdateProductInput>>;
   UpdateProjectInput: ResolverTypeWrapper<Partial<UpdateProjectInput>>;
@@ -3514,6 +3815,10 @@ export type ResolversParentTypes = ResolversObject<{
   CreateClientInput: Partial<CreateClientInput>;
   CreateCustomerInvoiceInput: Partial<CreateCustomerInvoiceInput>;
   CreateItemInput: Partial<CreateItemInput>;
+  CreateLeaveApplicationInput: Partial<CreateLeaveApplicationInput>;
+  CreateLeaveEnrollmentInput: Partial<CreateLeaveEnrollmentInput>;
+  CreateLeaveReinstatementInput: Partial<CreateLeaveReinstatementInput>;
+  CreateLeaveTypeInput: Partial<CreateLeaveTypeInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
   CreateProductInput: Partial<CreateProductInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
@@ -3562,6 +3867,10 @@ export type ResolversParentTypes = ResolversObject<{
   InventoryReturn: Partial<InventoryReturn>;
   InventoryReturnInput: Partial<InventoryReturnInput>;
   Item: Partial<Item>;
+  LeaveApplication: Partial<LeaveApplication>;
+  LeaveEnrollment: Partial<LeaveEnrollment>;
+  LeaveReinstatement: Partial<LeaveReinstatement>;
+  LeaveType: Partial<LeaveType>;
   LoginInput: Partial<LoginInput>;
   MaterialReceipt: Partial<MaterialReceipt>;
   MaterialReceiptInput: Partial<MaterialReceiptInput>;
@@ -3597,6 +3906,7 @@ export type ResolversParentTypes = ResolversObject<{
   SalesQuotation: Partial<SalesQuotation>;
   SalesReturn: Partial<SalesReturn>;
   SalesReturnInput: Partial<SalesReturnInput>;
+  SendQuotationResult: Partial<SendQuotationResult>;
   StockAdjustment: Partial<StockAdjustment>;
   StockAdjustmentInput: Partial<StockAdjustmentInput>;
   StockMovement: Partial<StockMovement>;
@@ -3608,6 +3918,10 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateClientInput: Partial<UpdateClientInput>;
   UpdateCustomerInvoiceInput: Partial<UpdateCustomerInvoiceInput>;
   UpdateItemInput: Partial<UpdateItemInput>;
+  UpdateLeaveApplicationInput: Partial<UpdateLeaveApplicationInput>;
+  UpdateLeaveEnrollmentInput: Partial<UpdateLeaveEnrollmentInput>;
+  UpdateLeaveReinstatementInput: Partial<UpdateLeaveReinstatementInput>;
+  UpdateLeaveTypeInput: Partial<UpdateLeaveTypeInput>;
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
   UpdateProductInput: Partial<UpdateProductInput>;
   UpdateProjectInput: Partial<UpdateProjectInput>;
@@ -4051,6 +4365,72 @@ export type ItemResolvers<ContextType = GraphQLContext, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LeaveApplicationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeaveApplication'] = ResolversParentTypes['LeaveApplication']> = ResolversObject<{
+  approvedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  approvedBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  leaveTypeId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  reason: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  rejectedReason: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  startDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  totalDays: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LeaveEnrollmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeaveEnrollment'] = ResolversParentTypes['LeaveEnrollment']> = ResolversObject<{
+  calendarYear: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  carriedForward: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  entitledDays: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  leaveTypeId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  usedDays: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  userId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LeaveReinstatementResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeaveReinstatement'] = ResolversParentTypes['LeaveReinstatement']> = ResolversObject<{
+  calendarYear: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  daysRestored: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  leaveApplicationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  leaveTypeId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  reason: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reviewNotes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  reviewedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  reviewedBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LeaveTypeResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LeaveType'] = ResolversParentTypes['LeaveType']> = ResolversObject<{
+  active: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  allowCarryForward: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  code: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  defaultDaysPerYear: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  maxCarryForwardDays: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  paid: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MaterialReceiptResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MaterialReceipt'] = ResolversParentTypes['MaterialReceipt']> = ResolversObject<{
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4063,6 +4443,8 @@ export type MaterialReceiptResolvers<ContextType = GraphQLContext, ParentType ex
 
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   adjustStock: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationAdjustStockArgs, 'binLocation' | 'itemId' | 'quantity' | 'reason'>>;
+  approveLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationApproveLeaveApplicationArgs, 'id'>>;
+  approveLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationApproveLeaveReinstatementArgs, 'id'>>;
   createApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationCreateApplicantArgs, 'input'>>;
   createAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationCreateAssetArgs, 'input'>>;
   createAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationCreateAttendanceArgs, 'input'>>;
@@ -4086,6 +4468,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createInventoryControl: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationCreateInventoryControlArgs, 'input'>>;
   createInventoryReturn: Resolver<ResolversTypes['InventoryReturn'], ParentType, ContextType, RequireFields<MutationCreateInventoryReturnArgs, 'input'>>;
   createItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationCreateItemArgs, 'input'>>;
+  createLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationCreateLeaveApplicationArgs, 'input'>>;
+  createLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationCreateLeaveEnrollmentArgs, 'input'>>;
+  createLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationCreateLeaveReinstatementArgs, 'input'>>;
+  createLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationCreateLeaveTypeArgs, 'input'>>;
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
@@ -4116,7 +4502,6 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationDeleteAttendanceArgs, 'id'>>;
   deleteCareer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCareerArgs, 'id'>>;
   deleteChartOfAccount: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteChartOfAccountArgs, 'id'>>;
-  deleteClient: Resolver<ResolversTypes['Client'], ParentType, ContextType, RequireFields<MutationDeleteClientArgs, 'id'>>;
   deleteClient: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteClientArgs, 'id'>>;
   deleteCustomer: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCustomerArgs, 'id'>>;
   deleteCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationDeleteCustomerInvoiceArgs, 'id'>>;
@@ -4131,6 +4516,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteInternalOrder: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteInternalOrderArgs, 'id'>>;
   deleteInventoryReturn: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteInventoryReturnArgs, 'id'>>;
   deleteItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationDeleteItemArgs, 'id'>>;
+  deleteLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationDeleteLeaveApplicationArgs, 'id'>>;
+  deleteLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationDeleteLeaveEnrollmentArgs, 'id'>>;
+  deleteLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationDeleteLeaveReinstatementArgs, 'id'>>;
+  deleteLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationDeleteLeaveTypeArgs, 'id'>>;
   deleteMaterialReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMaterialReceiptArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
@@ -4138,7 +4527,6 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteProductionPlanning: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductionPlanningArgs, 'id'>>;
   deleteProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deletePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationDeletePurchaseOrderArgs, 'id'>>;
-  deleteQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationDeleteQuotationArgs, 'id'>>;
   deleteQuotation: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteQuotationArgs, 'id'>>;
   deleteRole: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   deleteSalaryProcessing: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteSalaryProcessingArgs, 'id'>>;
@@ -4155,8 +4543,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   login: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   reconcileCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationReconcileCashBankArgs, 'id'>>;
   register: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  rejectLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationRejectLeaveApplicationArgs, 'id' | 'reason'>>;
+  rejectLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationRejectLeaveReinstatementArgs, 'id'>>;
   seedSystemRoles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
-  sendQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
+  sendQuotation: Resolver<ResolversTypes['SendQuotationResult'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
   updateApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationUpdateApplicantArgs, 'id' | 'input'>>;
   updateAsset: Resolver<ResolversTypes['Asset'], ParentType, ContextType, RequireFields<MutationUpdateAssetArgs, 'id' | 'input'>>;
   updateAttendance: Resolver<ResolversTypes['Attendance'], ParentType, ContextType, RequireFields<MutationUpdateAttendanceArgs, 'id' | 'input'>>;
@@ -4178,6 +4568,10 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateInventoryControl: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationUpdateInventoryControlArgs, 'id' | 'input'>>;
   updateInventoryReturn: Resolver<ResolversTypes['InventoryReturn'], ParentType, ContextType, RequireFields<MutationUpdateInventoryReturnArgs, 'id' | 'input'>>;
   updateItem: Resolver<ResolversTypes['Item'], ParentType, ContextType, RequireFields<MutationUpdateItemArgs, 'id' | 'input'>>;
+  updateLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationUpdateLeaveApplicationArgs, 'id' | 'input'>>;
+  updateLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationUpdateLeaveEnrollmentArgs, 'id' | 'input'>>;
+  updateLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationUpdateLeaveReinstatementArgs, 'id' | 'input'>>;
+  updateLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationUpdateLeaveTypeArgs, 'id' | 'input'>>;
   updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
@@ -4310,7 +4704,6 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   chartOfAccounts: Resolver<Array<ResolversTypes['ChartOfAccounts']>, ParentType, ContextType, RequireFields<QueryChartOfAccountsArgs, 'organizationId'>>;
   client: Resolver<Maybe<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientArgs, 'id'>>;
   clients: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, QueryClientsArgs>;
-  clients: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType>;
   clientsByOrganization: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientsByOrganizationArgs, 'organizationId'>>;
   clientsByStatus: Resolver<Array<ResolversTypes['Client']>, ParentType, ContextType, RequireFields<QueryClientsByStatusArgs, 'organizationId' | 'status'>>;
   customer: Resolver<Maybe<ResolversTypes['Customer']>, ParentType, ContextType, RequireFields<QueryCustomerArgs, 'id'>>;
@@ -4343,6 +4736,14 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   ipinspections: Resolver<Array<ResolversTypes['IPInspection']>, ParentType, ContextType, RequireFields<QueryIpinspectionsArgs, 'organizationId'>>;
   item: Resolver<Maybe<ResolversTypes['Item']>, ParentType, ContextType, RequireFields<QueryItemArgs, 'id'>>;
   items: Resolver<Array<ResolversTypes['Item']>, ParentType, ContextType, RequireFields<QueryItemsArgs, 'organizationId'>>;
+  leaveApplication: Resolver<Maybe<ResolversTypes['LeaveApplication']>, ParentType, ContextType, RequireFields<QueryLeaveApplicationArgs, 'id'>>;
+  leaveApplications: Resolver<Array<ResolversTypes['LeaveApplication']>, ParentType, ContextType, RequireFields<QueryLeaveApplicationsArgs, 'organizationId'>>;
+  leaveEnrollment: Resolver<Maybe<ResolversTypes['LeaveEnrollment']>, ParentType, ContextType, RequireFields<QueryLeaveEnrollmentArgs, 'id'>>;
+  leaveEnrollments: Resolver<Array<ResolversTypes['LeaveEnrollment']>, ParentType, ContextType, RequireFields<QueryLeaveEnrollmentsArgs, 'organizationId'>>;
+  leaveReinstatement: Resolver<Maybe<ResolversTypes['LeaveReinstatement']>, ParentType, ContextType, RequireFields<QueryLeaveReinstatementArgs, 'id'>>;
+  leaveReinstatements: Resolver<Array<ResolversTypes['LeaveReinstatement']>, ParentType, ContextType, RequireFields<QueryLeaveReinstatementsArgs, 'organizationId'>>;
+  leaveType: Resolver<Maybe<ResolversTypes['LeaveType']>, ParentType, ContextType, RequireFields<QueryLeaveTypeArgs, 'id'>>;
+  leaveTypes: Resolver<Array<ResolversTypes['LeaveType']>, ParentType, ContextType, RequireFields<QueryLeaveTypesArgs, 'organizationId'>>;
   lowStockItems: Resolver<Array<ResolversTypes['InventoryControl']>, ParentType, ContextType, RequireFields<QueryLowStockItemsArgs, 'organizationId'>>;
   materialreceipt: Resolver<Maybe<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptArgs, 'id'>>;
   materialreceipts: Resolver<Array<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptsArgs, 'organizationId'>>;
@@ -4364,8 +4765,6 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   purchaseorders: Resolver<Array<ResolversTypes['PurchaseOrder']>, ParentType, ContextType, RequireFields<QueryPurchaseordersArgs, 'organizationId'>>;
   quotation: Resolver<Maybe<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationArgs, 'id'>>;
   quotations: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, QueryQuotationsArgs>;
-  quotationsByClient: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByClientArgs, 'clientId'>>;
-  quotations: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType>;
   quotationsByClient: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByClientArgs, 'clientId'>>;
   quotationsByOrganization: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByOrganizationArgs, 'organizationId'>>;
   quotationsByStatus: Resolver<Array<ResolversTypes['Quotation']>, ParentType, ContextType, RequireFields<QueryQuotationsByStatusArgs, 'organizationId' | 'status'>>;
@@ -4419,9 +4818,6 @@ export type QuotationResolvers<ContextType = GraphQLContext, ParentType extends 
   clientId: Resolver<ResolversTypes['ClientRef'], ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  discountAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  clientId: Resolver<ResolversTypes['Client'], ParentType, ContextType>;
-  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   discountAmount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lineItems: Resolver<Array<ResolversTypes['QuotationLineItem']>, ParentType, ContextType>;
@@ -4429,12 +4825,8 @@ export type QuotationResolvers<ContextType = GraphQLContext, ParentType extends 
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   quotationDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   quotationNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subject: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subtotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  taxAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   sentAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  sentBy: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  sentBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subject: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4611,6 +5003,12 @@ export type SalesReturnResolvers<ContextType = GraphQLContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SendQuotationResultResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SendQuotationResult'] = ResolversParentTypes['SendQuotationResult']> = ResolversObject<{
+  emailSent: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  quotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type StockAdjustmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['StockAdjustment'] = ResolversParentTypes['StockAdjustment']> = ResolversObject<{
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4766,6 +5164,10 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   InventoryControl: InventoryControlResolvers<ContextType>;
   InventoryReturn: InventoryReturnResolvers<ContextType>;
   Item: ItemResolvers<ContextType>;
+  LeaveApplication: LeaveApplicationResolvers<ContextType>;
+  LeaveEnrollment: LeaveEnrollmentResolvers<ContextType>;
+  LeaveReinstatement: LeaveReinstatementResolvers<ContextType>;
+  LeaveType: LeaveTypeResolvers<ContextType>;
   MaterialReceipt: MaterialReceiptResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;
   Organization: OrganizationResolvers<ContextType>;
@@ -4788,6 +5190,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   SalesOrder: SalesOrderResolvers<ContextType>;
   SalesQuotation: SalesQuotationResolvers<ContextType>;
   SalesReturn: SalesReturnResolvers<ContextType>;
+  SendQuotationResult: SendQuotationResultResolvers<ContextType>;
   StockAdjustment: StockAdjustmentResolvers<ContextType>;
   StockMovement: StockMovementResolvers<ContextType>;
   StockTransfer: StockTransferResolvers<ContextType>;
