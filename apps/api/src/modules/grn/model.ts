@@ -1,22 +1,28 @@
-import mongoose, { Schema } from 'mongoose';
-import { IBaseEntity } from '../base/mongo-repository';
+import { model, Schema } from 'mongoose'
 
-export interface IGRN extends IBaseEntity {
-  docNumber: string;
-  docDate: Date;
-  status: string;
-  organizationId: string;
-  createdBy: string;
-  isDeleted: boolean;
-}
+const lineItemSchema = new Schema({
+  itemDescription: { type: String, required: true },
+  orderedQty: { type: Number, default: 0 },
+  receivedQty: { type: Number, required: true },
+  unitPrice: { type: Number, default: 0 },
+}, { _id: false })
 
-const GRNSchema = new Schema<IGRN>({
-  docNumber: { type: String, required: true, unique: true },
-  docDate: { type: Date, required: true },
-  status: { type: String, default: 'DRAFT' },
-  organizationId: { type: String, required: true, index: true },
-  createdBy: { type: String, required: true },
-  isDeleted: { type: Boolean, default: false },
-}, { timestamps: true });
+const grnSchema = new Schema({
+  grnNumber: { type: String, required: true, unique: true },
+  purchaseOrderId: { type: Schema.Types.ObjectId, ref: 'PurchaseOrder' },
+  vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor' },
+  vendorName: { type: String },
+  receivedDate: { type: Date, required: true },
+  lineItems: [lineItemSchema],
+  notes: { type: String },
+  status: { type: String, enum: ['draft', 'confirmed'], default: 'confirmed' },
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  deletedAt: { type: Date },
+}, { timestamps: true })
 
-export const GRN = mongoose.model<IGRN>('GRN', GRNSchema);
+grnSchema.index({ purchaseOrderId: 1 })
+grnSchema.index({ organizationId: 1 })
+grnSchema.index({ receivedDate: 1 })
+
+export const GRN = model('GRN', grnSchema)

@@ -1,6 +1,6 @@
 type Item {
 	id: ID!
-	seqNo: String!
+	seqNo: String
 	name: String!
 	description: String
 	category: String

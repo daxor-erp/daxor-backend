@@ -1,36 +1,51 @@
-import { StockTransferRepository } from './repository';
-import { IStockTransfer } from './model';
+import { StockTransferRepository } from './repository'
 
 export class StockTransferService {
-  private repository: StockTransferRepository;
+  private repository: StockTransferRepository
 
   constructor() {
-    this.repository = new StockTransferRepository();
+    this.repository = new StockTransferRepository()
   }
 
-  async create(data: Partial<IStockTransfer>, userId: string) {
-    const docNumber = await this.generateDocNumber(data.organizationId!);
-    return this.repository.create({ ...data, docNumber, createdBy: userId } as IStockTransfer);
+  private async generateNumber(organizationId: any): Promise<string> {
+    const count = await this.repository.count({ organizationId })
+    const orgStr = `${organizationId}`
+    return `ST-${orgStr.slice(-6).toUpperCase()}-${String(count + 1).padStart(5, '0')}`
   }
 
-  async getAll(organizationId: string) {
-    return this.repository.findByOrganization(organizationId);
+  async create(data: any, userId: string) {
+    const transferNumber = await this.generateNumber(data.organizationId)
+    return this.repository.create({ ...data, transferNumber, createdBy: userId })
+  }
+
+  async getAll(organizationId: string, page = 1, limit = 100) {
+    const result = await this.repository.findByOrg(organizationId, page, limit)
+    return result.data
   }
 
   async getById(id: string) {
-    return this.repository.findById(id);
+    return this.repository.findById(id)
   }
 
-  async update(id: string, data: Partial<IStockTransfer>) {
-    return this.repository.update(id, data);
+  async update(id: string, data: any, userId: string) {
+    return this.repository.update(id, { ...data, updatedBy: userId })
+  }
+
+  async confirm(id: string, userId: string) {
+    const doc = await this.repository.findById(id)
+    if (!doc) throw new Error('Stock transfer not found')
+    if (doc.status !== 'draft') throw new Error('Only draft transfers can be confirmed')
+    return this.repository.update(id, { status: 'confirmed', updatedBy: userId })
+  }
+
+  async cancel(id: string, userId: string) {
+    const doc = await this.repository.findById(id)
+    if (!doc) throw new Error('Stock transfer not found')
+    if (doc.status === 'cancelled') throw new Error('Already cancelled')
+    return this.repository.update(id, { status: 'cancelled', updatedBy: userId })
   }
 
   async delete(id: string) {
-    return this.repository.softDelete(id);
-  }
-
-  private async generateDocNumber(organizationId: string): Promise<string> {
-    const count = await this.repository.count({ organizationId } as any);
-    return `STOCK_TRANSFER-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return this.repository.update(id, { deletedAt: new Date() })
   }
 }

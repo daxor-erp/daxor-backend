@@ -225,6 +225,18 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
   }
 
   /**
+   * Find with pagination (alias accepting options object — used by legacy services)
+   */
+  async findWithPagination(
+    filters: FilterQuery<T> = {},
+    options: { page?: number; limit?: number; sortBy?: string; sortOrder?: string } = {}
+  ): Promise<{ data: T[]; total: number; page: number; pages: number }> {
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options
+    const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 }
+    return this.findPaginated(filters, page, limit, sort)
+  }
+
+  /**
    * Bulk write operations
    */
   async bulkWrite(operations: any[]): Promise<any> {
@@ -236,3 +248,4 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
     }
   }
 }
+

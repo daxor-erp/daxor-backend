@@ -10,7 +10,7 @@ export class SalesEnquiryService {
 	private async generateEnquiryNumber(organizationId: string): Promise<string> {
 		const count = await this.repository.count({ organizationId, deletedAt: null })
 		const seqNumber = (count + 1).toString().padStart(4, '0')
-		return `SE-${organizationId.slice(-6).toUpperCase()}-${seqNumber}`
+		return `SE-${`${organizationId}`.slice(-6).toUpperCase()}-${seqNumber}`
 	}
 
 	async createSalesEnquiry(data: any, userId: string, organizationId: string): Promise<any> {

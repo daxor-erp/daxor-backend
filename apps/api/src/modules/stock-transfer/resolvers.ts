@@ -1,26 +1,31 @@
-import { StockTransferService } from './service';
+import { StockTransferService } from './service'
+import type { GraphQLContext } from '~/types/graphql.context'
 
-const service = new StockTransferService();
+const service = new StockTransferService()
 
-export const stocktransferResolvers = {
+export const resolvers = {
   Query: {
-    stocktransfer: async (_: any, { id }: { id: string }) => {
-      return service.getById(id);
-    },
-    stocktransfers: async (_: any, { organizationId }: any) => {
-      return service.getAll(organizationId);
-    },
+    stocktransfer: (_: unknown, { id }: any) => service.getById(id),
+    stocktransfers: (_: unknown, { organizationId, page, limit }: any) =>
+      service.getAll(organizationId, page, limit),
   },
   Mutation: {
-    createStockTransfer: async (_: any, { input }: any, context: any) => {
-      return service.create(input, context.user?.id || 'system');
-    },
-    updateStockTransfer: async (_: any, { id, input }: any) => {
-      return service.update(id, input);
-    },
-    deleteStockTransfer: async (_: any, { id }: { id: string }) => {
-      await service.delete(id);
-      return true;
+    createStockTransfer: (_: unknown, { input }: any, ctx: GraphQLContext) =>
+      service.create(input, ctx.user?.id ?? ''),
+    updateStockTransfer: (_: unknown, { id, input }: any, ctx: GraphQLContext) =>
+      service.update(id, input, ctx.user?.id ?? ''),
+    confirmStockTransfer: (_: unknown, { id }: any, ctx: GraphQLContext) =>
+      service.confirm(id, ctx.user?.id ?? ''),
+    cancelStockTransfer: (_: unknown, { id }: any, ctx: GraphQLContext) =>
+      service.cancel(id, ctx.user?.id ?? ''),
+    deleteStockTransfer: async (_: unknown, { id }: any) => {
+      await service.delete(id)
+      return true
     },
   },
-};
+  StockTransfer: {
+    id: (p: any) => p._id || p.id,
+    transferDate: (p: any) => (p.transferDate ? new Date(p.transferDate).toISOString() : null),
+    createdAt: (p: any) => (p.createdAt ? new Date(p.createdAt).toISOString() : null),
+  },
+}

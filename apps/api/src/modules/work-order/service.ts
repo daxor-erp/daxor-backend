@@ -31,6 +31,6 @@ export class WorkOrderService {
 
   private async generateDocNumber(organizationId: string): Promise<string> {
     const count = await this.repository.count({ organizationId } as any);
-    return `WORK_ORDER-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `WORK_ORDER-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }

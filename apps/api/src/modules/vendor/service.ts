@@ -1,25 +1,39 @@
 import { VendorRepository } from './repository'
+import { getNextSequence } from '../counter'
+import { formatEntitySequence } from '../../lib/sequence'
 
 export class VendorService {
-	private repository: VendorRepository
+  private repository: VendorRepository
 
-	constructor() {
-		this.repository = new VendorRepository()
-	}
+  constructor() {
+    this.repository = new VendorRepository()
+  }
 
-	async create(data: any): Promise<any> {
-		return this.repository.create(data)
-	}
+  async createVendor(data: any, userId: string) {
+    const seq = await getNextSequence({ type: 'Vendor', organizationId: data.organizationId })
+    const seqNo = formatEntitySequence('V', data.organizationId.toString(), seq)
+    return this.repository.create({ ...data, seqNo, createdBy: userId, updatedBy: userId })
+  }
 
-	async findById(id: string): Promise<any> {
-		return this.repository.findById(id)
-	}
+  async getVendorById(id: string) {
+    return this.repository.findById(id)
+  }
 
-	async update(id: string, data: any): Promise<any> {
-		return this.repository.update(id, data)
-	}
+  async getAllVendors(filter: any = {}, page = 1, limit = 100) {
+    const result = await this.repository.findPaginated(
+      { ...filter, deletedAt: null },
+      page,
+      limit,
+      { createdAt: -1 }
+    )
+    return result.data
+  }
 
-	async findWithPagination(filter: any, options: any): Promise<any> {
-		return this.repository.findWithPagination(filter, options)
-	}
+  async updateVendor(id: string, data: any, userId: string) {
+    return this.repository.update(id, { ...data, updatedBy: userId })
+  }
+
+  async deleteVendor(id: string, userId: string) {
+    return this.repository.update(id, { deletedAt: new Date(), deletedBy: userId })
+  }
 }

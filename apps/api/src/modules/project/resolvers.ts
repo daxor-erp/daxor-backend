@@ -17,10 +17,16 @@ export const resolvers = {
 	},
 	Mutation: {
 		createProject: async (_: unknown, { input }: any, ctx: GraphQLContext) => 
-			service.create({ ...input, createdBy: ctx.user?.id }),
+			service.create(input, ctx.user?.id),
 		updateProject: async (_: unknown, { id, input }: any, ctx: GraphQLContext) => 
-			service.update(id, { ...input, updatedBy: ctx.user?.id }),
+			service.update(id, input, ctx.user?.id),
 		deleteProject: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => 
 			service.update(id, { deletedAt: new Date(), deletedBy: ctx.user?.id }),
+	},
+	Project: {
+		id: (p: any) => p._id || p.id,
+		startDate: (p: any) => p.startDate ? new Date(p.startDate).toISOString().split('T')[0] : null,
+		endDate: (p: any) => p.endDate ? new Date(p.endDate).toISOString().split('T')[0] : null,
+		createdAt: (p: any) => p.createdAt ? new Date(p.createdAt).toISOString() : null,
 	},
 }

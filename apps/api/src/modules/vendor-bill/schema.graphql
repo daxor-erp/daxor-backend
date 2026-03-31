@@ -1,0 +1,81 @@
+type VendorBillLineItem {
+  description: String!
+  quantity: Float!
+  unitPrice: Float!
+  discount: Float
+  tax: Float
+  total: Float!
+}
+
+input VendorBillLineItemInput {
+  description: String!
+  quantity: Float!
+  unitPrice: Float!
+  discount: Float
+  tax: Float
+  total: Float!
+}
+
+type VendorBill {
+  id: ID!
+  billNumber: String!
+  vendorId: ID!
+  vendor: Vendor
+  purchaseOrderId: ID
+  billDate: String!
+  dueDate: String!
+  lineItems: [VendorBillLineItem!]!
+  subtotal: Float!
+  discountAmount: Float
+  taxAmount: Float
+  totalAmount: Float!
+  paidAmount: Float!
+  outstandingAmount: Float!
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateVendorBillInput {
+  vendorId: ID!
+  purchaseOrderId: ID
+  billDate: String!
+  dueDate: String!
+  lineItems: [VendorBillLineItemInput!]!
+  subtotal: Float!
+  discountAmount: Float
+  taxAmount: Float
+  totalAmount: Float!
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateVendorBillInput {
+  vendorId: ID
+  purchaseOrderId: ID
+  billDate: String
+  dueDate: String
+  lineItems: [VendorBillLineItemInput!]
+  subtotal: Float
+  discountAmount: Float
+  taxAmount: Float
+  totalAmount: Float
+  notes: String
+  status: String
+}
+
+extend type Query {
+  vendorBill(id: ID!): VendorBill
+  vendorBills(organizationId: ID!, vendorId: ID, status: String, page: Int, limit: Int): [VendorBill!]!
+  vendorBillsByVendor(vendorId: ID!): [VendorBill!]!
+  outstandingVendorBills(organizationId: ID!): [VendorBill!]!
+}
+
+extend type Mutation {
+  createVendorBill(input: CreateVendorBillInput!): VendorBill!
+  updateVendorBill(id: ID!, input: UpdateVendorBillInput!): VendorBill!
+  approveVendorBill(id: ID!): VendorBill!
+  deleteVendorBill(id: ID!): Boolean!
+}

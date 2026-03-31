@@ -45,6 +45,6 @@ export class CashBankService {
 
   private async generateTransactionNumber(organizationId: string): Promise<string> {
     const count = await this.cbRepository.count({ organizationId } as any);
-    return `CB-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `CB-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }

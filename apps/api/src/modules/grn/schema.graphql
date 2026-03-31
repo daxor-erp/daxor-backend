@@ -1,25 +1,47 @@
-type GRN {
-  id: ID!
-  docNumber: String!
-  docDate: String!
-  status: String!
-  organizationId: String!
-  createdAt: String!
+type GRNLineItem {
+  itemDescription: String!
+  orderedQty: Float!
+  receivedQty: Float!
+  unitPrice: Float
 }
 
-input GRNInput {
-  docDate: String!
-  status: String
-  organizationId: String!
+type GRN {
+  id: ID!
+  grnNumber: String!
+  purchaseOrderId: ID
+  vendorId: ID
+  vendorName: String
+  receivedDate: String!
+  lineItems: [GRNLineItem!]!
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String
+}
+
+input GRNLineItemInput {
+  itemDescription: String!
+  orderedQty: Float!
+  receivedQty: Float!
+  unitPrice: Float
+}
+
+input CreateGRNInput {
+  purchaseOrderId: ID
+  vendorId: ID
+  receivedDate: String!
+  lineItems: [GRNLineItemInput!]!
+  notes: String
+  organizationId: ID!
 }
 
 extend type Query {
   grn(id: ID!): GRN
-  grns(organizationId: String!, page: Int, limit: Int): [GRN!]!
+  grns(organizationId: ID!, page: Int, limit: Int): [GRN!]!
+  grnsByPO(purchaseOrderId: ID!): [GRN!]!
 }
 
 extend type Mutation {
-  createGRN(input: GRNInput!): GRN!
-  updateGRN(id: ID!, input: GRNInput!): GRN!
+  createGRN(input: CreateGRNInput!): GRN!
   deleteGRN(id: ID!): Boolean!
 }

@@ -1,27 +1,31 @@
 import { ItemRepository } from './repository'
+import { getNextSequence } from '../counter'
+import { formatEntitySequence } from '../../lib/sequence'
 
 export class ItemService {
-	private repository: ItemRepository
+  private repository: ItemRepository
 
-	constructor() {
-		this.repository = new ItemRepository()
-	}
+  constructor() {
+    this.repository = new ItemRepository()
+  }
 
-	async create(data: any): Promise<any> {
-		return this.repository.create(data)
-	}
+  async create(data: any): Promise<any> {
+    const seq = await getNextSequence({ type: 'Item', organizationId: data.organizationId })
+    const seqNo = formatEntitySequence('I', data.organizationId.toString(), seq)
+    return this.repository.create({ ...data, seqNo })
+  }
 
-	async findById(id: string): Promise<any> {
-		return this.repository.findById(id)
-	}
+  async findById(id: string): Promise<any> {
+    return this.repository.findById(id)
+  }
 
-	async update(id: string, data: any): Promise<any> {
-		return this.repository.update(id, data)
-	}
+  async update(id: string, data: any): Promise<any> {
+    return this.repository.update(id, data)
+  }
 
-	async findWithPagination(filter: any, options: any): Promise<any> {
-		const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options
-		const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 }
-		return this.repository.findPaginated(filter, page, limit, sort)
-	}
+  async findWithPagination(filter: any, options: any): Promise<any> {
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options
+    const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 }
+    return this.repository.findPaginated(filter, page, limit, sort)
+  }
 }

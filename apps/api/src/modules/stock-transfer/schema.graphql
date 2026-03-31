@@ -1,25 +1,63 @@
-type StockTransfer {
-  id: ID!
-  docNumber: String!
-  docDate: String!
-  status: String!
-  organizationId: String!
-  createdAt: String!
+type STLineItem {
+  itemId: ID
+  itemDescription: String!
+  qty: Float!
+  unit: String
 }
 
-input StockTransferInput {
-  docDate: String!
-  status: String
-  organizationId: String!
+type StockTransfer {
+  id: ID!
+  transferNumber: String!
+  transferDate: String!
+  fromWarehouseId: ID
+  fromWarehouseName: String
+  toWarehouseId: ID
+  toWarehouseName: String
+  lineItems: [STLineItem!]!
+  status: String!
+  notes: String
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input STLineItemInput {
+  itemId: ID
+  itemDescription: String!
+  qty: Float!
+  unit: String
+}
+
+input CreateStockTransferInput {
+  transferDate: String!
+  fromWarehouseId: ID
+  fromWarehouseName: String
+  toWarehouseId: ID
+  toWarehouseName: String
+  lineItems: [STLineItemInput!]!
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateStockTransferInput {
+  transferDate: String
+  fromWarehouseId: ID
+  fromWarehouseName: String
+  toWarehouseId: ID
+  toWarehouseName: String
+  lineItems: [STLineItemInput!]
+  notes: String
 }
 
 extend type Query {
   stocktransfer(id: ID!): StockTransfer
-  stocktransfers(organizationId: String!, page: Int, limit: Int): [StockTransfer!]!
+  stocktransfers(organizationId: ID!, page: Int, limit: Int): [StockTransfer!]!
 }
 
 extend type Mutation {
-  createStockTransfer(input: StockTransferInput!): StockTransfer!
-  updateStockTransfer(id: ID!, input: StockTransferInput!): StockTransfer!
+  createStockTransfer(input: CreateStockTransferInput!): StockTransfer!
+  updateStockTransfer(id: ID!, input: UpdateStockTransferInput!): StockTransfer!
+  confirmStockTransfer(id: ID!): StockTransfer!
+  cancelStockTransfer(id: ID!): StockTransfer!
   deleteStockTransfer(id: ID!): Boolean!
 }

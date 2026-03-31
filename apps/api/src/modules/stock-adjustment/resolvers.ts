@@ -1,26 +1,31 @@
-import { StockAdjustmentService } from './service';
+import { StockAdjustmentService } from './service'
+import type { GraphQLContext } from '~/types/graphql.context'
 
-const service = new StockAdjustmentService();
+const service = new StockAdjustmentService()
 
-export const stockadjustmentResolvers = {
+export const resolvers = {
   Query: {
-    stockadjustment: async (_: any, { id }: { id: string }) => {
-      return service.getById(id);
-    },
-    stockadjustments: async (_: any, { organizationId }: any) => {
-      return service.getAll(organizationId);
-    },
+    stockadjustment: (_: unknown, { id }: any) => service.getById(id),
+    stockadjustments: (_: unknown, { organizationId, page, limit }: any) =>
+      service.getAll(organizationId, page, limit),
   },
   Mutation: {
-    createStockAdjustment: async (_: any, { input }: any, context: any) => {
-      return service.create(input, context.user?.id || 'system');
-    },
-    updateStockAdjustment: async (_: any, { id, input }: any) => {
-      return service.update(id, input);
-    },
-    deleteStockAdjustment: async (_: any, { id }: { id: string }) => {
-      await service.delete(id);
-      return true;
+    createStockAdjustment: (_: unknown, { input }: any, ctx: GraphQLContext) =>
+      service.create(input, ctx.user?.id ?? ''),
+    updateStockAdjustment: (_: unknown, { id, input }: any, ctx: GraphQLContext) =>
+      service.update(id, input, ctx.user?.id ?? ''),
+    confirmStockAdjustment: (_: unknown, { id }: any, ctx: GraphQLContext) =>
+      service.confirm(id, ctx.user?.id ?? ''),
+    cancelStockAdjustment: (_: unknown, { id }: any, ctx: GraphQLContext) =>
+      service.cancel(id, ctx.user?.id ?? ''),
+    deleteStockAdjustment: async (_: unknown, { id }: any) => {
+      await service.delete(id)
+      return true
     },
   },
-};
+  StockAdjustment: {
+    id: (p: any) => p._id || p.id,
+    adjDate: (p: any) => (p.adjDate ? new Date(p.adjDate).toISOString() : null),
+    createdAt: (p: any) => (p.createdAt ? new Date(p.createdAt).toISOString() : null),
+  },
+}

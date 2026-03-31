@@ -31,6 +31,6 @@ export class ExciseInvoiceService {
 
   private async generateDocNumber(organizationId: string): Promise<string> {
     const count = await this.repository.count({ organizationId } as any);
-    return `EXCISE_INVOICE-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `EXCISE_INVOICE-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }
