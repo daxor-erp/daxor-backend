@@ -1,0 +1,44 @@
+type VendorCredit {
+  id: ID!
+  creditNumber: String!
+  vendorId: ID!
+  vendor: Vendor
+  creditDate: String!
+  totalAmount: Float!
+  appliedAmount: Float!
+  remainingAmount: Float!
+  reason: String
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateVendorCreditInput {
+  vendorId: ID!
+  creditDate: String!
+  totalAmount: Float!
+  reason: String
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateVendorCreditInput {
+  creditDate: String
+  reason: String
+  notes: String
+  status: String
+}
+
+extend type Query {
+  vendorCredit(id: ID!): VendorCredit
+  vendorCredits(organizationId: ID!, vendorId: ID, page: Int, limit: Int): [VendorCredit!]!
+  availableVendorCredits(organizationId: ID!, vendorId: ID!): [VendorCredit!]!
+}
+
+extend type Mutation {
+  createVendorCredit(input: CreateVendorCreditInput!): VendorCredit!
+  updateVendorCredit(id: ID!, input: UpdateVendorCreditInput!): VendorCredit!
+  deleteVendorCredit(id: ID!): Boolean!
+}

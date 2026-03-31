@@ -1,0 +1,44 @@
+type VendorPrepayment {
+  id: ID!
+  prepaymentNumber: String!
+  vendorId: ID!
+  vendor: Vendor
+  prepaymentDate: String!
+  amount: Float!
+  appliedAmount: Float!
+  remainingAmount: Float!
+  paymentMethod: String!
+  referenceNumber: String
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateVendorPrepaymentInput {
+  vendorId: ID!
+  prepaymentDate: String!
+  amount: Float!
+  paymentMethod: String!
+  referenceNumber: String
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateVendorPrepaymentInput {
+  notes: String
+  status: String
+}
+
+extend type Query {
+  vendorPrepayment(id: ID!): VendorPrepayment
+  vendorPrepayments(organizationId: ID!, vendorId: ID, page: Int, limit: Int): [VendorPrepayment!]!
+  availableVendorPrepayments(organizationId: ID!, vendorId: ID!): [VendorPrepayment!]!
+}
+
+extend type Mutation {
+  createVendorPrepayment(input: CreateVendorPrepaymentInput!): VendorPrepayment!
+  updateVendorPrepayment(id: ID!, input: UpdateVendorPrepaymentInput!): VendorPrepayment!
+  deleteVendorPrepayment(id: ID!): Boolean!
+}

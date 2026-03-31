@@ -31,6 +31,6 @@ export class GoodsReceiptService {
 
   private async generateDocNumber(organizationId: string): Promise<string> {
     const count = await this.repository.count({ organizationId } as any);
-    return `GOODS_RECEIPT-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `GOODS_RECEIPT-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }

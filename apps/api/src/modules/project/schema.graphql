@@ -1,13 +1,13 @@
 type Project {
 	id: ID!
-	seqNo: String!
+	seqNo: String
 	name: String!
 	description: String
 	startDate: String
 	endDate: String
 	status: String!
 	organizationId: ID!
-	createdAt: String!
+	createdAt: String
 }
 
 input CreateProjectInput {

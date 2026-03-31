@@ -1,4 +1,6 @@
 import { ClientRepository } from './repository'
+import { getNextSequence } from '../counter'
+import { formatEntitySequence } from '../../lib/sequence'
 
 export class ClientService {
   private repository: ClientRepository
@@ -8,7 +10,9 @@ export class ClientService {
   }
 
   async createClient(data: any, userId: string) {
-    return this.repository.create({ ...data, createdBy: userId, updatedBy: userId })
+    const seq = await getNextSequence({ type: 'Client', organizationId: data.organizationId })
+    const seqNo = formatEntitySequence('C', data.organizationId.toString(), seq)
+    return this.repository.create({ ...data, seqNo, createdBy: userId, updatedBy: userId })
   }
 
   async getClientById(id: string) {

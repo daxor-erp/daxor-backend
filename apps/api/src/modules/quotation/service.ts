@@ -14,7 +14,7 @@ export class QuotationService {
   private async generateQuotationNumber(organizationId: string): Promise<string> {
     const count = await this.repository.count({ organizationId, deletedAt: null })
     const seq = (count + 1).toString().padStart(4, '0')
-    return `QT-${organizationId.slice(-6).toUpperCase()}-${seq}`
+    return `QT-${`${organizationId}`.slice(-6).toUpperCase()}-${seq}`
   }
 
   async createQuotation(data: any, userId: string): Promise<any> {

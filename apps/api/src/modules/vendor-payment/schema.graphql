@@ -1,25 +1,57 @@
-type VendorPayment {
-  id: ID!
-  docNumber: String!
-  docDate: String!
-  status: String!
-  organizationId: String!
-  createdAt: String!
+type VendorPaymentAllocation {
+  billId: ID!
+  billNumber: String
+  amount: Float!
 }
 
-input VendorPaymentInput {
-  docDate: String!
-  status: String
-  organizationId: String!
+input VendorPaymentAllocationInput {
+  billId: ID!
+  amount: Float!
+}
+
+type VendorPayment {
+  id: ID!
+  paymentNumber: String!
+  vendorId: ID!
+  vendor: Vendor
+  paymentDate: String!
+  paymentMethod: String!
+  referenceNumber: String
+  totalAmount: Float!
+  allocations: [VendorPaymentAllocation!]!
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input CreateVendorPaymentInput {
+  vendorId: ID!
+  paymentDate: String!
+  paymentMethod: String!
+  referenceNumber: String
+  totalAmount: Float!
+  allocations: [VendorPaymentAllocationInput!]!
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateVendorPaymentInput {
+  paymentDate: String
+  paymentMethod: String
+  referenceNumber: String
+  notes: String
 }
 
 extend type Query {
-  vendorpayment(id: ID!): VendorPayment
-  vendorpayments(organizationId: String!, page: Int, limit: Int): [VendorPayment!]!
+  vendorPayment(id: ID!): VendorPayment
+  vendorPayments(organizationId: ID!, vendorId: ID, page: Int, limit: Int): [VendorPayment!]!
+  vendorPaymentsByVendor(vendorId: ID!): [VendorPayment!]!
 }
 
 extend type Mutation {
-  createVendorPayment(input: VendorPaymentInput!): VendorPayment!
-  updateVendorPayment(id: ID!, input: VendorPaymentInput!): VendorPayment!
+  createVendorPayment(input: CreateVendorPaymentInput!): VendorPayment!
+  updateVendorPayment(id: ID!, input: UpdateVendorPaymentInput!): VendorPayment!
   deleteVendorPayment(id: ID!): Boolean!
 }

@@ -1,22 +1,39 @@
-import mongoose, { Schema } from 'mongoose';
-import { IBaseEntity } from '../base/mongo-repository';
+import { model, Schema } from 'mongoose'
 
-export interface IStockTransfer extends IBaseEntity {
-  docNumber: string;
-  docDate: Date;
-  status: string;
-  organizationId: string;
-  createdBy: string;
-  isDeleted: boolean;
-}
+const stLineSchema = new Schema(
+  {
+    itemId: { type: Schema.Types.ObjectId, ref: 'Item' },
+    itemDescription: { type: String, required: true },
+    qty: { type: Number, required: true },
+    unit: { type: String },
+  },
+  { _id: false }
+)
 
-const StockTransferSchema = new Schema<IStockTransfer>({
-  docNumber: { type: String, required: true, unique: true },
-  docDate: { type: Date, required: true },
-  status: { type: String, default: 'DRAFT' },
-  organizationId: { type: String, required: true, index: true },
-  createdBy: { type: String, required: true },
-  isDeleted: { type: Boolean, default: false },
-}, { timestamps: true });
+const stockTransferSchema = new Schema(
+  {
+    transferNumber: { type: String, required: true, unique: true },
+    transferDate: { type: Date, required: true },
+    fromWarehouseId: { type: Schema.Types.ObjectId, ref: 'Warehouse' },
+    fromWarehouseName: { type: String },
+    toWarehouseId: { type: Schema.Types.ObjectId, ref: 'Warehouse' },
+    toWarehouseName: { type: String },
+    lineItems: [stLineSchema],
+    status: {
+      type: String,
+      enum: ['draft', 'confirmed', 'cancelled'],
+      default: 'draft',
+    },
+    notes: { type: String },
+    organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    deletedAt: { type: Date },
+  },
+  { timestamps: true }
+)
 
-export const StockTransfer = mongoose.model<IStockTransfer>('StockTransfer', StockTransferSchema);
+stockTransferSchema.index({ organizationId: 1 })
+stockTransferSchema.index({ deletedAt: 1 })
+
+export const StockTransfer = model('StockTransfer', stockTransferSchema)

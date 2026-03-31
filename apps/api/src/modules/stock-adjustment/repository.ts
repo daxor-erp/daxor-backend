@@ -1,12 +1,12 @@
-import { MongoBaseRepository } from '../base/mongo-repository';
-import { StockAdjustment, IStockAdjustment } from './model';
+import { MongoBaseRepository } from '../base/mongo-repository'
+import { StockAdjustment } from './model'
 
-export class StockAdjustmentRepository extends MongoBaseRepository<IStockAdjustment> {
+export class StockAdjustmentRepository extends MongoBaseRepository<any> {
   constructor() {
-    super(StockAdjustment);
+    super(StockAdjustment as any)
   }
 
-  async findByOrganization(organizationId: string) {
-    return this.findAll({ organizationId, isDeleted: false } as any);
+  async findByOrg(organizationId: string, page = 1, limit = 100) {
+    return this.findPaginated({ organizationId, deletedAt: null }, page, limit, { createdAt: -1 })
   }
 }

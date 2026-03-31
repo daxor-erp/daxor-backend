@@ -55,6 +55,6 @@ export class GeneralLedgerService {
 
   private async generateTransactionNumber(organizationId: string): Promise<string> {
     const count = await this.glRepository.count({ organizationId } as any);
-    return `GL-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `GL-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }

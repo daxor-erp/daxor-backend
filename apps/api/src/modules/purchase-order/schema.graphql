@@ -1,37 +1,75 @@
+type POLineItem {
+  itemId: ID
+  itemDescription: String
+  quantity: Float
+  unitPrice: Float
+  lineTotal: Float
+}
+
+input POLineItemInput {
+  itemId: ID
+  itemDescription: String!
+  quantity: Float!
+  unitPrice: Float!
+  lineTotal: Float!
+}
+
 type PurchaseOrder {
-	id: ID!
-	seqNo: String!
-	vendorId: ID!
-	projectId: ID
-	totalAmount: Float!
-	status: String!
-	orderDate: String!
-	organizationId: ID!
-	createdAt: String!
+  id: ID!
+  seqNo: String
+  vendorId: ID
+  vendor: Vendor
+  vendorName: String
+  projectId: ID
+  projectName: String
+  deliveryDate: String
+  subtotal: Float
+  taxAmount: Float
+  totalAmount: Float
+  status: String!
+  orderDate: String
+  items: [POLineItem!]
+  notes: String
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
 }
 
 input CreatePurchaseOrderInput {
-	vendorId: ID!
-	projectId: ID
-	totalAmount: Float!
-	orderDate: String!
-	organizationId: ID!
+  vendorId: ID
+  projectId: ID
+  deliveryDate: String
+  orderDate: String!
+  items: [POLineItemInput!]!
+  subtotal: Float!
+  taxAmount: Float
+  totalAmount: Float!
+  notes: String
+  organizationId: ID!
 }
 
 input UpdatePurchaseOrderInput {
-	vendorId: ID
-	projectId: ID
-	totalAmount: Float
-	status: String
+  vendorId: ID
+  projectId: ID
+  deliveryDate: String
+  items: [POLineItemInput!]
+  subtotal: Float
+  taxAmount: Float
+  totalAmount: Float
+  status: String
 }
 
 extend type Query {
-	purchaseorder(id: ID!): PurchaseOrder
-	purchaseorders(organizationId: ID!, page: Int, limit: Int, status: String): [PurchaseOrder!]!
+  purchaseorder(id: ID!): PurchaseOrder
+  purchaseorders(organizationId: ID!, page: Int, limit: Int, status: String): [PurchaseOrder!]!
 }
 
 extend type Mutation {
-	createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
-	updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
-	deletePurchaseOrder(id: ID!): PurchaseOrder!
+  createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
+  updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
+  deletePurchaseOrder(id: ID!): Boolean!
+  submitPurchaseOrder(id: ID!): PurchaseOrder!
+  approvePurchaseOrder(id: ID!): PurchaseOrder!
+  receivePurchaseOrder(id: ID!): PurchaseOrder!
+  billPurchaseOrder(id: ID!, billDate: String!, dueDate: String!): VendorBill!
 }

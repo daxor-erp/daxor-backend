@@ -1,36 +1,45 @@
-import { GRNRepository } from './repository';
-import { IGRN } from './model';
+import { GRNRepository } from './repository'
 
 export class GRNService {
-  private repository: GRNRepository;
+  private repository: GRNRepository
+  constructor() { this.repository = new GRNRepository() }
 
-  constructor() {
-    this.repository = new GRNRepository();
+  private async generateGRNNumber(organizationId: string): Promise<string> {
+    const count = await this.repository.count({ organizationId, deletedAt: null })
+    return `GRN-${organizationId.toString().slice(-6).toUpperCase()}-${String(count + 1).padStart(5, '0')}`
   }
 
-  async create(data: Partial<IGRN>, userId: string) {
-    const docNumber = await this.generateDocNumber(data.organizationId!);
-    return this.repository.create({ ...data, docNumber, createdBy: userId } as IGRN);
+  async createGRN(data: any, userId: string) {
+    const grnNumber = await this.generateGRNNumber(data.organizationId)
+    return this.repository.create({ ...data, grnNumber, createdBy: userId })
   }
 
-  async getAll(organizationId: string) {
-    return this.repository.findByOrganization(organizationId);
+  async getGRNs(organizationId: string, page = 1, limit = 100) {
+    const result = await this.repository.findByOrganization(organizationId, page, limit)
+    return result.data
   }
 
-  async getById(id: string) {
-    return this.repository.findById(id);
-  }
+  async getGRNById(id: string) { return this.repository.findById(id) }
 
-  async update(id: string, data: Partial<IGRN>) {
-    return this.repository.update(id, data);
-  }
+  async getGRNsByPO(purchaseOrderId: string) { return this.repository.findByPO(purchaseOrderId) }
 
-  async delete(id: string) {
-    return this.repository.softDelete(id);
-  }
+  async deleteGRN(id: string) { return this.repository.update(id, { deletedAt: new Date() }) }
 
-  private async generateDocNumber(organizationId: string): Promise<string> {
-    const count = await this.repository.count({ organizationId } as any);
-    return `GRN-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+  // Called automatically when a PO is marked as received
+  async createFromPO(po: any, userId: string) {
+    return this.createGRN({
+      purchaseOrderId: po._id || po.id,
+      vendorId: po.vendorId,
+      vendorName: po.vendorName,
+      receivedDate: new Date(),
+      lineItems: (po.items || []).map((item: any) => ({
+        itemDescription: item.itemDescription,
+        orderedQty: item.quantity || 0,
+        receivedQty: item.quantity || 0,
+        unitPrice: item.unitPrice || 0,
+      })),
+      notes: `Auto-created from PO ${po.seqNo}`,
+      organizationId: po.organizationId,
+    }, userId)
   }
 }

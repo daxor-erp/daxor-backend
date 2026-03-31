@@ -31,6 +31,6 @@ export class PayrollManagementService {
 
   private async generateDocNumber(organizationId: string): Promise<string> {
     const count = await this.repository.count({ organizationId } as any);
-    return `PAYROLL_MANAGEMENT-${organizationId.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+    return `PAYROLL_MANAGEMENT-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 }

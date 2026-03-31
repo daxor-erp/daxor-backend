@@ -1,25 +1,67 @@
-type StockAdjustment {
-  id: ID!
-  docNumber: String!
-  docDate: String!
-  status: String!
-  organizationId: String!
-  createdAt: String!
+type SALineItem {
+  itemId: ID
+  itemDescription: String!
+  currentQty: Float!
+  adjustedQty: Float!
+  difference: Float!
+  unit: String
 }
 
-input StockAdjustmentInput {
-  docDate: String!
-  status: String
-  organizationId: String!
+type StockAdjustment {
+  id: ID!
+  adjNumber: String!
+  adjDate: String!
+  warehouseId: ID
+  warehouseName: String
+  adjustmentType: String!
+  lineItems: [SALineItem!]!
+  reason: String
+  status: String!
+  notes: String
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input SALineItemInput {
+  itemId: ID
+  itemDescription: String!
+  currentQty: Float!
+  adjustedQty: Float!
+  difference: Float!
+  unit: String
+}
+
+input CreateStockAdjustmentInput {
+  adjDate: String!
+  warehouseId: ID
+  warehouseName: String
+  adjustmentType: String!
+  lineItems: [SALineItemInput!]!
+  reason: String
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateStockAdjustmentInput {
+  adjDate: String
+  warehouseId: ID
+  warehouseName: String
+  adjustmentType: String
+  lineItems: [SALineItemInput!]
+  reason: String
+  notes: String
 }
 
 extend type Query {
   stockadjustment(id: ID!): StockAdjustment
-  stockadjustments(organizationId: String!, page: Int, limit: Int): [StockAdjustment!]!
+  stockadjustments(organizationId: ID!, page: Int, limit: Int): [StockAdjustment!]!
 }
 
 extend type Mutation {
-  createStockAdjustment(input: StockAdjustmentInput!): StockAdjustment!
-  updateStockAdjustment(id: ID!, input: StockAdjustmentInput!): StockAdjustment!
+  createStockAdjustment(input: CreateStockAdjustmentInput!): StockAdjustment!
+  updateStockAdjustment(id: ID!, input: UpdateStockAdjustmentInput!): StockAdjustment!
+  confirmStockAdjustment(id: ID!): StockAdjustment!
+  cancelStockAdjustment(id: ID!): StockAdjustment!
   deleteStockAdjustment(id: ID!): Boolean!
 }

@@ -1,41 +1,63 @@
 type Vendor {
-	id: ID!
-	seqNo: String!
-	name: String!
-	contactPerson: String
-	email: String
-	phone: String
-	address: String
-	organizationId: ID!
-	status: String!
-	createdAt: String!
+  id: ID!
+  seqNo: String
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
+  organizationId: ID!
+  status: String!
+  createdAt: String!
+  updatedAt: String!
 }
 
 input CreateVendorInput {
-	name: String!
-	contactPerson: String
-	email: String
-	phone: String
-	address: String
-	organizationId: ID!
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
+  organizationId: ID!
 }
 
 input UpdateVendorInput {
-	name: String
-	contactPerson: String
-	email: String
-	phone: String
-	address: String
-	status: String
+  name: String
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
+  status: String
 }
 
 extend type Query {
-	vendor(id: ID!): Vendor
-	vendors(organizationId: ID!, page: Int, limit: Int, search: String): [Vendor!]!
+  vendor(id: ID!): Vendor
+  vendors(organizationId: ID!, page: Int, limit: Int, status: String, search: String): [Vendor!]!
 }
 
 extend type Mutation {
-	createVendor(input: CreateVendorInput!): Vendor!
-	updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
-	deleteVendor(id: ID!): Vendor!
+  createVendor(input: CreateVendorInput!): Vendor!
+  updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
+  deleteVendor(id: ID!): Boolean!
 }
