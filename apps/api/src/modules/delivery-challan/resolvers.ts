@@ -13,7 +13,11 @@ export const deliverychallanResolvers = {
   },
   Mutation: {
     createDeliveryChallan: async (_: any, { input }: any, context: any) => {
-      return service.create(input, context.user?.id || 'system');
+      const created = await service.create(input, context.user?.id || 'system');
+      if (!created) {
+        throw new Error('Failed to create delivery challan');
+      }
+      return created;
     },
     updateDeliveryChallan: async (_: any, { id, input }: any) => {
       return service.update(id, input);
@@ -24,3 +28,6 @@ export const deliverychallanResolvers = {
     },
   },
 };
+
+// Ensure GraphQL resolver merging picks this module consistently.
+export const resolvers = deliverychallanResolvers;

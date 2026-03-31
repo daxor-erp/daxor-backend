@@ -10,10 +10,13 @@ const invoiceItemSchema = new Schema({
 
 const customerInvoiceSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	invoiceNumber: { type: String, required: true },
+	invoiceNumber: { type: String, required: true, unique: true },
 	salesOrderId: { type: Schema.Types.ObjectId, ref: 'SalesOrder' },
-	projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
-	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
+	customerId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	// Backward compatibility for modules still reading clientId.
+	clientId: { type: Schema.Types.ObjectId, ref: 'Organization' },
+	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	invoiceDate: { type: Date, required: true, default: Date.now },
 	dueDate: { type: Date },
 	subtotal: { type: Number, required: true, default: 0 },
@@ -31,7 +34,9 @@ const customerInvoiceSchema = new Schema({
 customerInvoiceSchema.index({ invoiceNumber: 1 })
 customerInvoiceSchema.index({ salesOrderId: 1 })
 customerInvoiceSchema.index({ projectId: 1 })
+customerInvoiceSchema.index({ customerId: 1 })
 customerInvoiceSchema.index({ clientId: 1 })
+customerInvoiceSchema.index({ organizationId: 1 })
 customerInvoiceSchema.index({ deletedAt: 1 })
 
 export const CustomerInvoice = model('CustomerInvoice', customerInvoiceSchema)

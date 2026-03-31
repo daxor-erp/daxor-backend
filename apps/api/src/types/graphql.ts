@@ -506,6 +506,8 @@ export type CreateSalesOrderInput = {
   orderDate: Scalars['String']['input'];
   organizationId: Scalars['ID']['input'];
   projectId: InputMaybe<Scalars['ID']['input']>;
+  quotationId: InputMaybe<Scalars['ID']['input']>;
+  quotationStatus: InputMaybe<Scalars['String']['input']>;
   totalAmount: Scalars['Float']['input'];
 };
 
@@ -3544,12 +3546,15 @@ export type SalesEnquiry = {
 
 export type SalesOrder = {
   __typename?: 'SalesOrder';
+  clientId: Maybe<Scalars['ID']['output']>;
   createdAt: Scalars['String']['output'];
   customerId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   orderDate: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
   projectId: Maybe<Scalars['ID']['output']>;
+  quotationId: Maybe<Scalars['ID']['output']>;
+  quotationStatus: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
   totalAmount: Scalars['Float']['output'];
@@ -5701,12 +5706,15 @@ export type SalesEnquiryResolvers<ContextType = GraphQLContext, ParentType exten
 }>;
 
 export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesOrder'] = ResolversParentTypes['SalesOrder']> = ResolversObject<{
+  clientId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   customerId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   orderDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   projectId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  quotationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  quotationStatus: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;

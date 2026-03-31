@@ -10,7 +10,12 @@ export const resolvers = {
 			const { organizationId, page = 1, limit = 10, status, search } = args
 			const filter: any = { organizationId, deletedAt: null }
 			if (status) filter.status = status
-			if (search) filter.name = { $regex: search, $options: 'i' }
+			if (search) {
+				filter.$or = [
+					{ invoiceNumber: { $regex: search, $options: 'i' } },
+					{ seqNo: { $regex: search, $options: 'i' } },
+				]
+			}
 			const result = await service.findWithPagination(filter, { page, limit, sortBy: 'createdAt', sortOrder: 'desc' })
 			return result.data
 		},
@@ -19,8 +24,18 @@ export const resolvers = {
 		createCustomerInvoice: async (_: unknown, { input }: any, ctx: GraphQLContext) => 
 			service.create({ ...input, createdBy: ctx.user?.id }),
 		updateCustomerInvoice: async (_: unknown, { id, input }: any, ctx: GraphQLContext) => 
-			service.update(id, { ...input, updatedBy: ctx.user?.id }),
+			service.update(id, {
+				...input,
+				...(input.customerId ? { clientId: input.customerId } : {}),
+				updatedBy: ctx.user?.id,
+			}),
 		deleteCustomerInvoice: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => 
 			service.update(id, { deletedAt: new Date(), deletedBy: ctx.user?.id }),
+	},
+	CustomerInvoice: {
+		seqNo: (parent: any) => String(parent.seqNo ?? parent.invoiceNumber ?? parent._id ?? ''),
+		customerId: (parent: any) => String(parent.customerId ?? parent.clientId ?? ''),
+		organizationId: (parent: any) => String(parent.organizationId ?? ''),
+		salesOrderId: (parent: any) => (parent.salesOrderId != null ? String(parent.salesOrderId) : null),
 	},
 }

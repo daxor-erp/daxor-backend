@@ -10,8 +10,12 @@ const orderItemSchema = new Schema({
 
 const salesOrderSchema = new Schema({
 	seqNo: { type: String, unique: true, sparse: true },
-	salesOrderNumber: { type: String, required: true },
-	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	salesOrderNumber: { type: String, required: true, unique: true },
+	customerId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	// Backward compatibility for any existing reads/writes expecting clientId.
+	clientId: { type: Schema.Types.ObjectId, ref: 'Organization' },
+	quotationId: { type: Schema.Types.ObjectId, ref: 'Quotation' },
+	quotationStatus: { type: String, enum: ['pending', 'accepted', 'rejected'] },
 	projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
 	orderDate: { type: Date, required: true, default: Date.now },
 	deliveryDate: { type: Date },
@@ -19,6 +23,7 @@ const salesOrderSchema = new Schema({
 	taxAmount: { type: Number, default: 0 },
 	totalAmount: { type: Number, required: true, default: 0 },
 	status: { type: String, enum: ['draft', 'submitted', 'approved', 'active', 'completed', 'cancelled'], default: 'draft' },
+	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	items: [orderItemSchema],
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	createdAt: { type: Date, default: Date.now },
@@ -27,8 +32,11 @@ const salesOrderSchema = new Schema({
 }, { timestamps: false })
 
 salesOrderSchema.index({ salesOrderNumber: 1 })
+salesOrderSchema.index({ customerId: 1 })
 salesOrderSchema.index({ clientId: 1 })
+salesOrderSchema.index({ quotationId: 1 })
 salesOrderSchema.index({ projectId: 1 })
+salesOrderSchema.index({ organizationId: 1 })
 salesOrderSchema.index({ deletedAt: 1 })
 
 export const SalesOrder = model('SalesOrder', salesOrderSchema)

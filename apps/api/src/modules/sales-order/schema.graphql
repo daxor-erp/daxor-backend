@@ -2,6 +2,9 @@ type SalesOrder {
 	id: ID!
 	seqNo: String!
 	customerId: ID!
+	clientId: ID
+	quotationId: ID
+	quotationStatus: String
 	projectId: ID
 	totalAmount: Float!
 	status: String!
@@ -13,6 +16,8 @@ type SalesOrder {
 input CreateSalesOrderInput {
 	customerId: ID!
 	projectId: ID
+	quotationId: ID
+	quotationStatus: String
 	totalAmount: Float!
 	orderDate: String!
 	organizationId: ID!
