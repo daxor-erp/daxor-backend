@@ -1,25 +1,67 @@
 type Customer {
   id: ID!
   docNumber: String!
-  docDate: String!
-  status: String!
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
   organizationId: String!
+  status: String!
+  invoiceBillable: Boolean!
   createdAt: String!
+  updatedAt: String!
 }
 
-input CustomerInput {
-  docDate: String!
-  status: String
+input CreateCustomerInput {
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
   organizationId: String!
+  invoiceBillable: Boolean
+}
+
+input UpdateCustomerInput {
+  name: String
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  taxNumber: String
+  paymentTerms: String
+  notes: String
+  status: String
+  invoiceBillable: Boolean
 }
 
 extend type Query {
   customer(id: ID!): Customer
-  customers(organizationId: String!, page: Int, limit: Int): [Customer!]!
+  customers(organizationId: String!, page: Int, limit: Int, search: String): [Customer!]!
+  invoiceBillableCustomers(organizationId: String!, page: Int, limit: Int): [Customer!]!
 }
 
 extend type Mutation {
-  createCustomer(input: CustomerInput!): Customer!
-  updateCustomer(id: ID!, input: CustomerInput!): Customer!
+  createCustomer(input: CreateCustomerInput!): Customer!
+  updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer!
   deleteCustomer(id: ID!): Boolean!
 }

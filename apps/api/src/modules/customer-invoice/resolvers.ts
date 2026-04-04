@@ -7,10 +7,22 @@ export const resolvers = {
 	Query: {
 		customerinvoice: async (_: unknown, { id }: { id: string }) => service.findById(id),
 		customerinvoices: async (_: unknown, args: any) => {
-			const { organizationId, page = 1, limit = 10, status, search } = args
+			const { organizationId, page = 1, limit = 10, status, search, customerId } = args
 			const filter: any = { organizationId, deletedAt: null }
 			if (status) filter.status = status
-			if (search) {
+			if (customerId && search) {
+				filter.$and = [
+					{ $or: [{ customerId }, { clientId: customerId }] },
+					{
+						$or: [
+							{ invoiceNumber: { $regex: search, $options: 'i' } },
+							{ seqNo: { $regex: search, $options: 'i' } },
+						],
+					},
+				]
+			} else if (customerId) {
+				filter.$or = [{ customerId }, { clientId: customerId }]
+			} else if (search) {
 				filter.$or = [
 					{ invoiceNumber: { $regex: search, $options: 'i' } },
 					{ seqNo: { $regex: search, $options: 'i' } },
@@ -37,5 +49,20 @@ export const resolvers = {
 		customerId: (parent: any) => String(parent.customerId ?? parent.clientId ?? ''),
 		organizationId: (parent: any) => String(parent.organizationId ?? ''),
 		salesOrderId: (parent: any) => (parent.salesOrderId != null ? String(parent.salesOrderId) : null),
+		outstandingAmount: (parent: any) => {
+			const total = Number(parent.totalAmount ?? 0)
+			const paid = Number(parent.paidAmount ?? 0)
+			return Math.max(0, Math.round((total - paid) * 100) / 100)
+		},
+		invoiceDate: (parent: any) =>
+			parent.invoiceDate
+				? new Date(parent.invoiceDate).toISOString()
+				: new Date(0).toISOString(),
+		dueDate: (parent: any) =>
+			parent.dueDate ? new Date(parent.dueDate).toISOString() : null,
+		createdAt: (parent: any) =>
+			parent.createdAt
+				? new Date(parent.createdAt).toISOString()
+				: new Date(0).toISOString(),
 	},
 }

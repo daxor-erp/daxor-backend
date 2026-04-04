@@ -1,22 +1,30 @@
-import mongoose, { Schema } from 'mongoose';
-import { IBaseEntity } from '../base/mongo-repository';
+import { model, Schema } from 'mongoose'
 
-export interface ICustomer extends IBaseEntity {
-  docNumber: string;
-  docDate: Date;
-  status: string;
-  organizationId: string;
-  createdBy: string;
-  isDeleted: boolean;
-}
+const customerSchema = new Schema({
+  docNumber: { type: String, unique: true, sparse: true },
+  name: { type: String, required: true },
+  contactPerson: { type: String },
+  email: { type: String },
+  phone: { type: String },
+  address: { type: String },
+  city: { type: String },
+  state: { type: String },
+  country: { type: String },
+  zipCode: { type: String },
+  taxNumber: { type: String },
+  paymentTerms: { type: String },
+  notes: { type: String },
+  organizationId: { type: String, required: true },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  /** When false, customer is excluded from invoice billing workflows and lists. */
+  invoiceBillable: { type: Boolean, default: true },
+  createdBy: { type: String },
+  updatedBy: { type: String },
+  deletedAt: { type: Date, default: null },
+}, { timestamps: true })
 
-const CustomerSchema = new Schema<ICustomer>({
-  docNumber: { type: String, required: true, unique: true },
-  docDate: { type: Date, required: true },
-  status: { type: String, default: 'DRAFT' },
-  organizationId: { type: String, required: true, index: true },
-  createdBy: { type: String, required: true },
-  isDeleted: { type: Boolean, default: false },
-}, { timestamps: true });
+customerSchema.index({ organizationId: 1 })
+customerSchema.index({ name: 1 })
+customerSchema.index({ deletedAt: 1 })
 
-export const Customer = mongoose.model<ICustomer>('Customer', CustomerSchema);
+export const Customer = model('Customer', customerSchema)

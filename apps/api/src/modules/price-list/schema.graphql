@@ -1,0 +1,35 @@
+type PriceListLine {
+	itemId: ID!
+	seqNo: String
+	name: String!
+	unit: String
+	rate: Float
+	category: String
+}
+
+type PriceList {
+	id: ID!
+	listNumber: String!
+	organizationId: String!
+	title: String!
+	categoryFilter: String
+	lines: [PriceListLine!]!
+	generatedAt: String!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input GeneratePriceListInput {
+	organizationId: String!
+	title: String
+	category: String
+}
+
+extend type Query {
+	priceList(id: ID!): PriceList
+	priceLists(organizationId: String!, page: Int, limit: Int): [PriceList!]!
+}
+
+extend type Mutation {
+	generatePriceList(input: GeneratePriceListInput!): PriceList!
+}

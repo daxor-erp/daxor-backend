@@ -1,0 +1,78 @@
+type ReturnAuthorizationLine {
+	id: ID!
+	itemId: ID
+	description: String!
+	quantity: Float!
+	quantityReceived: Float!
+}
+
+input ReturnAuthorizationLineInput {
+	itemId: ID
+	description: String!
+	quantity: Float!
+}
+
+type ReturnAuthorization {
+	id: ID!
+	raNumber: String!
+	customerId: ID!
+	customer: Customer
+	salesOrderId: ID
+	reason: String
+	notes: String
+	status: String!
+	requestedDate: String!
+	lines: [ReturnAuthorizationLine!]!
+	rejectionReason: String
+	approvedAt: String
+	goodsReceivedAt: String
+	goodsReceivedBy: ID
+	receiptComplete: Boolean!
+	receiptNotes: String
+	organizationId: String!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input ReceiveReturnGoodsLineInput {
+	lineId: ID!
+	quantityReceived: Float!
+}
+
+input ReceiveReturnAuthorizationGoodsInput {
+	returnAuthorizationId: ID!
+	receivedDate: String!
+	notes: String
+	lines: [ReceiveReturnGoodsLineInput!]!
+}
+
+input CreateReturnAuthorizationInput {
+	organizationId: String!
+	customerId: ID!
+	salesOrderId: ID
+	reason: String
+	notes: String
+	requestedDate: String!
+	lines: [ReturnAuthorizationLineInput!]!
+}
+
+extend type Query {
+	returnAuthorization(id: ID!): ReturnAuthorization
+	returnAuthorizations(
+		organizationId: String!
+		status: String
+		customerId: ID
+		receiptComplete: Boolean
+		page: Int
+		limit: Int
+	): [ReturnAuthorization!]!
+}
+
+extend type Mutation {
+	createReturnAuthorization(input: CreateReturnAuthorizationInput!): ReturnAuthorization!
+	approveReturnAuthorization(id: ID!): ReturnAuthorization!
+	rejectReturnAuthorization(id: ID!, reason: String): ReturnAuthorization!
+	cancelReturnAuthorization(id: ID!): ReturnAuthorization!
+	deleteReturnAuthorization(id: ID!): Boolean!
+	receiveReturnAuthorizationGoods(input: ReceiveReturnAuthorizationGoodsInput!): ReturnAuthorization!
+}

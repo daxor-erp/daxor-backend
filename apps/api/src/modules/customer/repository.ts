@@ -1,12 +1,12 @@
-import { MongoBaseRepository } from '../base/mongo-repository';
-import { Customer, ICustomer } from './model';
+import { MongoBaseRepository } from '../base/mongo-repository'
+import { Customer } from './model'
 
-export class CustomerRepository extends MongoBaseRepository<ICustomer> {
+export class CustomerRepository extends MongoBaseRepository<any> {
   constructor() {
-    super(Customer);
+    super(Customer)
   }
 
-  async findByOrganization(organizationId: string) {
-    return this.findAll({ organizationId, isDeleted: false } as any);
+  async findByOrganization(organizationId: string): Promise<any[]> {
+    return this.findAllActive({ organizationId })
   }
 }

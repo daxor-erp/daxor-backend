@@ -1,0 +1,57 @@
+type CustomerPaymentAllocation {
+	invoiceId: ID!
+	invoiceNumber: String
+	amount: Float!
+}
+
+input CustomerPaymentAllocationInput {
+	invoiceId: ID!
+	amount: Float!
+}
+
+type CustomerPayment {
+	id: ID!
+	paymentNumber: String!
+	customerId: ID!
+	customer: Customer
+	paymentDate: String!
+	paymentMethod: String!
+	referenceNumber: String
+	totalAmount: Float!
+	allocations: [CustomerPaymentAllocation!]!
+	notes: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateCustomerPaymentInput {
+	customerId: ID!
+	paymentDate: String!
+	paymentMethod: String!
+	referenceNumber: String
+	totalAmount: Float!
+	allocations: [CustomerPaymentAllocationInput!]!
+	notes: String
+	organizationId: ID!
+}
+
+input UpdateCustomerPaymentInput {
+	paymentDate: String
+	paymentMethod: String
+	referenceNumber: String
+	notes: String
+}
+
+extend type Query {
+	customerPayment(id: ID!): CustomerPayment
+	customerPayments(organizationId: ID!, customerId: ID, page: Int, limit: Int): [CustomerPayment!]!
+	customerPaymentsByCustomer(customerId: ID!): [CustomerPayment!]!
+}
+
+extend type Mutation {
+	createCustomerPayment(input: CreateCustomerPaymentInput!): CustomerPayment!
+	updateCustomerPayment(id: ID!, input: UpdateCustomerPaymentInput!): CustomerPayment!
+	deleteCustomerPayment(id: ID!): Boolean!
+}
