@@ -1,0 +1,35 @@
+type CustomerDeposit {
+	id: ID!
+	depositNumber: String!
+	customerId: ID!
+	customer: Customer
+	depositDate: String!
+	depositMethod: String!
+	referenceNumber: String
+	amount: Float!
+	notes: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateCustomerDepositInput {
+	organizationId: ID!
+	customerId: ID!
+	depositDate: String!
+	depositMethod: String!
+	referenceNumber: String
+	amount: Float!
+	notes: String
+}
+
+extend type Query {
+	customerDeposit(id: ID!): CustomerDeposit
+	customerDeposits(organizationId: ID!, customerId: ID, page: Int, limit: Int): [CustomerDeposit!]!
+}
+
+extend type Mutation {
+	createCustomerDeposit(input: CreateCustomerDepositInput!): CustomerDeposit!
+	cancelCustomerDeposit(id: ID!): CustomerDeposit!
+}

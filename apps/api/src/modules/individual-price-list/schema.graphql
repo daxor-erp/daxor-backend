@@ -1,0 +1,52 @@
+type IndividualPriceListLine {
+	itemId: ID!
+	seqNo: String
+	name: String!
+	unit: String
+	category: String
+	standardRate: Float
+	customerRate: Float
+}
+
+type IndividualPriceList {
+	id: ID!
+	listNumber: String!
+	organizationId: String!
+	customerId: ID!
+	customer: Customer
+	title: String!
+	notes: String
+	lines: [IndividualPriceListLine!]!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input IndividualPriceListLineInput {
+	itemId: ID!
+	seqNo: String
+	name: String!
+	unit: String
+	category: String
+	standardRate: Float
+	customerRate: Float
+}
+
+input UpsertIndividualPriceListInput {
+	organizationId: String!
+	customerId: ID!
+	title: String
+	notes: String
+	lines: [IndividualPriceListLineInput!]!
+}
+
+extend type Query {
+	individualPriceList(id: ID!): IndividualPriceList
+	individualPriceLists(organizationId: String!, page: Int, limit: Int): [IndividualPriceList!]!
+	individualPriceListByCustomer(organizationId: String!, customerId: ID!): IndividualPriceList
+}
+
+extend type Mutation {
+	upsertIndividualPriceList(input: UpsertIndividualPriceListInput!): IndividualPriceList!
+	seedIndividualPriceListFromCatalog(organizationId: String!, customerId: ID!): IndividualPriceList!
+	deleteIndividualPriceList(id: ID!): Boolean!
+}

@@ -1,0 +1,28 @@
+type CustomerStatementLine {
+	date: String!
+	kind: String!
+	reference: String!
+	description: String
+	debit: Float
+	credit: Float
+}
+
+type CustomerStatement {
+	customerId: ID!
+	customer: Customer
+	dateFrom: String!
+	dateTo: String!
+	lines: [CustomerStatementLine!]!
+	periodInvoicesTotal: Float!
+	periodPaymentsTotal: Float!
+	currentBalance: Float!
+}
+
+extend type Query {
+	generateCustomerStatement(
+		organizationId: String!
+		customerId: ID!
+		dateFrom: String!
+		dateTo: String!
+	): CustomerStatement!
+}

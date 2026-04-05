@@ -1,0 +1,38 @@
+type CustomerRefund {
+	id: ID!
+	refundNumber: String!
+	customerId: ID!
+	customer: Customer
+	refundDate: String!
+	refundMethod: String!
+	referenceNumber: String
+	amount: Float!
+	customerInvoiceId: ID
+	invoice: CustomerInvoice
+	notes: String
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateCustomerRefundInput {
+	organizationId: ID!
+	customerId: ID!
+	refundDate: String!
+	refundMethod: String!
+	referenceNumber: String
+	amount: Float!
+	customerInvoiceId: ID
+	notes: String
+}
+
+extend type Query {
+	customerRefund(id: ID!): CustomerRefund
+	customerRefunds(organizationId: ID!, customerId: ID, page: Int, limit: Int): [CustomerRefund!]!
+}
+
+extend type Mutation {
+	createCustomerRefund(input: CreateCustomerRefundInput!): CustomerRefund!
+	cancelCustomerRefund(id: ID!): CustomerRefund!
+}

@@ -10,6 +10,12 @@ type SalesOrder {
 	status: String!
 	orderDate: String!
 	organizationId: ID!
+	cashSale: Boolean!
+	refundedAt: String
+	refundAmount: Float
+	refundMethod: String
+	refundReferenceNumber: String
+	refundNotes: String
 	createdAt: String!
 }
 
@@ -30,13 +36,24 @@ input UpdateSalesOrderInput {
 	status: String
 }
 
+input RefundCashSaleInput {
+	salesOrderId: ID!
+	refundDate: String!
+	refundMethod: String!
+	referenceNumber: String
+	amount: Float!
+	notes: String
+}
+
 extend type Query {
 	salesorder(id: ID!): SalesOrder
-	salesorders(organizationId: ID!, page: Int, limit: Int, status: String): [SalesOrder!]!
+	salesorders(organizationId: ID!, page: Int, limit: Int, status: String, cashSale: Boolean): [SalesOrder!]!
+	cashSalesRefundCandidates(organizationId: ID!): [SalesOrder!]!
 }
 
 extend type Mutation {
 	createSalesOrder(input: CreateSalesOrderInput!): SalesOrder!
 	updateSalesOrder(id: ID!, input: UpdateSalesOrderInput!): SalesOrder!
 	deleteSalesOrder(id: ID!): SalesOrder!
+	refundCashSale(input: RefundCashSaleInput!): SalesOrder!
 }

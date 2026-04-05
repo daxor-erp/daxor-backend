@@ -1,0 +1,43 @@
+type FinanceChargeLine {
+	invoiceId: ID!
+	invoiceNumber: String
+	customerId: ID!
+	customer: Customer
+	daysOverdue: Int!
+	outstandingBefore: Float!
+	chargeAmount: Float!
+}
+
+type FinanceChargeAssessment {
+	id: ID!
+	assessmentNumber: String!
+	organizationId: String!
+	asOfDate: String!
+	annualRatePercent: Float!
+	status: String!
+	lines: [FinanceChargeLine!]!
+	totalChargeAmount: Float!
+	notes: String
+	postedAt: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input DraftFinanceChargeAssessmentInput {
+	organizationId: String!
+	asOfDate: String!
+	annualRatePercent: Float!
+	notes: String
+}
+
+extend type Query {
+	financeChargeAssessment(id: ID!): FinanceChargeAssessment
+	financeChargeAssessments(organizationId: String!, status: String, page: Int, limit: Int): [FinanceChargeAssessment!]!
+}
+
+extend type Mutation {
+	draftFinanceChargeAssessment(input: DraftFinanceChargeAssessmentInput!): FinanceChargeAssessment!
+	postFinanceChargeAssessment(id: ID!): FinanceChargeAssessment!
+	cancelFinanceChargeAssessment(id: ID!): FinanceChargeAssessment!
+	deleteFinanceChargeAssessment(id: ID!): Boolean!
+}

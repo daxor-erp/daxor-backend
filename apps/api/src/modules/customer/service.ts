@@ -1,36 +1,50 @@
-import { CustomerRepository } from './repository';
-import { ICustomer } from './model';
+import { CustomerRepository } from './repository'
+import { getNextSequence } from '../counter'
 
 export class CustomerService {
-  private repository: CustomerRepository;
+  private repository: CustomerRepository
 
   constructor() {
-    this.repository = new CustomerRepository();
+    this.repository = new CustomerRepository()
   }
 
-  async create(data: Partial<ICustomer>, userId: string) {
-    const docNumber = await this.generateDocNumber(data.organizationId!);
-    return this.repository.create({ ...data, docNumber, createdBy: userId } as ICustomer);
+  async createCustomer(data: any, userId: string) {
+    try {
+      const seq = await getNextSequence({ type: 'Customer', organizationId: data.organizationId })
+      const orgSlug = data.organizationId.toString().slice(-4).toUpperCase()
+      const docNumber = `CUST-${orgSlug}-${String(seq).padStart(5, '0')}`
+      const doc = await this.repository.create({
+        ...data,
+        docNumber,
+        createdBy: userId,
+        updatedBy: userId,
+      })
+      return doc
+    } catch (error) {
+      console.error('[CustomerService.createCustomer] error:', error)
+      throw error
+    }
   }
 
-  async getAll(organizationId: string) {
-    return this.repository.findByOrganization(organizationId);
+  async getCustomerById(id: string) {
+    return this.repository.findById(id)
   }
 
-  async getById(id: string) {
-    return this.repository.findById(id);
+  async getAllCustomers(filter: any = {}, page = 1, limit = 100) {
+    const result = await this.repository.findPaginated(
+      { ...filter, deletedAt: null },
+      page,
+      limit,
+      { createdAt: -1 }
+    )
+    return result.data
   }
 
-  async update(id: string, data: Partial<ICustomer>) {
-    return this.repository.update(id, data);
+  async updateCustomer(id: string, data: any, userId: string) {
+    return this.repository.update(id, { ...data, updatedBy: userId })
   }
 
-  async delete(id: string) {
-    return this.repository.softDelete(id);
-  }
-
-  private async generateDocNumber(organizationId: string): Promise<string> {
-    const count = await this.repository.count({ organizationId } as any);
-    return `CUST-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+  async deleteCustomer(id: string, userId: string) {
+    return this.repository.update(id, { deletedAt: new Date(), updatedBy: userId })
   }
 }

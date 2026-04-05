@@ -7,6 +7,7 @@ type CustomerInvoice {
 	dueDate: String
 	totalAmount: Float!
 	paidAmount: Float
+	outstandingAmount: Float!
 	status: String!
 	organizationId: ID!
 	createdAt: String!
@@ -33,7 +34,7 @@ input UpdateCustomerInvoiceInput {
 
 extend type Query {
 	customerinvoice(id: ID!): CustomerInvoice
-	customerinvoices(organizationId: ID!, page: Int, limit: Int, status: String): [CustomerInvoice!]!
+	customerinvoices(organizationId: ID!, page: Int, limit: Int, status: String, customerId: ID): [CustomerInvoice!]!
 }
 
 extend type Mutation {
