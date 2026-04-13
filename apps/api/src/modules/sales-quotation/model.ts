@@ -12,8 +12,8 @@ const itemSchema = new Schema({
 }, { _id: false })
 
 const salesQuotationSchema = new Schema({
-	seqNo: { type: String, unique: true, sparse: true },
-	quotationNumber: { type: String, required: true, unique: true, maxlength: 50 },
+	seqNo: { type: String },
+	quotationNumber: { type: String, required: true, maxlength: 50 },
 	enquiryId: { type: Schema.Types.ObjectId, ref: 'SalesEnquiry' },
 	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	quotationDate: { type: Date, default: Date.now },
@@ -42,7 +42,8 @@ const salesQuotationSchema = new Schema({
 	deletedAt: { type: Date },
 }, { timestamps: false })
 
-salesQuotationSchema.index({ quotationNumber: 1 })
+salesQuotationSchema.index({ seqNo: 1 }, { unique: true, sparse: true })
+salesQuotationSchema.index({ quotationNumber: 1 }, { unique: true })
 salesQuotationSchema.index({ clientId: 1 })
 salesQuotationSchema.index({ enquiryId: 1 })
 salesQuotationSchema.index({ status: 1 })

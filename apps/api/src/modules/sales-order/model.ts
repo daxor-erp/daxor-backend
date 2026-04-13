@@ -9,8 +9,8 @@ const orderItemSchema = new Schema({
 }, { _id: true })
 
 const salesOrderSchema = new Schema({
-	seqNo: { type: String, unique: true, sparse: true },
-	salesOrderNumber: { type: String, required: true, unique: true },
+	seqNo: { type: String },
+	salesOrderNumber: { type: String, required: true },
 	customerId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	// Backward compatibility for any existing reads/writes expecting clientId.
 	clientId: { type: Schema.Types.ObjectId, ref: 'Organization' },
@@ -42,7 +42,8 @@ const salesOrderSchema = new Schema({
 	deletedAt: { type: Date },
 }, { timestamps: false })
 
-salesOrderSchema.index({ salesOrderNumber: 1 })
+salesOrderSchema.index({ seqNo: 1 }, { unique: true, sparse: true })
+salesOrderSchema.index({ salesOrderNumber: 1 }, { unique: true })
 salesOrderSchema.index({ customerId: 1 })
 salesOrderSchema.index({ clientId: 1 })
 salesOrderSchema.index({ quotationId: 1 })

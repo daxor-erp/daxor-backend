@@ -1,5 +1,6 @@
 import { logger } from '@repo/observability'
 import mongoose, { Connection } from 'mongoose'
+import { dropDuplicateIndexes } from '~/lib/drop-duplicate-indexes'
 import { dropLegacyCodeFieldIndexes } from '~/lib/legacy-index-drops'
 
 let dbConnection: Connection | null = null
@@ -12,6 +13,7 @@ export const connectDB = async (uri: string, debugMode: boolean): Promise<Connec
 		const mongooseInstance = await mongoose.connect(uri)
 		dbConnection = mongooseInstance.connection
 		await dropLegacyCodeFieldIndexes(dbConnection)
+		await dropDuplicateIndexes(dbConnection)
 		logger.info('Database connected successfully')
 		return dbConnection
 	} catch (error) {

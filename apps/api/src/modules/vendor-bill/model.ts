@@ -10,7 +10,7 @@ const lineItemSchema = new Schema({
 }, { _id: false })
 
 const vendorBillSchema = new Schema({
-  billNumber: { type: String, required: true, unique: true },
+  billNumber: { type: String, required: true },
   vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor', required: true },
   purchaseOrderId: { type: Schema.Types.ObjectId, ref: 'PurchaseOrder' },
   billDate: { type: Date, required: true },
@@ -36,11 +36,11 @@ const vendorBillSchema = new Schema({
   deletedAt: { type: Date },
 }, { timestamps: true })
 
+vendorBillSchema.index({ billNumber: 1 }, { unique: true })
 vendorBillSchema.index({ vendorId: 1 })
 vendorBillSchema.index({ organizationId: 1 })
 vendorBillSchema.index({ status: 1 })
 vendorBillSchema.index({ dueDate: 1 })
-vendorBillSchema.index({ billNumber: 1 })
 vendorBillSchema.index({ deletedAt: 1 })
 
 export const VendorBill = model('VendorBill', vendorBillSchema)
