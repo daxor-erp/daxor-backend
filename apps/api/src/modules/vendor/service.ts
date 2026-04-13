@@ -1,3 +1,4 @@
+import { userIdForRef } from '~/lib/user-ref'
 import { VendorRepository } from './repository'
 import { getNextSequence } from '../counter'
 import { formatEntitySequence } from '../../lib/sequence'
@@ -10,9 +11,16 @@ export class VendorService {
   }
 
   async createVendor(data: any, userId: string) {
-    const seq = await getNextSequence({ type: 'Vendor', organizationId: data.organizationId })
-    const seqNo = formatEntitySequence('V', data.organizationId.toString(), seq)
-    return this.repository.create({ ...data, seqNo, createdBy: userId, updatedBy: userId })
+    const { createdBy: _c, updatedBy: _u, ...rest } = data
+    const seq = await getNextSequence({ type: 'Vendor', organizationId: rest.organizationId })
+    const seqNo = formatEntitySequence('V', rest.organizationId.toString(), seq)
+    const uid = userIdForRef(userId)
+    const payload: Record<string, unknown> = { ...rest, seqNo }
+    if (uid) {
+      payload.createdBy = uid
+      payload.updatedBy = uid
+    }
+    return this.repository.create(payload)
   }
 
   async getVendorById(id: string) {
@@ -30,10 +38,17 @@ export class VendorService {
   }
 
   async updateVendor(id: string, data: any, userId: string) {
-    return this.repository.update(id, { ...data, updatedBy: userId })
+    const { createdBy: _c, updatedBy: _u, ...rest } = data
+    const uid = userIdForRef(userId)
+    const payload: Record<string, unknown> = { ...rest }
+    if (uid) payload.updatedBy = uid
+    return this.repository.update(id, payload)
   }
 
   async deleteVendor(id: string, userId: string) {
-    return this.repository.update(id, { deletedAt: new Date(), deletedBy: userId })
+    const uid = userIdForRef(userId)
+    const payload: Record<string, unknown> = { deletedAt: new Date() }
+    if (uid) payload.deletedBy = uid
+    return this.repository.update(id, payload)
   }
 }

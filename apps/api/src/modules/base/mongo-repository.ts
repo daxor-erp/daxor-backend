@@ -1,6 +1,38 @@
 import { Model, Document, FilterQuery, UpdateQuery, QueryOptions } from 'mongoose';
 import { logger } from '../../lib/logger';
 
+/** ObjectId refs that do not follow the *By naming pattern (e.g. assignedTo). */
+const STRIP_EMPTY_OID_EXTRA_KEYS = new Set(['assignedTo'])
+
+function shouldStripEmptyObjectIdRef(key: string, value: unknown): boolean {
+	if (value !== '') return false
+	if (STRIP_EMPTY_OID_EXTRA_KEYS.has(key)) return true
+	// createdBy, updatedBy, refundedBy, goodsReceivedBy, generatedBy, …
+	if (key.endsWith('By')) return true
+	return false
+}
+
+/** Empty strings cannot cast to ObjectId; strip known ref keys when ''. */
+function stripEmptyUserRefFields(obj: Record<string, unknown>): void {
+	for (const key of Object.keys(obj)) {
+		if (shouldStripEmptyObjectIdRef(key, obj[key])) {
+			delete obj[key];
+		}
+	}
+	if (obj.$set && typeof obj.$set === 'object' && obj.$set !== null && !Array.isArray(obj.$set)) {
+		stripEmptyUserRefFields(obj.$set as Record<string, unknown>);
+	}
+}
+
+function sanitizeWritePayload<T extends Record<string, unknown>>(data: T): T {
+	if (!data || typeof data !== 'object' || Array.isArray(data)) {
+		return data;
+	}
+	const clone = { ...data } as Record<string, unknown>;
+	stripEmptyUserRefFields(clone);
+	return clone as T;
+}
+
 export interface IBaseEntity extends Document {
   _id: any;
   createdAt: Date;
@@ -20,7 +52,8 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
    */
   async create(data: Partial<T>): Promise<T> {
     try {
-      const doc = new this.model(data);
+      const payload = sanitizeWritePayload(data as Record<string, unknown>) as Partial<T>;
+      const doc = new this.model(payload);
       return await doc.save();
     } catch (error) {
       logger.error(`Error creating document in ${this.model.collection.name}:`, error);
@@ -82,7 +115,8 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
    */
   async update(id: string | any, data: UpdateQuery<T>): Promise<T | null> {
     try {
-      return await this.model.findByIdAndUpdate(id, data, { new: true }).exec();
+      const payload = sanitizeWritePayload(data as Record<string, unknown>) as UpdateQuery<T>;
+      return await this.model.findByIdAndUpdate(id, payload, { new: true }).exec();
     } catch (error) {
       logger.error(`Error updating document in ${this.model.collection.name}:`, error);
       throw error;
@@ -94,7 +128,8 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
    */
   async updateMany(filters: FilterQuery<T>, data: UpdateQuery<T>): Promise<any> {
     try {
-      return await this.model.updateMany(filters, data).exec();
+      const payload = sanitizeWritePayload(data as Record<string, unknown>) as UpdateQuery<T>;
+      return await this.model.updateMany(filters, payload).exec();
     } catch (error) {
       logger.error(`Error updating multiple documents in ${this.model.collection.name}:`, error);
       throw error;
@@ -241,7 +276,37 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
    */
   async bulkWrite(operations: any[]): Promise<any> {
     try {
-      return await this.model.collection.bulkWrite(operations);
+      const sanitized = operations.map((op: any) => {
+        if (op?.insertOne?.document) {
+          return {
+            ...op,
+            insertOne: {
+              ...op.insertOne,
+              document: sanitizeWritePayload(op.insertOne.document as Record<string, unknown>),
+            },
+          };
+        }
+        if (op?.updateOne?.update) {
+          return {
+            ...op,
+            updateOne: {
+              ...op.updateOne,
+              update: sanitizeWritePayload(op.updateOne.update as Record<string, unknown>),
+            },
+          };
+        }
+        if (op?.replaceOne?.replacement) {
+          return {
+            ...op,
+            replaceOne: {
+              ...op.replaceOne,
+              replacement: sanitizeWritePayload(op.replaceOne.replacement as Record<string, unknown>),
+            },
+          };
+        }
+        return op;
+      });
+      return await this.model.collection.bulkWrite(sanitized);
     } catch (error) {
       logger.error(`Error bulk writing documents in ${this.model.collection.name}:`, error);
       throw error;
