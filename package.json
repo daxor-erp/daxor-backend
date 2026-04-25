@@ -11,12 +11,12 @@
 		"lint:fix": "turbo run lint:fix",
 		"clean": "turbo run clean",
 		"format": "turbo run format",
-		"build": "turbo run build",
+		"build": "dotenv -c -- turbo run build",
 		"postinstall": "node scripts/install-chromium.js",
-		"api:dev": "turbo run dev --filter=api",
-		"api:prod": "turbo run prod --filter=api",
-		"build:dev": "turbo run build --filter=api",
-		"build:prod": "turbo run build --filter=api"
+		"api:dev": "dotenv -c -- turbo run dev --concurrency 15 --filter=api",
+		"api:prod": "dotenv -c -- turbo run prod --concurrency 15 --filter=api",
+		"build:dev": "dotenv -e apps/api/.env.development -c -- turbo run build --filter=api",
+		"build:prod": "dotenv -e apps/api/.env.production -c -- turbo run build --filter=api"
 	},
 	"workspaces": [
 		"apps/*",
