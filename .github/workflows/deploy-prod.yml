@@ -1,0 +1,182 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Debug Secrets
+        run: |
+          echo "Debugging deployment details..."
+          echo "HOST: ${{ secrets.DAXOR_EC2_HOST }}"
+          echo "USERNAME: ${{ secrets.DAXOR_EC2_USERNAME }}"
+          if [ -z "${{ secrets.DAXOR_EC2_SSH_KEY }}" ]; then
+            echo "SSH key is empty or missing!"
+            exit 1
+          else
+            echo "SSH key is loaded."
+          fi
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DAXOR_EC2_HOST }}
+          username: ${{ secrets.DAXOR_EC2_USERNAME }}
+          key: ${{ secrets.DAXOR_EC2_SSH_KEY }}
+          script: |
+            echo "[Remote] Starting Production Deployment Script"
+            echo "[Remote] Running on: $(hostname)"
+            echo "[Remote] User: $(whoami)"
+            echo "[Remote] Pulling latest changes from ${{ github.ref_name }}"
+
+            set -e
+
+            # Clone the repo if the folder doesn't exist
+            if [ ! -d "$HOME/daxor-backend" ]; then
+              echo "[Remote] Repo folder not found. Cloning..."
+              git clone git@github.com:healthflex-in/daxor-backend.git ~/daxor-backend
+            fi
+
+            cd ~/daxor-backend
+                     
+            # Clean working tree and fetch changes
+            echo "Cleaning working tree"
+            git reset --hard HEAD
+            git clean -fd
+                     
+            echo "Fetching latest changes from main"
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Install Bun
+            curl -fsSL https://bun.sh/install | bash
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+
+            # Install system dependencies for Chromium
+            echo "Installing system dependencies for Chromium"
+            if command -v apt-get >/dev/null 2>&1; then
+              UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
+              echo "Ubuntu version: $UBUNTU_VERSION"
+              
+              sudo apt-get update -qq
+              
+              sudo apt-get install -y -qq \
+                ca-certificates \
+                fonts-liberation \
+                libasound2 \
+                libatk-bridge2.0-0 \
+                libatk1.0-0 \
+                libc6 \
+                libcairo2 \
+                libcups2 \
+                libdbus-1-3 \
+                libdrm2 \
+                libexpat1 \
+                libfontconfig1 \
+                libgbm1 \
+                libgcc1 \
+                libgdk-pixbuf2.0-0 \
+                libglib2.0-0 \
+                libgtk-3-0 \
+                libnspr4 \
+                libnss3 \
+                libpango-1.0-0 \
+                libpangocairo-1.0-0 \
+                libstdc++6 \
+                libx11-6 \
+                libx11-xcb1 \
+                libxcb1 \
+                libxcomposite1 \
+                libxcursor1 \
+                libxdamage1 \
+                libxext6 \
+                libxfixes3 \
+                libxi6 \
+                libxrandr2 \
+                libxrender1 \
+                libxss1 \
+                libxtst6 \
+                lsb-release \
+                wget \
+                xdg-utils || {
+                  echo "Some packages failed to install, trying alternative approach..."
+                  
+                  sudo apt-get install -y -qq \
+                    ca-certificates \
+                    fonts-liberation \
+                    libatk-bridge2.0-0 \
+                    libdrm2 \
+                    libgtk-3-0 \
+                    libnspr4 \
+                    libnss3 \
+                    libx11-6 \
+                    libxcomposite1 \
+                    libxdamage1 \
+                    libxrandr2 \
+                    wget \
+                    xdg-utils || echo "Warning: Some Chromium dependencies may be missing"
+                }
+            fi
+
+            # Setup Puppeteer environment variables
+            echo "Setting up Puppeteer environment"
+            export PUPPETEER_CACHE_DIR="$HOME/daxor-backend/.puppeteer_cache"
+            export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+            export PUPPETEER_EXECUTABLE_PATH=""
+            
+            mkdir -p "$PUPPETEER_CACHE_DIR"
+            chmod 755 "$PUPPETEER_CACHE_DIR"
+            
+            mkdir -p apps/api
+            
+            cat > apps/api/.env.puppeteer << EOF
+            # Puppeteer Configuration
+            PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+            PUPPETEER_CACHE_DIR=$PUPPETEER_CACHE_DIR
+            PUPPETEER_EXECUTABLE_PATH=
+            EOF
+            
+            echo "Created .env.puppeteer with cache directory: $PUPPETEER_CACHE_DIR"
+
+            echo "Installing dependencies with Puppeteer configuration"
+            PUPPETEER_CACHE_DIR="$PUPPETEER_CACHE_DIR" \
+            PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false \
+            bun install --frozen-lockfile
+
+            echo "Running codegen"
+            cd apps/api
+            bun run codegen
+            cd ../..
+                     
+            echo "Building application"
+            bun run build:prod
+
+            # Setup PM2
+            command -v pm2 >/dev/null 2>&1 || npm install -g pm2
+
+            pm2 restart api.daxor.in || pm2 start ecosystem.config.js --only "api.daxor.in"
+
+            # Health check
+            echo "Performing health check"
+            sleep 10
+                     
+            pm2 show api.daxor.in
+                     
+            curl -X POST https://api.daxor.in/graphql \
+              -H "Content-Type: application/json" \
+              -d '{"query":"{ __typename }"}' || {
+              echo "Health check failed"
+              pm2 logs api.daxor.in --lines 20
+              exit 1
+            }
+
+            echo "Deployment to PRODUCTION successful!"
