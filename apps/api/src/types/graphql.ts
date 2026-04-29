@@ -1357,6 +1357,38 @@ export type LeaveType = {
   updatedAt: Scalars['String']['output'];
 };
 
+export type LoanRepayment = {
+  __typename?: 'LoanRepayment';
+  createdAt: Scalars['String']['output'];
+  docDate: Scalars['String']['output'];
+  docNumber: Scalars['String']['output'];
+  employeeName: Maybe<Scalars['String']['output']>;
+  employeeNo: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  loanReference: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['String']['output'];
+  payPeriodEnd: Maybe<Scalars['String']['output']>;
+  payPeriodStart: Maybe<Scalars['String']['output']>;
+  remarks: Maybe<Scalars['String']['output']>;
+  repaymentAmount: Scalars['Float']['output'];
+  status: Scalars['String']['output'];
+  title: Maybe<Scalars['String']['output']>;
+};
+
+export type LoanRepaymentInput = {
+  docDate: Scalars['String']['input'];
+  employeeName: InputMaybe<Scalars['String']['input']>;
+  employeeNo: InputMaybe<Scalars['String']['input']>;
+  loanReference: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
+  payPeriodEnd: InputMaybe<Scalars['String']['input']>;
+  payPeriodStart: InputMaybe<Scalars['String']['input']>;
+  remarks: InputMaybe<Scalars['String']['input']>;
+  repaymentAmount: InputMaybe<Scalars['Float']['input']>;
+  status: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -1455,6 +1487,7 @@ export type Mutation = {
   createLeaveEnrollment: LeaveEnrollment;
   createLeaveReinstatement: LeaveReinstatement;
   createLeaveType: LeaveType;
+  createLoanRepayment: LoanRepayment;
   createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
   createPayrollManagement: PayrollManagement;
@@ -1512,6 +1545,7 @@ export type Mutation = {
   deleteLeaveEnrollment: LeaveEnrollment;
   deleteLeaveReinstatement: LeaveReinstatement;
   deleteLeaveType: LeaveType;
+  deleteLoanRepayment: Scalars['Boolean']['output'];
   deleteMaterialReceipt: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
   deletePayrollManagement: Scalars['Boolean']['output'];
@@ -1580,6 +1614,7 @@ export type Mutation = {
   updateLeaveEnrollment: LeaveEnrollment;
   updateLeaveReinstatement: LeaveReinstatement;
   updateLeaveType: LeaveType;
+  updateLoanRepayment: LoanRepayment;
   updateMaterialReceipt: MaterialReceipt;
   updateOrganization: Organization;
   updatePayrollManagement: PayrollManagement;
@@ -1854,6 +1889,11 @@ export type MutationCreateLeaveReinstatementArgs = {
 
 export type MutationCreateLeaveTypeArgs = {
   input: CreateLeaveTypeInput;
+};
+
+
+export type MutationCreateLoanRepaymentArgs = {
+  input: LoanRepaymentInput;
 };
 
 
@@ -2138,6 +2178,11 @@ export type MutationDeleteLeaveReinstatementArgs = {
 
 
 export type MutationDeleteLeaveTypeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteLoanRepaymentArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2507,6 +2552,12 @@ export type MutationUpdateLeaveTypeArgs = {
 };
 
 
+export type MutationUpdateLoanRepaymentArgs = {
+  id: Scalars['ID']['input'];
+  input: LoanRepaymentInput;
+};
+
+
 export type MutationUpdateMaterialReceiptArgs = {
   id: Scalars['ID']['input'];
   input: UpdateMaterialReceiptInput;
@@ -2716,13 +2767,21 @@ export type PayrollManagement = {
   docNumber: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   organizationId: Scalars['String']['output'];
+  payPeriodEnd: Maybe<Scalars['String']['output']>;
+  payPeriodStart: Maybe<Scalars['String']['output']>;
+  remarks: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
+  title: Maybe<Scalars['String']['output']>;
 };
 
 export type PayrollManagementInput = {
   docDate: Scalars['String']['input'];
   organizationId: Scalars['String']['input'];
+  payPeriodEnd: InputMaybe<Scalars['String']['input']>;
+  payPeriodStart: InputMaybe<Scalars['String']['input']>;
+  remarks: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Permission = {
@@ -2911,6 +2970,8 @@ export type Query = {
   leaveReinstatements: Array<LeaveReinstatement>;
   leaveType: Maybe<LeaveType>;
   leaveTypes: Array<LeaveType>;
+  loanrepayment: Maybe<LoanRepayment>;
+  loanrepayments: Array<LoanRepayment>;
   lowStockItems: Array<InventoryControl>;
   materialreceipt: Maybe<MaterialReceipt>;
   materialreceipts: Array<MaterialReceipt>;
@@ -3465,6 +3526,16 @@ export type QueryLeaveTypeArgs = {
 export type QueryLeaveTypesArgs = {
   activeOnly: InputMaybe<Scalars['Boolean']['input']>;
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryLoanrepaymentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryLoanrepaymentsArgs = {
+  organizationId: Scalars['String']['input'];
 };
 
 
@@ -4235,13 +4306,21 @@ export type SalaryProcessing = {
   docNumber: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   organizationId: Scalars['String']['output'];
+  payPeriodEnd: Maybe<Scalars['String']['output']>;
+  payPeriodStart: Maybe<Scalars['String']['output']>;
+  remarks: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
+  title: Maybe<Scalars['String']['output']>;
 };
 
 export type SalaryProcessingInput = {
   docDate: Scalars['String']['input'];
   organizationId: Scalars['String']['input'];
+  payPeriodEnd: InputMaybe<Scalars['String']['input']>;
+  payPeriodStart: InputMaybe<Scalars['String']['input']>;
+  remarks: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SalaryRange = {
@@ -5114,6 +5193,8 @@ export type ResolversTypes = ResolversObject<{
   LeaveEnrollment: ResolverTypeWrapper<Partial<LeaveEnrollment>>;
   LeaveReinstatement: ResolverTypeWrapper<Partial<LeaveReinstatement>>;
   LeaveType: ResolverTypeWrapper<Partial<LeaveType>>;
+  LoanRepayment: ResolverTypeWrapper<Partial<LoanRepayment>>;
+  LoanRepaymentInput: ResolverTypeWrapper<Partial<LoanRepaymentInput>>;
   LoginInput: ResolverTypeWrapper<Partial<LoginInput>>;
   MRNLineItem: ResolverTypeWrapper<Partial<MrnLineItem>>;
   MRNLineItemInput: ResolverTypeWrapper<Partial<MrnLineItemInput>>;
@@ -5335,6 +5416,8 @@ export type ResolversParentTypes = ResolversObject<{
   LeaveEnrollment: Partial<LeaveEnrollment>;
   LeaveReinstatement: Partial<LeaveReinstatement>;
   LeaveType: Partial<LeaveType>;
+  LoanRepayment: Partial<LoanRepayment>;
+  LoanRepaymentInput: Partial<LoanRepaymentInput>;
   LoginInput: Partial<LoginInput>;
   MRNLineItem: Partial<MrnLineItem>;
   MRNLineItemInput: Partial<MrnLineItemInput>;
@@ -6114,6 +6197,24 @@ export type LeaveTypeResolvers<ContextType = GraphQLContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LoanRepaymentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['LoanRepayment'] = ResolversParentTypes['LoanRepayment']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  employeeName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  employeeNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  loanReference: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  payPeriodEnd: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  payPeriodStart: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  remarks: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  repaymentAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MrnLineItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['MRNLineItem'] = ResolversParentTypes['MRNLineItem']> = ResolversObject<{
   itemDescription: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   itemId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -6195,6 +6296,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationCreateLeaveEnrollmentArgs, 'input'>>;
   createLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationCreateLeaveReinstatementArgs, 'input'>>;
   createLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationCreateLeaveTypeArgs, 'input'>>;
+  createLoanRepayment: Resolver<ResolversTypes['LoanRepayment'], ParentType, ContextType, RequireFields<MutationCreateLoanRepaymentArgs, 'input'>>;
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
@@ -6252,6 +6354,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationDeleteLeaveEnrollmentArgs, 'id'>>;
   deleteLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationDeleteLeaveReinstatementArgs, 'id'>>;
   deleteLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationDeleteLeaveTypeArgs, 'id'>>;
+  deleteLoanRepayment: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteLoanRepaymentArgs, 'id'>>;
   deleteMaterialReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMaterialReceiptArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
@@ -6320,6 +6423,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateLeaveEnrollment: Resolver<ResolversTypes['LeaveEnrollment'], ParentType, ContextType, RequireFields<MutationUpdateLeaveEnrollmentArgs, 'id' | 'input'>>;
   updateLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationUpdateLeaveReinstatementArgs, 'id' | 'input'>>;
   updateLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationUpdateLeaveTypeArgs, 'id' | 'input'>>;
+  updateLoanRepayment: Resolver<ResolversTypes['LoanRepayment'], ParentType, ContextType, RequireFields<MutationUpdateLoanRepaymentArgs, 'id' | 'input'>>;
   updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
@@ -6379,7 +6483,11 @@ export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType 
   docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  payPeriodEnd: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  payPeriodStart: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  remarks: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -6557,6 +6665,8 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   leaveReinstatements: Resolver<Array<ResolversTypes['LeaveReinstatement']>, ParentType, ContextType, RequireFields<QueryLeaveReinstatementsArgs, 'organizationId'>>;
   leaveType: Resolver<Maybe<ResolversTypes['LeaveType']>, ParentType, ContextType, RequireFields<QueryLeaveTypeArgs, 'id'>>;
   leaveTypes: Resolver<Array<ResolversTypes['LeaveType']>, ParentType, ContextType, RequireFields<QueryLeaveTypesArgs, 'organizationId'>>;
+  loanrepayment: Resolver<Maybe<ResolversTypes['LoanRepayment']>, ParentType, ContextType, RequireFields<QueryLoanrepaymentArgs, 'id'>>;
+  loanrepayments: Resolver<Array<ResolversTypes['LoanRepayment']>, ParentType, ContextType, RequireFields<QueryLoanrepaymentsArgs, 'organizationId'>>;
   lowStockItems: Resolver<Array<ResolversTypes['InventoryControl']>, ParentType, ContextType, RequireFields<QueryLowStockItemsArgs, 'organizationId'>>;
   materialreceipt: Resolver<Maybe<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptArgs, 'id'>>;
   materialreceipts: Resolver<Array<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptsArgs, 'organizationId'>>;
@@ -6811,7 +6921,11 @@ export type SalaryProcessingResolvers<ContextType = GraphQLContext, ParentType e
   docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  payPeriodEnd: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  payPeriodStart: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  remarks: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -7191,6 +7305,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   LeaveEnrollment: LeaveEnrollmentResolvers<ContextType>;
   LeaveReinstatement: LeaveReinstatementResolvers<ContextType>;
   LeaveType: LeaveTypeResolvers<ContextType>;
+  LoanRepayment: LoanRepaymentResolvers<ContextType>;
   MRNLineItem: MrnLineItemResolvers<ContextType>;
   MaterialReceipt: MaterialReceiptResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;

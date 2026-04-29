@@ -5,12 +5,20 @@ type SalaryProcessing {
   status: String!
   organizationId: String!
   createdAt: String!
+  title: String
+  remarks: String
+  payPeriodStart: String
+  payPeriodEnd: String
 }
 
 input SalaryProcessingInput {
   docDate: String!
   status: String
   organizationId: String!
+  title: String
+  remarks: String
+  payPeriodStart: String
+  payPeriodEnd: String
 }
 
 extend type Query {
