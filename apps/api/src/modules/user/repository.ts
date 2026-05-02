@@ -15,7 +15,7 @@ export class UserRepository extends MongoBaseRepository<any> {
   }
 
   async findByRole(role: string): Promise<any[]> {
-    return this.findAllActive({ role });
+    return this.findAllActive({ roles: role })
   }
 
   async findByOrganization(organizationId: string): Promise<any[]> {

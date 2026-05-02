@@ -1,6 +1,7 @@
 export const ROLES = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ERP_ADMIN: 'ERP_ADMIN',
+  ORG_ADMIN: 'ORG_ADMIN',
   EXTRACTION_MANAGER: 'EXTRACTION_MANAGER',
   PRODUCTION_MANAGER: 'PRODUCTION_MANAGER',
   PURCHASE_MANAGER: 'PURCHASE_MANAGER',
@@ -164,6 +165,15 @@ export const ROLE_PERMISSIONS = {
       { resource: RESOURCES.PERMISSION, actions: ALL_ACTIONS },
       { resource: RESOURCES.AUDIT_LOG, actions: READ_ONLY },
       { resource: RESOURCES.ORGANIZATION, actions: [ACTIONS.READ, ACTIONS.UPDATE] },
+    ]
+  },
+
+  [ROLES.ORG_ADMIN]: {
+    displayName: 'Organization Admin',
+    description: 'Manages users for a single tenant organization',
+    permissions: [
+      { resource: RESOURCES.USER, actions: ALL_ACTIONS },
+      { resource: RESOURCES.ORGANIZATION, actions: READ_ONLY },
     ]
   },
   

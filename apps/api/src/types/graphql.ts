@@ -508,12 +508,27 @@ export type CreateMaterialReceiptInput = {
   warehouseName: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Create a tenant organization and its first ORG_ADMIN user (platform admins only). */
+export type CreateOrgAdminUserInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type CreateOrganizationInput = {
   address: InputMaybe<Scalars['String']['input']>;
   code: InputMaybe<Scalars['String']['input']>;
+  contactPerson: InputMaybe<Scalars['String']['input']>;
   email: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   phone: InputMaybe<Scalars['String']['input']>;
+  type: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateOrganizationWithOrgAdminInput = {
+  orgAdmin: CreateOrgAdminUserInput;
+  organization: CreateOrganizationInput;
 };
 
 export type CreateProductInput = {
@@ -1490,6 +1505,7 @@ export type Mutation = {
   createLoanRepayment: LoanRepayment;
   createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
+  createOrganizationWithOrgAdmin: Organization;
   createPayrollManagement: PayrollManagement;
   createProduct: Product;
   createProductionPlanning: ProductionPlanning;
@@ -1904,6 +1920,11 @@ export type MutationCreateMaterialReceiptArgs = {
 
 export type MutationCreateOrganizationArgs = {
   input: CreateOrganizationInput;
+};
+
+
+export type MutationCreateOrganizationWithOrgAdminArgs = {
+  input: CreateOrganizationWithOrgAdminInput;
 };
 
 
@@ -5120,7 +5141,9 @@ export type ResolversTypes = ResolversObject<{
   CreateLeaveReinstatementInput: ResolverTypeWrapper<Partial<CreateLeaveReinstatementInput>>;
   CreateLeaveTypeInput: ResolverTypeWrapper<Partial<CreateLeaveTypeInput>>;
   CreateMaterialReceiptInput: ResolverTypeWrapper<Partial<CreateMaterialReceiptInput>>;
+  CreateOrgAdminUserInput: ResolverTypeWrapper<Partial<CreateOrgAdminUserInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
+  CreateOrganizationWithOrgAdminInput: ResolverTypeWrapper<Partial<CreateOrganizationWithOrgAdminInput>>;
   CreateProductInput: ResolverTypeWrapper<Partial<CreateProductInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
   CreatePurchaseOrderInput: ResolverTypeWrapper<Partial<CreatePurchaseOrderInput>>;
@@ -5343,7 +5366,9 @@ export type ResolversParentTypes = ResolversObject<{
   CreateLeaveReinstatementInput: Partial<CreateLeaveReinstatementInput>;
   CreateLeaveTypeInput: Partial<CreateLeaveTypeInput>;
   CreateMaterialReceiptInput: Partial<CreateMaterialReceiptInput>;
+  CreateOrgAdminUserInput: Partial<CreateOrgAdminUserInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
+  CreateOrganizationWithOrgAdminInput: Partial<CreateOrganizationWithOrgAdminInput>;
   CreateProductInput: Partial<CreateProductInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
   CreatePurchaseOrderInput: Partial<CreatePurchaseOrderInput>;
@@ -6299,6 +6324,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createLoanRepayment: Resolver<ResolversTypes['LoanRepayment'], ParentType, ContextType, RequireFields<MutationCreateLoanRepaymentArgs, 'input'>>;
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
+  createOrganizationWithOrgAdmin: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationWithOrgAdminArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
   createProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   createProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationCreateProductionPlanningArgs, 'input'>>;

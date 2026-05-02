@@ -8,6 +8,6 @@ export type GraphQLContext = {
 		email: string
 		role?: string
 		roles?: string[]
-		organizationId?: string
+		organizationId?: string | null
 	}
 }
