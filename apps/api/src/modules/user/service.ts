@@ -21,11 +21,16 @@ export class UserService {
 			throw new GraphQLValidationError('Invalid email format')
 		}
 
+		if (data.organizationId == null) {
+			throw new GraphQLValidationError('organizationId is required')
+		}
+
 		const existing = await this.repository.findByEmailInOrganization(data.email, data.organizationId)
 		if (existing) throw new GraphQLValidationError('User already exists')
 
-		const seq = await getNextSequence({ type: 'User', organizationId: data.organizationId })
-		const seqNo = formatEntitySequence('U', data.organizationId.toString(), seq)
+		const orgKey = String(data.organizationId)
+		const seq = await getNextSequence({ type: 'User', organizationId: orgKey })
+		const seqNo = formatEntitySequence('U', orgKey, seq)
 		const passwordHash = data.password ? await bcrypt.hash(data.password, 10) : undefined
 
 		return this.repository.create({

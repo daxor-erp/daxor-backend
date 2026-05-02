@@ -22,9 +22,28 @@ export const createContext = async ({
 			email: string
 			role?: string
 			roles?: string[]
-			organizationId?: string
+			organizationId?: string | null
 		}
-		return { req, res, user: decoded }
+		const roles =
+			decoded.roles?.length
+				? decoded.roles
+				: decoded.role
+					? [decoded.role]
+					: []
+		return {
+			req,
+			res,
+			user: {
+				...decoded,
+				id: String(decoded.id),
+				roles,
+				role: roles[0],
+				organizationId:
+					decoded.organizationId === undefined || decoded.organizationId === null
+						? null
+						: String(decoded.organizationId),
+			},
+		}
 	} catch {
 		return { req, res }
 	}

@@ -16,6 +16,21 @@ input CreateOrganizationInput {
 	address: String
 	phone: String
 	email: String
+	type: String
+	contactPerson: String
+}
+
+"""Create a tenant organization and its first ORG_ADMIN user (platform admins only)."""
+input CreateOrgAdminUserInput {
+	email: String!
+	firstName: String!
+	lastName: String!
+	password: String!
+}
+
+input CreateOrganizationWithOrgAdminInput {
+	organization: CreateOrganizationInput!
+	orgAdmin: CreateOrgAdminUserInput!
 }
 
 input UpdateOrganizationInput {
@@ -33,6 +48,7 @@ extend type Query {
 
 extend type Mutation {
 	createOrganization(input: CreateOrganizationInput!): Organization!
+	createOrganizationWithOrgAdmin(input: CreateOrganizationWithOrgAdminInput!): Organization!
 	updateOrganization(id: ID!, input: UpdateOrganizationInput!): Organization!
 	deleteOrganization(id: ID!): Organization!
 }

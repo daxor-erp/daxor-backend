@@ -18,8 +18,17 @@ export class AuthService {
 		const isValid = await bcrypt.compare(password, user.passwordHash)
 		if (!isValid) throw new GraphQLAuthError('Invalid credentials')
 
+		const roles = Array.isArray(user.roles) ? user.roles : []
+		const organizationId =
+			user.organizationId != null ? String(user.organizationId) : null
 		const token = jwt.sign(
-			{ id: user._id, email: user.email, role: user.roles?.[0], organizationId: user.organizationId },
+			{
+				id: String(user._id),
+				email: user.email,
+				roles,
+				role: roles[0],
+				organizationId,
+			},
 			config.jwtSecret,
 			{ expiresIn: config.jwtExpiresIn }
 		)
@@ -36,8 +45,17 @@ export class AuthService {
 		const passwordHash = await bcrypt.hash(data.password, 10)
 		const user = await this.userRepository.create({ ...data, passwordHash, status: 'active' })
 
+		const roles = Array.isArray(user.roles) ? user.roles : []
+		const organizationId =
+			user.organizationId != null ? String(user.organizationId) : null
 		const token = jwt.sign(
-			{ id: user._id, email: user.email, role: user.roles?.[0], organizationId: user.organizationId },
+			{
+				id: String(user._id),
+				email: user.email,
+				roles,
+				role: roles[0],
+				organizationId,
+			},
 			config.jwtSecret,
 			{ expiresIn: config.jwtExpiresIn }
 		)
