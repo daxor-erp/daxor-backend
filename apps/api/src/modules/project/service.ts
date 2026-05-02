@@ -12,7 +12,12 @@ export class ProjectService {
   async create(data: any, userId?: string): Promise<any> {
     const seq = await getNextSequence({ type: 'Project', organizationId: data.organizationId })
     const seqNo = formatEntitySequence('PRJ', data.organizationId.toString(), seq)
-    return this.repository.create({ ...data, seqNo, createdBy: userId, updatedBy: userId })
+    return this.repository.create({
+      ...data,
+      seqNo,
+      createdBy: userId,
+      updatedBy: userId,
+    })
   }
 
   async findById(id: string): Promise<any> {

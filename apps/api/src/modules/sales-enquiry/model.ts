@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose'
 
 const salesEnquirySchema = new Schema({
-	seqNo: { type: String, unique: true, sparse: true },
-	enquiryNumber: { type: String, required: true, unique: true, maxlength: 50 },
+	seqNo: { type: String },
+	enquiryNumber: { type: String, required: true, maxlength: 50 },
 	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	enquirySource: { type: String, maxlength: 50 },
 	subject: { type: String, maxlength: 255 },
@@ -32,8 +32,8 @@ const salesEnquirySchema = new Schema({
 	deletedAt: { type: Date },
 }, { timestamps: false })
 
-salesEnquirySchema.index({ enquiryNumber: 1 })
-salesEnquirySchema.index({ seqNo: 1 })
+salesEnquirySchema.index({ seqNo: 1 }, { unique: true, sparse: true })
+salesEnquirySchema.index({ enquiryNumber: 1 }, { unique: true })
 salesEnquirySchema.index({ clientId: 1 })
 salesEnquirySchema.index({ status: 1 })
 salesEnquirySchema.index({ assignedTo: 1 })

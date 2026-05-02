@@ -21,6 +21,7 @@ type BankAccount {
   id: ID!
   accountNumber: String!
   accountName: String!
+  accountHolder: String
   bankName: String!
   branchName: String!
   accountType: String!
@@ -48,6 +49,7 @@ input CashBankInput {
 input BankAccountInput {
   accountNumber: String!
   accountName: String!
+  accountHolder: String
   bankName: String!
   branchName: String!
   accountType: String!
@@ -55,11 +57,94 @@ input BankAccountInput {
   organizationId: String!
 }
 
+type BankStatementLine {
+  id: ID!
+  lineDate: String!
+  amount: Float!
+  lineKind: String!
+  description: String!
+  bankReference: String
+  bankAccount: String!
+  organizationId: String!
+  isMatched: Boolean!
+  matchedCashBankId: String
+  createdAt: String!
+}
+
+input BankStatementLineInput {
+  organizationId: String!
+  bankAccount: String!
+  lineDate: String!
+  amount: Float!
+  lineKind: String!
+  description: String!
+  bankReference: String
+}
+
+type ReconciliationRule {
+  id: ID!
+  name: String!
+  organizationId: String!
+  bankAccount: String
+  priority: Int!
+  isActive: Boolean!
+  bankLineTextContains: String!
+  bookLineTextContains: String!
+  amountTolerance: Float!
+  notes: String
+  createdAt: String!
+  updatedAt: String
+}
+
+input ReconciliationRuleInput {
+  name: String!
+  organizationId: String!
+  bankAccount: String
+  priority: Int
+  isActive: Boolean
+  bankLineTextContains: String
+  bookLineTextContains: String
+  amountTolerance: Float
+  notes: String
+}
+
+input ReconciliationRulePatch {
+  name: String
+  bankAccount: String
+  priority: Int
+  isActive: Boolean
+  bankLineTextContains: String
+  bookLineTextContains: String
+  amountTolerance: Float
+  notes: String
+}
+
+input BankTransferInput {
+  organizationId: String!
+  transferDate: String!
+  fromAccountNumber: String!
+  toAccountNumber: String!
+  amount: Float!
+  currency: String
+  description: String!
+  paymentMethod: String
+}
+
+type BankTransferResult {
+  transferId: String!
+  fromCashBankId: String!
+  toCashBankId: String!
+  fromTransactionNumber: String!
+  toTransactionNumber: String!
+}
+
 extend type Query {
   cashBank(id: ID!): CashBank
-  cashBanks(organizationId: String!, page: Int, limit: Int, reconciliationStatus: String): [CashBank!]!
+  cashBanks(organizationId: String!, page: Int, limit: Int, reconciliationStatus: String, bankAccount: String): [CashBank!]!
   bankAccount(id: ID!): BankAccount
   bankAccounts(organizationId: String!, page: Int, limit: Int): [BankAccount!]!
+  bankStatementLines(organizationId: String!, bankAccount: String!, onlyUnmatched: Boolean): [BankStatementLine!]!
+  reconciliationRules(organizationId: String!): [ReconciliationRule!]!
 }
 
 extend type Mutation {
@@ -67,4 +152,11 @@ extend type Mutation {
   reconcileCashBank(id: ID!): CashBank!
   createBankAccount(input: BankAccountInput!): BankAccount!
   updateBankAccount(id: ID!, input: BankAccountInput!): BankAccount!
+  createBankStatementLine(input: BankStatementLineInput!): BankStatementLine!
+  deleteBankStatementLine(id: ID!): Boolean!
+  matchBankStatementLineToBook(bankStatementLineId: ID!, cashBankId: ID!): BankStatementLine!
+  createReconciliationRule(input: ReconciliationRuleInput!): ReconciliationRule!
+  updateReconciliationRule(id: ID!, input: ReconciliationRulePatch!): ReconciliationRule!
+  deleteReconciliationRule(id: ID!): Boolean!
+  transferBankFunds(input: BankTransferInput!): BankTransferResult!
 }

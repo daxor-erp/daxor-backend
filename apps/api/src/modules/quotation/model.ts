@@ -11,8 +11,8 @@ const lineItemSchema = new Schema({
 }, { _id: false })
 
 const quotationSchema = new Schema({
-  seqNo: { type: String, unique: true, sparse: true },
-  quotationNumber: { type: String, required: true, unique: true },
+  seqNo: { type: String },
+  quotationNumber: { type: String, required: true },
   clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: true },
   subject: { type: String, required: true },
   quotationDate: { type: Date, required: true },
@@ -38,7 +38,8 @@ const quotationSchema = new Schema({
   deletedAt: { type: Date },
 }, { timestamps: true })
 
-quotationSchema.index({ quotationNumber: 1 })
+quotationSchema.index({ seqNo: 1 }, { unique: true, sparse: true })
+quotationSchema.index({ quotationNumber: 1 }, { unique: true })
 quotationSchema.index({ clientId: 1 })
 quotationSchema.index({ organizationId: 1 })
 quotationSchema.index({ status: 1 })

@@ -9,8 +9,8 @@ const invoiceItemSchema = new Schema({
 }, { _id: true })
 
 const customerInvoiceSchema = new Schema({
-	seqNo: { type: String, unique: true, sparse: true },
-	invoiceNumber: { type: String, required: true, unique: true },
+	seqNo: { type: String },
+	invoiceNumber: { type: String, required: true },
 	salesOrderId: { type: Schema.Types.ObjectId, ref: 'SalesOrder' },
 	projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
 	customerId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
@@ -31,7 +31,8 @@ const customerInvoiceSchema = new Schema({
 	deletedAt: { type: Date },
 }, { timestamps: false })
 
-customerInvoiceSchema.index({ invoiceNumber: 1 })
+customerInvoiceSchema.index({ seqNo: 1 }, { unique: true, sparse: true })
+customerInvoiceSchema.index({ invoiceNumber: 1 }, { unique: true })
 customerInvoiceSchema.index({ salesOrderId: 1 })
 customerInvoiceSchema.index({ projectId: 1 })
 customerInvoiceSchema.index({ customerId: 1 })

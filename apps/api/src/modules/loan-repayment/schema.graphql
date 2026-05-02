@@ -1,0 +1,41 @@
+type LoanRepayment {
+  id: ID!
+  docNumber: String!
+  docDate: String!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+  title: String
+  remarks: String
+  payPeriodStart: String
+  payPeriodEnd: String
+  employeeNo: String
+  employeeName: String
+  loanReference: String
+  repaymentAmount: Float!
+}
+
+input LoanRepaymentInput {
+  docDate: String!
+  status: String
+  organizationId: String!
+  title: String
+  remarks: String
+  payPeriodStart: String
+  payPeriodEnd: String
+  employeeNo: String
+  employeeName: String
+  loanReference: String
+  repaymentAmount: Float
+}
+
+extend type Query {
+  loanrepayment(id: ID!): LoanRepayment
+  loanrepayments(organizationId: String!): [LoanRepayment!]!
+}
+
+extend type Mutation {
+  createLoanRepayment(input: LoanRepaymentInput!): LoanRepayment!
+  updateLoanRepayment(id: ID!, input: LoanRepaymentInput!): LoanRepayment!
+  deleteLoanRepayment(id: ID!): Boolean!
+}

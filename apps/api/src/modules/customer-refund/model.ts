@@ -4,7 +4,7 @@ const customerRefundSchema = new Schema(
 	{
 		refundNumber: { type: String, required: true, unique: true },
 		organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true, index: true },
-		customerId: { type: Schema.Types.ObjectId, required: true, index: true },
+		customerId: { type: Schema.Types.ObjectId, required: true },
 		refundDate: { type: Date, required: true },
 		refundMethod: { type: String, required: true },
 		referenceNumber: { type: String },

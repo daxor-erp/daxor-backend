@@ -8,6 +8,11 @@ export interface IPayrollManagement extends IBaseEntity {
   organizationId: string;
   createdBy: string;
   isDeleted: boolean;
+  /** Short label, e.g. "April 2026 — Operations" */
+  title?: string;
+  remarks?: string;
+  payPeriodStart?: Date;
+  payPeriodEnd?: Date;
 }
 
 const PayrollManagementSchema = new Schema<IPayrollManagement>({
@@ -17,6 +22,10 @@ const PayrollManagementSchema = new Schema<IPayrollManagement>({
   organizationId: { type: String, required: true, index: true },
   createdBy: { type: String, required: true },
   isDeleted: { type: Boolean, default: false },
+  title: { type: String },
+  remarks: { type: String },
+  payPeriodStart: { type: Date },
+  payPeriodEnd: { type: Date },
 }, { timestamps: true });
 
 export const PayrollManagement = mongoose.model<IPayrollManagement>('PayrollManagement', PayrollManagementSchema);

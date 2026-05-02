@@ -8,6 +8,10 @@ export interface ISalaryProcessing extends IBaseEntity {
   organizationId: string;
   createdBy: string;
   isDeleted: boolean;
+  title?: string;
+  remarks?: string;
+  payPeriodStart?: Date;
+  payPeriodEnd?: Date;
 }
 
 const SalaryProcessingSchema = new Schema<ISalaryProcessing>({
@@ -17,6 +21,10 @@ const SalaryProcessingSchema = new Schema<ISalaryProcessing>({
   organizationId: { type: String, required: true, index: true },
   createdBy: { type: String, required: true },
   isDeleted: { type: Boolean, default: false },
+  title: { type: String },
+  remarks: { type: String },
+  payPeriodStart: { type: Date },
+  payPeriodEnd: { type: Date },
 }, { timestamps: true });
 
 export const SalaryProcessing = mongoose.model<ISalaryProcessing>('SalaryProcessing', SalaryProcessingSchema);
