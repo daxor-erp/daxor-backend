@@ -1,7 +1,7 @@
-import { StockTransferService } from './service'
+import { IntercompanyTransferService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
 
-const service = new StockTransferService()
+const service = new IntercompanyTransferService()
 
 function graphqlIsoDate(value: unknown): string | null {
   if (value == null) return null
@@ -31,12 +31,7 @@ function asPlain(doc: unknown): Record<string, unknown> {
   return doc as Record<string, unknown>
 }
 
-function optionalRefId(value: unknown): string | null {
-  if (value == null || String(value).trim() === '') return null
-  return String(value)
-}
-
-function optionalTrimmedString(value: unknown): string | null {
+function optionalTrim(value: unknown): string | null {
   if (value == null) return null
   const s = String(value).trim()
   return s === '' ? null : s
@@ -45,10 +40,6 @@ function optionalTrimmedString(value: unknown): string | null {
 function mapLineItems(items: unknown): Array<Record<string, unknown>> {
   if (!Array.isArray(items)) return []
   return items.map((li: Record<string, unknown>) => ({
-    itemId:
-      li.itemId != null && String(li.itemId).trim() !== ''
-        ? String(li.itemId)
-        : null,
     itemDescription: String(li.itemDescription ?? ''),
     qty: coerceFloat(li.qty),
     unit:
@@ -58,9 +49,9 @@ function mapLineItems(items: unknown): Array<Record<string, unknown>> {
   }))
 }
 
-function stockTransferToGraphQL(doc: unknown) {
+function intercompanyTransferToGraphQL(doc: unknown) {
   if (doc == null) {
-    throw new Error('Stock transfer operation returned no document')
+    throw new Error('Intercompany transfer operation returned no document')
   }
   const o = asPlain(doc)
   const transferDateIso =
@@ -69,13 +60,13 @@ function stockTransferToGraphQL(doc: unknown) {
     id: String(o._id ?? o.id ?? ''),
     transferNumber: String(o.transferNumber ?? ''),
     transferDate: transferDateIso,
-    fromWarehouseId: optionalRefId(o.fromWarehouseId),
-    fromWarehouseName: optionalTrimmedString(o.fromWarehouseName),
-    toWarehouseId: optionalRefId(o.toWarehouseId),
-    toWarehouseName: optionalTrimmedString(o.toWarehouseName),
+    fromOrganizationId: String(o.fromOrganizationId ?? ''),
+    fromOrganizationName: optionalTrim(o.fromOrganizationName),
+    toOrganizationId: String(o.toOrganizationId ?? ''),
+    toOrganizationName: optionalTrim(o.toOrganizationName),
     lineItems: mapLineItems(o.lineItems),
     status: String(o.status ?? 'draft'),
-    notes: optionalTrimmedString(o.notes),
+    notes: optionalTrim(o.notes),
     organizationId: String(o.organizationId ?? ''),
     createdAt: graphqlIsoDate(o.createdAt),
     updatedAt: graphqlIsoDate(o.updatedAt),
@@ -84,11 +75,14 @@ function stockTransferToGraphQL(doc: unknown) {
 
 export const resolvers = {
   Query: {
-    stocktransfer: async (_: unknown, { id }: { id: string }) => {
+    intercompanyTransfer: async (_: unknown, { id }: { id: string }) => {
       const doc = await service.getById(id)
-      return doc ? stockTransferToGraphQL(doc) : null
+      if (!doc) return null
+      const plain = asPlain(doc)
+      if (plain.deletedAt != null) return null
+      return intercompanyTransferToGraphQL(doc)
     },
-    stocktransfers: async (
+    intercompanyTransfers: async (
       _: unknown,
       {
         organizationId,
@@ -96,44 +90,44 @@ export const resolvers = {
         limit,
       }: { organizationId: string; page?: number; limit?: number },
     ) => {
-      const rows = await service.getAll(organizationId, page, limit)
-      return rows.map((d) => stockTransferToGraphQL(d))
+      const rows = await service.getAll(organizationId, page ?? 1, limit ?? 100)
+      return rows.map((d) => intercompanyTransferToGraphQL(d))
     },
   },
   Mutation: {
-    createStockTransfer: async (
+    createIntercompanyTransfer: async (
       _: unknown,
       { input }: { input: Record<string, unknown> },
       ctx: GraphQLContext,
     ) => {
-      const doc = await service.create(input, ctx.user?.id ?? 'system')
-      return stockTransferToGraphQL(doc)
+      const doc = await service.create(input, ctx.user?.id ?? '')
+      return intercompanyTransferToGraphQL(doc)
     },
-    updateStockTransfer: async (
+    updateIntercompanyTransfer: async (
       _: unknown,
       { id, input }: { id: string; input: Record<string, unknown> },
       ctx: GraphQLContext,
     ) => {
-      const doc = await service.update(id, input, ctx.user?.id ?? 'system')
-      return stockTransferToGraphQL(doc)
+      const doc = await service.update(id, input, ctx.user?.id ?? '')
+      return intercompanyTransferToGraphQL(doc)
     },
-    confirmStockTransfer: async (
+    confirmIntercompanyTransfer: async (
       _: unknown,
       { id }: { id: string },
       ctx: GraphQLContext,
     ) => {
-      const doc = await service.confirm(id, ctx.user?.id ?? 'system')
-      return stockTransferToGraphQL(doc)
+      const doc = await service.confirm(id, ctx.user?.id ?? '')
+      return intercompanyTransferToGraphQL(doc)
     },
-    cancelStockTransfer: async (
+    cancelIntercompanyTransfer: async (
       _: unknown,
       { id }: { id: string },
       ctx: GraphQLContext,
     ) => {
-      const doc = await service.cancel(id, ctx.user?.id ?? 'system')
-      return stockTransferToGraphQL(doc)
+      const doc = await service.cancel(id, ctx.user?.id ?? '')
+      return intercompanyTransferToGraphQL(doc)
     },
-    deleteStockTransfer: async (_: unknown, { id }: { id: string }) => {
+    deleteIntercompanyTransfer: async (_: unknown, { id }: { id: string }) => {
       await service.delete(id)
       return true
     },

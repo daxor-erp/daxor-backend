@@ -7,6 +7,6 @@ export class GoodsReceiptRepository extends MongoBaseRepository<IGoodsReceipt> {
   }
 
   async findByOrganization(organizationId: string) {
-    return this.findAll({ organizationId, isDeleted: false } as any);
+    return this.findAll({ organizationId, isDeleted: { $ne: true } } as any);
   }
 }

@@ -6,8 +6,12 @@ export class WarehouseRepository extends MongoBaseRepository<IWarehouse> {
     super(Warehouse);
   }
 
-  async findByOrganization(organizationId: string) {
-    return this.findAll({ organizationId, isDeleted: false } as any);
+  async findByOrganization(organizationId: string, isActive?: boolean) {
+    const q: Record<string, unknown> = { organizationId, isDeleted: false };
+    if (isActive !== undefined && isActive !== null) {
+      q.isActive = isActive;
+    }
+    return this.findAll(q as any);
   }
 }
 

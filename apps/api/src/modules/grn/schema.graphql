@@ -29,10 +29,19 @@ input GRNLineItemInput {
 input CreateGRNInput {
   purchaseOrderId: ID
   vendorId: ID
+  vendorName: String
   receivedDate: String!
   lineItems: [GRNLineItemInput!]!
   notes: String
   organizationId: ID!
+  """draft | confirmed (default confirmed)"""
+  status: String
+}
+
+input UpdateGRNInput {
+  status: String
+  notes: String
+  receivedDate: String
 }
 
 extend type Query {
@@ -43,5 +52,6 @@ extend type Query {
 
 extend type Mutation {
   createGRN(input: CreateGRNInput!): GRN!
+  updateGRN(id: ID!, input: UpdateGRNInput!): GRN!
   deleteGRN(id: ID!): Boolean!
 }

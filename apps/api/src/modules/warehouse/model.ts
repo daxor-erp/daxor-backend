@@ -29,7 +29,7 @@ export interface IWarehouseBin extends IBaseEntity {
 }
 
 const WarehouseSchema = new Schema<IWarehouse>({
-  warehouseCode: { type: String, required: true, unique: true },
+  warehouseCode: { type: String, required: true },
   warehouseName: { type: String, required: true },
   location: { type: String, required: true },
   address: { type: String, required: true },
@@ -42,6 +42,8 @@ const WarehouseSchema = new Schema<IWarehouse>({
   organizationId: { type: String, required: true, index: true },
   isDeleted: { type: Boolean, default: false },
 }, { timestamps: true });
+
+WarehouseSchema.index({ organizationId: 1, warehouseCode: 1 }, { unique: true });
 
 const WarehouseBinSchema = new Schema<IWarehouseBin>({
   warehouseId: { type: String, required: true, index: true },

@@ -28,7 +28,8 @@ type WarehouseBin {
 }
 
 input WarehouseInput {
-  warehouseCode: String!
+  """Omitted or blank values receive the next auto-generated code for the organization (e.g. WH0001)."""
+  warehouseCode: String
   warehouseName: String!
   location: String!
   address: String!
@@ -37,6 +38,10 @@ input WarehouseInput {
   contactNumber: String!
   warehouseType: String!
   organizationId: String!
+  """Defaults to true on create when omitted."""
+  isActive: Boolean
+  """Stored utilization / occupancy level for reporting."""
+  currentUtilization: Float
 }
 
 input WarehouseBinInput {
@@ -46,6 +51,8 @@ input WarehouseBinInput {
   binType: String!
   capacity: Float!
   organizationId: String!
+  """Defaults to true when omitted."""
+  isAvailable: Boolean
 }
 
 extend type Query {

@@ -8,14 +8,31 @@ export class StockAdjustmentService {
   }
 
   private async generateNumber(organizationId: any): Promise<string> {
-    const count = await this.repository.count({ organizationId })
+    const count = await this.repository.count({
+      organizationId,
+      deletedAt: null,
+    } as any)
     const orgStr = `${organizationId}`
     return `SA-${orgStr.slice(-6).toUpperCase()}-${String(count + 1).padStart(5, '0')}`
   }
 
   async create(data: any, userId: string) {
-    const adjNumber = await this.generateNumber(data.organizationId)
-    return this.repository.create({ ...data, adjNumber, createdBy: userId })
+    const payload = { ...data }
+    if (
+      payload.warehouseId === '' ||
+      payload.warehouseId == null ||
+      payload.warehouseId === undefined
+    ) {
+      delete payload.warehouseId
+    }
+    if (payload.warehouseName === '') delete payload.warehouseName
+
+    const adjNumber = await this.generateNumber(payload.organizationId)
+    return this.repository.create({
+      ...payload,
+      adjNumber,
+      createdBy: userId,
+    })
   }
 
   async getAll(organizationId: string, page = 1, limit = 100) {
@@ -28,21 +45,33 @@ export class StockAdjustmentService {
   }
 
   async update(id: string, data: any, userId: string) {
-    return this.repository.update(id, { ...data, updatedBy: userId })
+    const updated = await this.repository.update(id, { ...data, updatedBy: userId })
+    if (!updated) throw new Error('Stock adjustment not found')
+    return updated
   }
 
   async confirm(id: string, userId: string) {
     const doc = await this.repository.findById(id)
     if (!doc) throw new Error('Stock adjustment not found')
     if (doc.status !== 'draft') throw new Error('Only draft adjustments can be confirmed')
-    return this.repository.update(id, { status: 'confirmed', updatedBy: userId })
+    const updated = await this.repository.update(id, {
+      status: 'confirmed',
+      updatedBy: userId,
+    })
+    if (!updated) throw new Error('Stock adjustment not found')
+    return updated
   }
 
   async cancel(id: string, userId: string) {
     const doc = await this.repository.findById(id)
     if (!doc) throw new Error('Stock adjustment not found')
     if (doc.status === 'cancelled') throw new Error('Already cancelled')
-    return this.repository.update(id, { status: 'cancelled', updatedBy: userId })
+    const updated = await this.repository.update(id, {
+      status: 'cancelled',
+      updatedBy: userId,
+    })
+    if (!updated) throw new Error('Stock adjustment not found')
+    return updated
   }
 
   async delete(id: string) {

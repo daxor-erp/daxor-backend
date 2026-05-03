@@ -1,0 +1,61 @@
+type ICTLineItem {
+  itemDescription: String!
+  qty: Float!
+  unit: String
+}
+
+type IntercompanyTransfer {
+  id: ID!
+  transferNumber: String!
+  transferDate: String!
+  fromOrganizationId: ID!
+  fromOrganizationName: String
+  toOrganizationId: ID!
+  toOrganizationName: String
+  lineItems: [ICTLineItem!]!
+  status: String!
+  notes: String
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input ICTLineItemInput {
+  itemDescription: String!
+  qty: Float!
+  unit: String
+}
+
+input CreateIntercompanyTransferInput {
+  transferDate: String!
+  fromOrganizationId: ID!
+  toOrganizationId: ID!
+  fromOrganizationName: String
+  toOrganizationName: String
+  lineItems: [ICTLineItemInput!]!
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateIntercompanyTransferInput {
+  transferDate: String
+  fromOrganizationId: ID
+  toOrganizationId: ID
+  fromOrganizationName: String
+  toOrganizationName: String
+  lineItems: [ICTLineItemInput!]
+  notes: String
+}
+
+extend type Query {
+  intercompanyTransfer(id: ID!): IntercompanyTransfer
+  intercompanyTransfers(organizationId: ID!, page: Int, limit: Int): [IntercompanyTransfer!]!
+}
+
+extend type Mutation {
+  createIntercompanyTransfer(input: CreateIntercompanyTransferInput!): IntercompanyTransfer!
+  updateIntercompanyTransfer(id: ID!, input: UpdateIntercompanyTransferInput!): IntercompanyTransfer!
+  confirmIntercompanyTransfer(id: ID!): IntercompanyTransfer!
+  cancelIntercompanyTransfer(id: ID!): IntercompanyTransfer!
+  deleteIntercompanyTransfer(id: ID!): Boolean!
+}
