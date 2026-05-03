@@ -11,22 +11,44 @@ export class InventoryControlService {
   }
 
   async createInventoryControl(data: Partial<IInventoryControl>) {
-    const stockStatus = this.determineStockStatus(data.quantity!, data.reorderPoint!);
+    const qty = Number(data.quantity ?? 0);
+    const reorder = Number(data.reorderPoint ?? 0);
+    const stockStatus = this.determineStockStatus(qty, reorder);
     return this.icRepository.create({ ...data, stockStatus } as IInventoryControl);
   }
 
   async updateInventoryControl(id: string, data: Partial<IInventoryControl>) {
-    if (data.quantity !== undefined && data.reorderPoint !== undefined) {
-      data.stockStatus = this.determineStockStatus(data.quantity, data.reorderPoint);
+    const existing = await this.icRepository.findById(id);
+    if (!existing) throw new Error('Inventory record not found');
+
+    const qty =
+      data.quantity !== undefined ? Number(data.quantity) : existing.quantity;
+    const reorder =
+      data.reorderPoint !== undefined
+        ? Number(data.reorderPoint)
+        : existing.reorderPoint;
+
+    const patch = { ...data } as Partial<IInventoryControl>;
+    if (data.quantity !== undefined || data.reorderPoint !== undefined) {
+      patch.stockStatus = this.determineStockStatus(qty, reorder);
     }
-    return this.icRepository.update(id, data);
+    return this.icRepository.update(id, patch);
   }
 
   async getInventoryControls(organizationId: string, filters: any) {
+    let rows: IInventoryControl[];
     if (filters.warehouseId) {
-      return this.icRepository.findByWarehouse(organizationId, filters.warehouseId);
+      rows = await this.icRepository.findByWarehouse(
+        organizationId,
+        filters.warehouseId,
+      );
+    } else {
+      rows = await this.icRepository.findByOrganization(organizationId);
     }
-    return this.icRepository.findByOrganization(organizationId);
+    if (filters.stockStatus) {
+      return rows.filter((r) => r.stockStatus === filters.stockStatus);
+    }
+    return rows;
   }
 
   async getLowStockItems(organizationId: string) {
@@ -40,18 +62,47 @@ export class InventoryControlService {
   }
 
   async getStockMovements(organizationId: string, itemId?: string) {
+    let rows: IStockMovement[]
     if (itemId) {
-      return this.smRepository.findByItem(organizationId, itemId);
+      rows = await this.smRepository.findByItem(organizationId, itemId)
+    } else {
+      rows = await this.smRepository.findByOrganization(organizationId)
     }
-    return this.smRepository.findByOrganization(organizationId);
+    const time = (r: IStockMovement) => {
+      const d = r.movementDate ?? (r as unknown as { createdAt?: Date }).createdAt
+      const t = d != null ? new Date(d as unknown as string | Date).getTime() : 0
+      return Number.isFinite(t) ? t : 0
+    }
+    return [...rows].sort((a, b) => time(b) - time(a))
   }
 
-  async adjustStock(itemId: string, binLocation: string, quantity: number, reason: string, userId: string) {
-    const inventory = await this.icRepository.findOne({ itemId, binLocation } as any);
+  async adjustStock(
+    itemId: string,
+    binLocation: string,
+    quantity: number,
+    reason: string,
+    userId: string,
+    organizationId?: string,
+  ) {
+    const filter: Record<string, unknown> = {
+      itemId,
+      binLocation,
+      isDeleted: false,
+    };
+    if (organizationId != null && String(organizationId).trim() !== '') {
+      filter.organizationId = String(organizationId);
+    }
+    const inventory = await this.icRepository.findOne(filter as any);
     if (!inventory) throw new Error('Inventory not found');
 
     const newQuantity = inventory.quantity + quantity;
-    await this.icRepository.update(inventory.id, { quantity: newQuantity } as Partial<IInventoryControl>);
+    const reorder = Number(inventory.reorderPoint ?? 0);
+    const stockStatus = this.determineStockStatus(newQuantity, reorder);
+    await this.icRepository.update(inventory.id, {
+      quantity: newQuantity,
+      stockStatus,
+      lastStockDate: new Date(),
+    } as Partial<IInventoryControl>);
 
     await this.smRepository.create({
       itemId,
@@ -82,8 +133,21 @@ export class InventoryControlService {
   }
 
   private determineStockStatus(quantity: number, reorderPoint: number): string {
+    if (quantity < 0) return 'NEGATIVE';
     if (quantity === 0) return 'OUT_OF_STOCK';
     if (quantity <= reorderPoint) return 'LOW_STOCK';
     return 'IN_STOCK';
+  }
+
+  async getInventoryControlById(id: string) {
+    const row = await this.icRepository.findById(id);
+    if (!row || (row as any).isDeleted) return null;
+    return row;
+  }
+
+  async getStockMovementById(id: string) {
+    const row = await this.smRepository.findById(id);
+    if (!row || (row as any).isDeleted) return null;
+    return row;
   }
 }

@@ -41,7 +41,7 @@ input AssetInput {
 
 extend type Query {
   asset(id: ID!): Asset
-  assets(organizationId: String!, page: Int, limit: Int, status: String): [Asset!]!
+  assets(organizationId: String!, page: Int, limit: Int, status: String, assetType: String): [Asset!]!
 }
 
 extend type Mutation {

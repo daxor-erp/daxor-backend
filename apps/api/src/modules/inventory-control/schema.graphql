@@ -69,5 +69,5 @@ extend type Mutation {
   createInventoryControl(input: InventoryControlInput!): InventoryControl!
   updateInventoryControl(id: ID!, input: InventoryControlInput!): InventoryControl!
   createStockMovement(input: StockMovementInput!): StockMovement!
-  adjustStock(itemId: String!, binLocation: String!, quantity: Float!, reason: String!): InventoryControl!
+  adjustStock(itemId: String!, binLocation: String!, quantity: Float!, reason: String!, organizationId: String): InventoryControl!
 }
