@@ -1491,6 +1491,7 @@ export type Mutation = {
   createMaterialReceipt: MaterialReceipt;
   createOrganization: Organization;
   createPayrollManagement: PayrollManagement;
+  createPayrollUiRecord: PayrollUiRecord;
   createProduct: Product;
   createProductionPlanning: ProductionPlanning;
   createProject: Project;
@@ -1549,6 +1550,7 @@ export type Mutation = {
   deleteMaterialReceipt: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
   deletePayrollManagement: Scalars['Boolean']['output'];
+  deletePayrollUiRecord: Scalars['Boolean']['output'];
   deleteProduct: Scalars['Boolean']['output'];
   deleteProductionPlanning: Scalars['Boolean']['output'];
   deleteProject: Project;
@@ -1618,6 +1620,7 @@ export type Mutation = {
   updateMaterialReceipt: MaterialReceipt;
   updateOrganization: Organization;
   updatePayrollManagement: PayrollManagement;
+  updatePayrollUiRecord: PayrollUiRecord;
   updateProduct: Product;
   updateProductionPlanning: ProductionPlanning;
   updateProject: Project;
@@ -1912,6 +1915,11 @@ export type MutationCreatePayrollManagementArgs = {
 };
 
 
+export type MutationCreatePayrollUiRecordArgs = {
+  input: PayrollUiRecordInput;
+};
+
+
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
 };
@@ -2198,6 +2206,11 @@ export type MutationDeleteOrganizationArgs = {
 
 
 export type MutationDeletePayrollManagementArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeletePayrollUiRecordArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2576,6 +2589,12 @@ export type MutationUpdatePayrollManagementArgs = {
 };
 
 
+export type MutationUpdatePayrollUiRecordArgs = {
+  id: Scalars['ID']['input'];
+  input: PayrollUiRecordInput;
+};
+
+
 export type MutationUpdateProductArgs = {
   id: Scalars['ID']['input'];
   input: UpdateProductInput;
@@ -2784,6 +2803,24 @@ export type PayrollManagementInput = {
   title: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PayrollUiRecord = {
+  __typename?: 'PayrollUiRecord';
+  category: Scalars['String']['output'];
+  code: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  data: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type PayrollUiRecordInput = {
+  category: Scalars['String']['input'];
+  code: InputMaybe<Scalars['String']['input']>;
+  data: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+};
+
 export type Permission = {
   __typename?: 'Permission';
   actions: Array<Scalars['String']['output']>;
@@ -2982,6 +3019,8 @@ export type Query = {
   outstandingVendorBills: Array<VendorBill>;
   payrollmanagement: Maybe<PayrollManagement>;
   payrollmanagements: Array<PayrollManagement>;
+  payrolluirecord: Maybe<PayrollUiRecord>;
+  payrolluirecords: Array<PayrollUiRecord>;
   priceList: Maybe<PriceList>;
   priceLists: Array<PriceList>;
   product: Maybe<Product>;
@@ -3588,6 +3627,17 @@ export type QueryPayrollmanagementsArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryPayrolluirecordArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryPayrolluirecordsArgs = {
+  category: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
 };
 
 
@@ -5205,6 +5255,8 @@ export type ResolversTypes = ResolversObject<{
   POLineItemInput: ResolverTypeWrapper<Partial<PoLineItemInput>>;
   PayrollManagement: ResolverTypeWrapper<Partial<PayrollManagement>>;
   PayrollManagementInput: ResolverTypeWrapper<Partial<PayrollManagementInput>>;
+  PayrollUiRecord: ResolverTypeWrapper<Partial<PayrollUiRecord>>;
+  PayrollUiRecordInput: ResolverTypeWrapper<Partial<PayrollUiRecordInput>>;
   Permission: ResolverTypeWrapper<Partial<Permission>>;
   PermissionInput: ResolverTypeWrapper<Partial<PermissionInput>>;
   PriceList: ResolverTypeWrapper<Partial<PriceList>>;
@@ -5428,6 +5480,8 @@ export type ResolversParentTypes = ResolversObject<{
   POLineItemInput: Partial<PoLineItemInput>;
   PayrollManagement: Partial<PayrollManagement>;
   PayrollManagementInput: Partial<PayrollManagementInput>;
+  PayrollUiRecord: Partial<PayrollUiRecord>;
+  PayrollUiRecordInput: Partial<PayrollUiRecordInput>;
   Permission: Partial<Permission>;
   PermissionInput: Partial<PermissionInput>;
   PriceList: Partial<PriceList>;
@@ -6300,6 +6354,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
+  createPayrollUiRecord: Resolver<ResolversTypes['PayrollUiRecord'], ParentType, ContextType, RequireFields<MutationCreatePayrollUiRecordArgs, 'input'>>;
   createProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   createProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationCreateProductionPlanningArgs, 'input'>>;
   createProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
@@ -6358,6 +6413,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteMaterialReceipt: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMaterialReceiptArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
+  deletePayrollUiRecord: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollUiRecordArgs, 'id'>>;
   deleteProduct: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
   deleteProductionPlanning: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductionPlanningArgs, 'id'>>;
   deleteProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
@@ -6427,6 +6483,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
+  updatePayrollUiRecord: Resolver<ResolversTypes['PayrollUiRecord'], ParentType, ContextType, RequireFields<MutationUpdatePayrollUiRecordArgs, 'id' | 'input'>>;
   updateProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'id' | 'input'>>;
   updateProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationUpdateProductionPlanningArgs, 'id' | 'input'>>;
   updateProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'id' | 'input'>>;
@@ -6488,6 +6545,17 @@ export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType 
   remarks: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PayrollUiRecordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PayrollUiRecord'] = ResolversParentTypes['PayrollUiRecord']> = ResolversObject<{
+  category: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  data: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -6677,6 +6745,8 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   outstandingVendorBills: Resolver<Array<ResolversTypes['VendorBill']>, ParentType, ContextType, RequireFields<QueryOutstandingVendorBillsArgs, 'organizationId'>>;
   payrollmanagement: Resolver<Maybe<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementArgs, 'id'>>;
   payrollmanagements: Resolver<Array<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementsArgs, 'organizationId'>>;
+  payrolluirecord: Resolver<Maybe<ResolversTypes['PayrollUiRecord']>, ParentType, ContextType, RequireFields<QueryPayrolluirecordArgs, 'id'>>;
+  payrolluirecords: Resolver<Array<ResolversTypes['PayrollUiRecord']>, ParentType, ContextType, RequireFields<QueryPayrolluirecordsArgs, 'category' | 'organizationId'>>;
   priceList: Resolver<Maybe<ResolversTypes['PriceList']>, ParentType, ContextType, RequireFields<QueryPriceListArgs, 'id'>>;
   priceLists: Resolver<Array<ResolversTypes['PriceList']>, ParentType, ContextType, RequireFields<QueryPriceListsArgs, 'organizationId'>>;
   product: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
@@ -7312,6 +7382,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Organization: OrganizationResolvers<ContextType>;
   POLineItem: PoLineItemResolvers<ContextType>;
   PayrollManagement: PayrollManagementResolvers<ContextType>;
+  PayrollUiRecord: PayrollUiRecordResolvers<ContextType>;
   Permission: PermissionResolvers<ContextType>;
   PriceList: PriceListResolvers<ContextType>;
   PriceListLine: PriceListLineResolvers<ContextType>;
