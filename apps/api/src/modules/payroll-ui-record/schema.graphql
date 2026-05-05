@@ -1,0 +1,27 @@
+type PayrollUiRecord {
+  id: ID!
+  organizationId: String!
+  category: String!
+  code: String
+  data: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input PayrollUiRecordInput {
+  organizationId: String!
+  category: String!
+  code: String
+  data: String!
+}
+
+extend type Query {
+  payrolluirecord(id: ID!): PayrollUiRecord
+  payrolluirecords(organizationId: String!, category: String!): [PayrollUiRecord!]!
+}
+
+extend type Mutation {
+  createPayrollUiRecord(input: PayrollUiRecordInput!): PayrollUiRecord!
+  updatePayrollUiRecord(id: ID!, input: PayrollUiRecordInput!): PayrollUiRecord!
+  deletePayrollUiRecord(id: ID!): Boolean!
+}
