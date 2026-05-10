@@ -1,0 +1,53 @@
+type JournalEntryLine {
+  accountCode: String!
+  accountName: String!
+  debit: Float!
+  credit: Float!
+  description: String
+}
+
+type JournalEntry {
+  id: ID!
+  seqNo: String
+  entryNumber: String!
+  entryDate: String!
+  referenceNumber: String
+  description: String!
+  lines: [JournalEntryLine!]!
+  totalDebit: Float!
+  totalCredit: Float!
+  status: String!
+  postedAt: String
+  postedBy: String
+  organizationId: String!
+  createdAt: String!
+}
+
+input JournalEntryLineInput {
+  accountCode: String!
+  accountName: String!
+  debit: Float!
+  credit: Float!
+  description: String
+}
+
+input JournalEntryInput {
+  entryNumber: String!
+  entryDate: String!
+  referenceNumber: String
+  description: String!
+  lines: [JournalEntryLineInput!]!
+  organizationId: String!
+}
+
+extend type Query {
+  journalEntry(id: ID!): JournalEntry
+  journalEntries(organizationId: String!, status: String): [JournalEntry!]!
+}
+
+extend type Mutation {
+  createJournalEntry(input: JournalEntryInput!): JournalEntry!
+  updateJournalEntry(id: ID!, input: JournalEntryInput!): JournalEntry!
+  postJournalEntry(id: ID!): JournalEntry!
+  deleteJournalEntry(id: ID!): Boolean!
+}

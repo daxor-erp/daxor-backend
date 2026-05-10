@@ -23,4 +23,7 @@ export const productionplanningResolvers = {
       return true;
     },
   },
+  ProductionPlanning: {
+    id: (p: any) => p._id || p.id,
+  },
 };

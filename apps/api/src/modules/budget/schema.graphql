@@ -1,0 +1,48 @@
+type BudgetLine {
+  accountCode: String!
+  accountName: String!
+  period: String!
+  amount: Float!
+}
+
+type Budget {
+  id: ID!
+  seqNo: String
+  budgetName: String!
+  fiscalYear: String!
+  startDate: String!
+  endDate: String!
+  lines: [BudgetLine!]!
+  totalAmount: Float!
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input BudgetLineInput {
+  accountCode: String!
+  accountName: String!
+  period: String!
+  amount: Float!
+}
+
+input BudgetInput {
+  budgetName: String!
+  fiscalYear: String!
+  startDate: String!
+  endDate: String!
+  lines: [BudgetLineInput!]!
+  organizationId: String!
+}
+
+extend type Query {
+  budget(id: ID!): Budget
+  budgets(organizationId: String!, fiscalYear: String): [Budget!]!
+}
+
+extend type Mutation {
+  createBudget(input: BudgetInput!): Budget!
+  updateBudget(id: ID!, input: BudgetInput!): Budget!
+  activateBudget(id: ID!): Budget!
+  deleteBudget(id: ID!): Boolean!
+}

@@ -1,0 +1,41 @@
+type SiteLocation {
+  id: ID!
+  seqNo: String
+  name: String!
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  contactPerson: String
+  phone: String
+  email: String
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input SiteLocationInput {
+  name: String!
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  contactPerson: String
+  phone: String
+  email: String
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  siteLocation(id: ID!): SiteLocation
+  siteLocations(organizationId: String!, page: Int, limit: Int): [SiteLocation!]!
+}
+
+extend type Mutation {
+  createSiteLocation(input: SiteLocationInput!): SiteLocation!
+  updateSiteLocation(id: ID!, input: SiteLocationInput!): SiteLocation!
+  deleteSiteLocation(id: ID!): Boolean!
+}

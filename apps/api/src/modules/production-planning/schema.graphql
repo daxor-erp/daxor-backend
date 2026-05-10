@@ -1,7 +1,56 @@
+type Task {
+  id: ID!
+  name: String!
+  description: String
+  assignedTo: ID
+  status: String!
+  priority: String!
+  startDate: String
+  dueDate: String
+  completedAt: String
+}
+
+type Milestone {
+  id: ID!
+  name: String!
+  description: String
+  dueDate: String
+  status: String!
+  completedAt: String
+}
+
+input TaskInput {
+  id: ID
+  name: String!
+  description: String
+  assignedTo: ID
+  status: String
+  priority: String
+  startDate: String
+  dueDate: String
+  completedAt: String
+}
+
+input MilestoneInput {
+  id: ID
+  name: String!
+  description: String
+  dueDate: String
+  status: String
+  completedAt: String
+}
+
 type ProductionPlanning {
   id: ID!
   docNumber: String!
   docDate: String!
+  projectId: ID
+  managerId: ID
+  budget: Float
+  actualCost: Float
+  progress: Float
+  tasks: [Task!]
+  milestones: [Milestone!]
   status: String!
   organizationId: String!
   createdAt: String!
@@ -9,6 +58,13 @@ type ProductionPlanning {
 
 input ProductionPlanningInput {
   docDate: String!
+  projectId: ID
+  managerId: ID
+  budget: Float
+  actualCost: Float
+  progress: Float
+  tasks: [TaskInput!]
+  milestones: [MilestoneInput!]
   status: String
   organizationId: String!
 }

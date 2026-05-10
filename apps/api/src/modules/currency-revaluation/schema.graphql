@@ -1,0 +1,38 @@
+type CurrencyRevaluationLine {
+  accountCode: String!
+  accountName: String!
+  currency: String!
+  originalAmount: Float!
+  revaluedAmount: Float!
+  gainLoss: Float!
+}
+
+type CurrencyRevaluation {
+  id: ID!
+  seqNo: String
+  revaluationDate: String!
+  baseCurrency: String!
+  lines: [CurrencyRevaluationLine!]!
+  totalGainLoss: Float!
+  status: String!
+  postedAt: String
+  organizationId: String!
+  createdAt: String!
+}
+
+input CurrencyRevaluationInput {
+  revaluationDate: String!
+  baseCurrency: String!
+  organizationId: String!
+}
+
+extend type Query {
+  currencyRevaluation(id: ID!): CurrencyRevaluation
+  currencyRevaluations(organizationId: String!): [CurrencyRevaluation!]!
+}
+
+extend type Mutation {
+  createCurrencyRevaluation(input: CurrencyRevaluationInput!): CurrencyRevaluation!
+  postCurrencyRevaluation(id: ID!): CurrencyRevaluation!
+  deleteCurrencyRevaluation(id: ID!): Boolean!
+}

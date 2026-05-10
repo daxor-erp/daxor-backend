@@ -1,0 +1,47 @@
+type Opportunity {
+  id: ID!
+  seqNo: String
+  name: String!
+  accountName: String
+  contactName: String
+  email: String
+  phone: String
+  amount: Float
+  closeDate: String
+  stage: String!
+  probability: Int
+  leadSource: String
+  nextStep: String
+  description: String
+  assignedTo: ID
+  organizationId: String!
+  createdAt: String!
+}
+
+input OpportunityInput {
+  name: String!
+  accountName: String
+  contactName: String
+  email: String
+  phone: String
+  amount: Float
+  closeDate: String
+  stage: String
+  probability: Int
+  leadSource: String
+  nextStep: String
+  description: String
+  assignedTo: ID
+  organizationId: String!
+}
+
+extend type Query {
+  opportunity(id: ID!): Opportunity
+  opportunities(organizationId: String!, stage: String, page: Int, limit: Int): [Opportunity!]!
+}
+
+extend type Mutation {
+  createOpportunity(input: OpportunityInput!): Opportunity!
+  updateOpportunity(id: ID!, input: OpportunityInput!): Opportunity!
+  deleteOpportunity(id: ID!): Boolean!
+}
