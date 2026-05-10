@@ -1,0 +1,48 @@
+type Lead {
+  id: ID!
+  seqNo: String
+  firstName: String!
+  lastName: String!
+  company: String
+  title: String
+  email: String
+  phone: String
+  source: String
+  status: String!
+  rating: String
+  estimatedValue: Float
+  expectedCloseDate: String
+  assignedTo: ID
+  notes: String
+  organizationId: String!
+  createdAt: String!
+}
+
+input LeadInput {
+  firstName: String!
+  lastName: String!
+  company: String
+  title: String
+  email: String
+  phone: String
+  source: String
+  status: String
+  rating: String
+  estimatedValue: Float
+  expectedCloseDate: String
+  assignedTo: ID
+  notes: String
+  organizationId: String!
+}
+
+extend type Query {
+  lead(id: ID!): Lead
+  leads(organizationId: String!, status: String, page: Int, limit: Int): [Lead!]!
+}
+
+extend type Mutation {
+  createLead(input: LeadInput!): Lead!
+  updateLead(id: ID!, input: LeadInput!): Lead!
+  deleteLead(id: ID!): Boolean!
+  convertLeadToOpportunity(id: ID!): ID!
+}

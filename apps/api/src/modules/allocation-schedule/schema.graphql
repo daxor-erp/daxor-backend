@@ -1,0 +1,43 @@
+type AllocationLine {
+  destinationAccount: String!
+  percentage: Float!
+  amount: Float
+}
+
+type AllocationSchedule {
+  id: ID!
+  seqNo: String
+  scheduleName: String!
+  sourceAccount: String!
+  allocationMethod: String!
+  lines: [AllocationLine!]!
+  isActive: Boolean!
+  organizationId: String!
+  createdAt: String!
+}
+
+input AllocationLineInput {
+  destinationAccount: String!
+  percentage: Float!
+  amount: Float
+}
+
+input AllocationScheduleInput {
+  scheduleName: String!
+  sourceAccount: String!
+  allocationMethod: String
+  lines: [AllocationLineInput!]!
+  isActive: Boolean
+  organizationId: String!
+}
+
+extend type Query {
+  allocationSchedule(id: ID!): AllocationSchedule
+  allocationSchedules(organizationId: String!): [AllocationSchedule!]!
+}
+
+extend type Mutation {
+  createAllocationSchedule(input: AllocationScheduleInput!): AllocationSchedule!
+  updateAllocationSchedule(id: ID!, input: AllocationScheduleInput!): AllocationSchedule!
+  deleteAllocationSchedule(id: ID!): Boolean!
+}

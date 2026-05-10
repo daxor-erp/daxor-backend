@@ -1,0 +1,35 @@
+type Contractor {
+  id: ID!
+  seqNo: String
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  specialty: String
+  status: String!
+  organizationId: String!
+  createdAt: String!
+}
+
+input ContractorInput {
+  name: String!
+  contactPerson: String
+  email: String
+  phone: String
+  address: String
+  specialty: String
+  status: String
+  organizationId: String!
+}
+
+extend type Query {
+  contractor(id: ID!): Contractor
+  contractors(organizationId: String!, page: Int, limit: Int): [Contractor!]!
+}
+
+extend type Mutation {
+  createContractor(input: ContractorInput!): Contractor!
+  updateContractor(id: ID!, input: ContractorInput!): Contractor!
+  deleteContractor(id: ID!): Boolean!
+}
