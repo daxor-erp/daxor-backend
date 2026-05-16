@@ -21,5 +21,6 @@ extend type Query {
 extend type Mutation {
   createSalesReturn(input: SalesReturnInput!): SalesReturn!
   updateSalesReturn(id: ID!, input: SalesReturnInput!): SalesReturn!
+  submitSalesReturnForApproval(id: ID!): SalesReturn!
   deleteSalesReturn(id: ID!): Boolean!
 }

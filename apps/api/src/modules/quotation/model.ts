@@ -26,7 +26,7 @@ const quotationSchema = new Schema({
   notes: { type: String },
   status: {
     type: String,
-    enum: ['draft', 'sent', 'accepted', 'rejected', 'expired'],
+    enum: ['draft', 'submitted', 'approval_declined', 'approved', 'sent', 'accepted', 'rejected', 'expired'],
     default: 'draft',
   },
   sentAt: { type: Date },

@@ -1,8 +1,12 @@
 import { QuotationService } from './service'
 import { Quotation } from './model'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService, MODULE_KEY_QUOTATIONS } from '../approval-request/service'
 
 const service = new QuotationService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
   Query: {
@@ -43,6 +47,16 @@ export const resolvers = {
       return true
     },
 
+    submitQuotationForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const doc = await service.getQuotationById(id)
+      if (!doc || doc.deletedAt) throw new GraphQLAuthError('Quotation not found')
+      await approvalService.ensureApproverConfigured(String(doc.organizationId), MODULE_KEY_QUOTATIONS)
+      await service.submitForApproval(id, ctx.user!.id)
+      await approvalService.enqueueQuotationSubmitted(id, ctx.user!.id)
+      const updated = await service.getQuotationById(id)
+      return updated ? Quotation.populate(updated, { path: 'clientId', select: 'id name email' }) : updated
+    },
     sendQuotation: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
       service.sendQuotation(id, ctx.user?.id ?? '', ctx.user?.organizationId),
   },

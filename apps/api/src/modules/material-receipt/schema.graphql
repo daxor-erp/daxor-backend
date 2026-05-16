@@ -73,6 +73,7 @@ extend type Query {
 extend type Mutation {
   createMaterialReceipt(input: CreateMaterialReceiptInput!): MaterialReceipt!
   updateMaterialReceipt(id: ID!, input: UpdateMaterialReceiptInput!): MaterialReceipt!
+  submitMaterialReceiptForApproval(id: ID!): MaterialReceipt!
   confirmMaterialReceipt(id: ID!): MaterialReceipt!
   cancelMaterialReceipt(id: ID!): MaterialReceipt!
   deleteMaterialReceipt(id: ID!): Boolean!

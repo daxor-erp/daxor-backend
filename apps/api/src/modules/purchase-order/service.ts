@@ -77,6 +77,14 @@ export class PurchaseOrderService {
     return this.repository.update(id, { status: 'approved', updatedBy: userId })
   }
 
+  /** Decline after submission — returns PO to rejected state so it can be revised. */
+  async reject(id: string, userId: string): Promise<any> {
+    const po = await this.repository.findById(id)
+    if (!po) throw new Error('Purchase order not found')
+    if (po.status !== 'submitted') throw new Error('Only submitted POs can be declined')
+    return this.repository.update(id, { status: 'rejected', updatedBy: userId })
+  }
+
   async receive(id: string, userId: string): Promise<any> {
     const po = await this.repository.findById(id)
     if (!po) throw new Error('Purchase order not found')
@@ -94,7 +102,7 @@ export class PurchaseOrderService {
   async softDelete(id: string, userId: string): Promise<any> {
     const po = await this.repository.findById(id)
     if (!po) throw new Error('Purchase order not found')
-    if (!['draft', 'cancelled'].includes(po.status)) throw new Error('Only draft POs can be deleted')
+    if (!['draft', 'cancelled', 'rejected'].includes(po.status)) throw new Error('Only draft POs can be deleted')
     return this.repository.update(id, { deletedAt: new Date(), deletedBy: userId })
   }
 

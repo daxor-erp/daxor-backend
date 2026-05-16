@@ -55,5 +55,7 @@ extend type Mutation {
 	createSalesOrder(input: CreateSalesOrderInput!): SalesOrder!
 	updateSalesOrder(id: ID!, input: UpdateSalesOrderInput!): SalesOrder!
 	deleteSalesOrder(id: ID!): SalesOrder!
+	"""Draft → pending approval inbox for the Sales approver configured under Org admin → Approvals."""
+	submitSalesOrder(id: ID!): SalesOrder!
 	refundCashSale(input: RefundCashSaleInput!): SalesOrder!
 }

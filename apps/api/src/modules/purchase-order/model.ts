@@ -19,7 +19,7 @@ const purchaseOrderSchema = new Schema({
   subtotal: { type: Number, default: 0 },
   taxAmount: { type: Number, default: 0 },
   totalAmount: { type: Number, default: 0 },
-  status: { type: String, enum: ['draft', 'submitted', 'approved', 'sent', 'received', 'cancelled'], default: 'draft' },
+  status: { type: String, enum: ['draft', 'submitted', 'approved', 'sent', 'received', 'cancelled', 'rejected'], default: 'draft' },
   items: [poItemSchema],
   notes: { type: String },
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },

@@ -15,7 +15,7 @@ const salesEnquirySchema = new Schema({
 	currency: { type: String, maxlength: 3, default: 'SGD' },
 	status: { 
 		type: String, 
-		enum: ['new', 'under_review', 'quoted', 'negotiation', 'won', 'lost'], 
+		enum: ['new', 'under_review', 'quoted', 'negotiation', 'won', 'lost', 'submitted', 'approval_declined'], 
 		default: 'new' 
 	},
 	assignedTo: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -25,6 +25,15 @@ const salesEnquirySchema = new Schema({
 		default: 'normal' 
 	},
 	notes: { type: String },
+	approvalStatus: {
+		type: String,
+		enum: ['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED'],
+		default: 'DRAFT',
+		index: true,
+	},
+	approvalRequestedAt: { type: Date },
+	approvedAt: { type: Date },
+	approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	createdAt: { type: Date, default: Date.now, immutable: true },

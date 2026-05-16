@@ -15,7 +15,7 @@ const grnSchema = new Schema({
   receivedDate: { type: Date, required: true },
   lineItems: [lineItemSchema],
   notes: { type: String },
-  status: { type: String, enum: ['draft', 'confirmed'], default: 'confirmed' },
+  status: { type: String, enum: ['draft', 'submitted', 'approval_declined', 'confirmed'], default: 'draft' },
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
   deletedAt: { type: Date },

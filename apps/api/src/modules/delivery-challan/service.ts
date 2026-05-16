@@ -1,3 +1,4 @@
+import { GraphQLValidationError } from '@repo/errors';
 import { DeliveryChallanRepository } from './repository';
 import { IDeliveryChallan } from './model';
 
@@ -10,7 +11,13 @@ export class DeliveryChallanService {
 
   async create(data: Partial<IDeliveryChallan>, userId: string) {
     const docNumber = await this.generateDocNumber(data.organizationId!);
-    return this.repository.create({ ...data, docNumber, createdBy: userId } as IDeliveryChallan);
+    const { status: _s, ...rest } = data as Record<string, unknown>;
+    return this.repository.create({
+      ...rest,
+      docNumber,
+      createdBy: userId,
+      status: 'DRAFT',
+    } as IDeliveryChallan);
   }
 
   async getAll(organizationId: string) {
@@ -22,7 +29,42 @@ export class DeliveryChallanService {
   }
 
   async update(id: string, data: Partial<IDeliveryChallan>) {
-    return this.repository.update(id, data);
+    const existing = await this.repository.findById(id);
+    if (!existing || existing.isDeleted) throw new GraphQLValidationError('Delivery challan not found');
+    const st = String(existing.status);
+    if (st !== 'DRAFT' && st !== 'APPROVAL_DECLINED') {
+      throw new GraphQLValidationError('Only draft or declined delivery challans can be edited');
+    }
+    const { status: _ignored, ...rest } = data as Record<string, unknown>;
+    return this.repository.update(id, rest as Partial<IDeliveryChallan>);
+  }
+
+  async submitForOrgApproval(id: string) {
+    const row = await this.repository.findById(id);
+    if (!row || row.isDeleted) throw new GraphQLValidationError('Delivery challan not found');
+    const st = String(row.status);
+    if (st !== 'DRAFT' && st !== 'APPROVAL_DECLINED') {
+      throw new GraphQLValidationError('Only draft or declined delivery challans can be sent for approval');
+    }
+    return this.repository.update(id, { status: 'SUBMITTED' });
+  }
+
+  async approveApproval(id: string, _decidedByUserId?: string) {
+    const row = await this.repository.findById(id);
+    if (!row || row.isDeleted) throw new GraphQLValidationError('Delivery challan not found');
+    if (String(row.status) !== 'SUBMITTED') {
+      throw new GraphQLValidationError('Only submitted delivery challans can be approved');
+    }
+    return this.repository.update(id, { status: 'APPROVED' });
+  }
+
+  async declineApproval(id: string, _decidedByUserId?: string) {
+    const row = await this.repository.findById(id);
+    if (!row || row.isDeleted) throw new GraphQLValidationError('Delivery challan not found');
+    if (String(row.status) !== 'SUBMITTED') {
+      throw new GraphQLValidationError('Only submitted delivery challans can be declined');
+    }
+    return this.repository.update(id, { status: 'APPROVAL_DECLINED' });
   }
 
   async delete(id: string) {

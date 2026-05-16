@@ -1,0 +1,45 @@
+"""Unified workflow state stored on approvable ERP records (extend per module)."""
+enum RecordApprovalWorkflowStatus {
+	DRAFT
+	PENDING_APPROVAL
+	APPROVED
+	REJECTED
+}
+
+enum ApprovalRequestStatus {
+	PENDING
+	APPROVED
+	REJECTED
+}
+
+enum ApprovalDecision {
+	APPROVED
+	REJECTED
+}
+
+type ApprovalRequest {
+	id: ID!
+	organizationId: ID!
+	moduleKey: String!
+	entityType: String!
+	entityId: ID!
+	title: String!
+	status: ApprovalRequestStatus!
+	requesterUserId: ID!
+	requesterDisplayName: String
+	assigneeApproverUserId: ID!
+	resolutionNote: String
+	decidedByUserId: ID
+	decidedAt: String
+	createdAt: String
+	updatedAt: String
+}
+
+extend type Query {
+	"""Approval tasks assigned to the current user (same organization)."""
+	myPendingApprovalRequests: [ApprovalRequest!]!
+}
+
+extend type Mutation {
+	resolveApprovalRequest(id: ID!, decision: ApprovalDecision!, note: String): ApprovalRequest!
+}

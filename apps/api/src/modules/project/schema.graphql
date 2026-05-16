@@ -5,6 +5,8 @@ type Project {
 	description: String
 	startDate: String
 	endDate: String
+	"""draft | submitted | approval_declined | approved — omitted on legacy rows means approved"""
+	orgApprovalStatus: String!
 	status: String!
 	organizationId: ID!
 	createdAt: String
@@ -34,5 +36,6 @@ extend type Query {
 extend type Mutation {
 	createProject(input: CreateProjectInput!): Project!
 	updateProject(id: ID!, input: UpdateProjectInput!): Project!
+	submitProjectForApproval(id: ID!): Project!
 	deleteProject(id: ID!): Project!
 }

@@ -1,0 +1,39 @@
+enum ModuleWorkspaceStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+type ModuleWorkspaceRecord {
+  id: ID!
+  organizationId: ID!
+  routePath: String!
+  approvalModuleKey: String!
+  title: String!
+  detail: String
+  snapshot: String
+  status: ModuleWorkspaceStatus!
+  createdByUserId: ID
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateModuleWorkspaceRecordInput {
+  organizationId: ID!
+  routePath: String!
+  approvalModuleKey: String!
+  title: String!
+  detail: String
+  snapshot: String
+}
+
+extend type Query {
+  moduleWorkspaceRecords(organizationId: ID!, routePath: String!, page: Int, limit: Int): [ModuleWorkspaceRecord!]!
+}
+
+extend type Mutation {
+  createModuleWorkspaceRecord(input: CreateModuleWorkspaceRecordInput!): ModuleWorkspaceRecord!
+  updateModuleWorkspaceRecord(id: ID!, title: String, detail: String, snapshot: String): ModuleWorkspaceRecord!
+  submitModuleWorkspaceRecordForApproval(id: ID!): ModuleWorkspaceRecord!
+}

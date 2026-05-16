@@ -51,6 +51,34 @@ export class QuotationService {
     return this.repository.softDelete(id)
   }
 
+  async submitForApproval(id: string, userId: string): Promise<any> {
+    const doc = await this.repository.findById(id)
+    if (!doc || doc.deletedAt) throw new GraphQLValidationError('Quotation not found')
+    const st = String(doc.status)
+    if (st !== 'draft' && st !== 'approval_declined') {
+      throw new GraphQLValidationError('Only draft or declined quotations can be submitted for approval')
+    }
+    return this.repository.update(id, { status: 'submitted', updatedBy: userId, updatedAt: new Date() })
+  }
+
+  async approveApproval(id: string, userId: string): Promise<any> {
+    const doc = await this.repository.findById(id)
+    if (!doc || doc.deletedAt) throw new GraphQLValidationError('Quotation not found')
+    if (String(doc.status) !== 'submitted') {
+      throw new GraphQLValidationError('Only quotations pending approval can be approved')
+    }
+    return this.repository.update(id, { status: 'approved', updatedBy: userId, updatedAt: new Date() })
+  }
+
+  async declineApproval(id: string, userId: string): Promise<any> {
+    const doc = await this.repository.findById(id)
+    if (!doc || doc.deletedAt) throw new GraphQLValidationError('Quotation not found')
+    if (String(doc.status) !== 'submitted') {
+      throw new GraphQLValidationError('Only quotations pending approval can be declined')
+    }
+    return this.repository.update(id, { status: 'approval_declined', updatedBy: userId, updatedAt: new Date() })
+  }
+
   async sendQuotation(id: string, userId: string, userOrganizationId?: string): Promise<{ quotation: any; emailSent: boolean }> {
     const doc = await this.repository.findById(id)
     if (!doc || doc.deletedAt) throw new GraphQLValidationError('Quotation not found')
@@ -59,7 +87,14 @@ export class QuotationService {
     if (userOrganizationId && org && userOrganizationId !== org) {
       throw new GraphQLValidationError('Quotation not found')
     }
-    if (doc.status !== 'draft') throw new GraphQLValidationError('Only draft quotations can be sent')
+    const st = String(doc.status ?? '')
+    if (st !== 'approved') {
+      throw new GraphQLValidationError(
+        st === 'draft' || st === 'submitted' || st === 'approval_declined'
+          ? 'Submit for internal approval first; once approved you can send to the client.'
+          : 'Only internally approved quotations can be emailed to the client.',
+      )
+    }
 
     const populated = await Quotation.populate(doc, { path: 'clientId', select: 'name email' })
     const clientRef = populated.clientId as { email?: string } | null | undefined

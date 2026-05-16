@@ -1,7 +1,11 @@
 import { GRNService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService, MODULE_KEY_PURCHASES } from '../approval-request/service'
 
 const service = new GRNService()
+const approvalService = new ApprovalRequestService()
 
 function graphqlIsoDate(value: unknown): string {
   if (value == null) return new Date(0).toISOString()
@@ -65,7 +69,7 @@ function grnToGraphQL(doc: unknown) {
     receivedDate: graphqlIsoDate(o.receivedDate),
     lineItems: lines.map((li) => grnLineToGraphQL(asPlain(li))),
     notes: o.notes != null && String(o.notes).trim() !== '' ? String(o.notes) : null,
-    status: String(o.status ?? 'confirmed'),
+    status: String(o.status ?? 'draft'),
     organizationId: orgId ?? '',
     createdAt: o.createdAt != null ? graphqlIsoDate(o.createdAt) : null,
   }
@@ -111,6 +115,22 @@ export const resolvers = {
     deleteGRN: async (_: unknown, { id }: { id: string }) => {
       await service.deleteGRN(id)
       return true
+    },
+    submitGRNForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const row = await service.getGRNById(id)
+      const plain = asPlain(row)
+      if (!row || plain.deletedAt != null) throw new GraphQLAuthError('GRN not found')
+      const ctxOrg = ctx.user?.organizationId
+      const orgId = refIdToString(plain.organizationId)
+      if (ctxOrg == null || String(ctxOrg) !== String(orgId ?? '')) {
+        throw new GraphQLAuthError('Forbidden')
+      }
+      await approvalService.ensureApproverConfigured(String(orgId), MODULE_KEY_PURCHASES)
+      await service.submitForOrgApproval(id, ctx.user!.id)
+      await approvalService.enqueueGRNSubmitted(id, ctx.user!.id)
+      const updated = await service.getGRNById(id)
+      return grnToGraphQL(updated)
     },
   },
 }

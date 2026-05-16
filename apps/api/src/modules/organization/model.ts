@@ -10,6 +10,16 @@ const organizationSchema = new Schema({
 	phone: { type: String },
 	address: { type: String },
 	status: { type: String, enum: ['active', 'inactive', 'suspended', 'deleted'], default: 'active' },
+	/** ERP module → user who may approve workflow requests for that module (within this org). */
+	moduleApprovers: {
+		type: [
+			{
+				moduleKey: { type: String, required: true },
+				approverUserId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+			},
+		],
+		default: [],
+	},
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },

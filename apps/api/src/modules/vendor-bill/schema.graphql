@@ -77,5 +77,6 @@ extend type Mutation {
   createVendorBill(input: CreateVendorBillInput!): VendorBill!
   updateVendorBill(id: ID!, input: UpdateVendorBillInput!): VendorBill!
   approveVendorBill(id: ID!): VendorBill!
+  submitVendorBillForApproval(id: ID!): VendorBill!
   deleteVendorBill(id: ID!): Boolean!
 }

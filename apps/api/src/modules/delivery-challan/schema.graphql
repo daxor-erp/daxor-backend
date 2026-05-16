@@ -21,5 +21,6 @@ extend type Query {
 extend type Mutation {
   createDeliveryChallan(input: DeliveryChallanInput!): DeliveryChallan!
   updateDeliveryChallan(id: ID!, input: DeliveryChallanInput!): DeliveryChallan!
+  submitDeliveryChallanForApproval(id: ID!): DeliveryChallan!
   deleteDeliveryChallan(id: ID!): Boolean!
 }

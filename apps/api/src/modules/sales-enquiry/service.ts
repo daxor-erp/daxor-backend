@@ -1,3 +1,11 @@
+import { GraphQLValidationError } from '@repo/errors'
+import {
+	deriveSalesEnquiryWorkflowStatus,
+	RECORD_APPROVAL_APPROVED,
+	RECORD_APPROVAL_DRAFT,
+	RECORD_APPROVAL_PENDING,
+	RECORD_APPROVAL_REJECTED,
+} from '~/helpers/approval-workflow/record-approval-status'
 import { SalesEnquiryRepository } from './repository'
 
 export class SalesEnquiryService {
@@ -21,11 +29,62 @@ export class SalesEnquiryService {
 			clientId: data.clientId || userId,
 			organizationId,
 			createdBy: userId,
+			approvalStatus: RECORD_APPROVAL_DRAFT,
 		})
 	}
 
 	async updateSalesEnquiry(id: string, data: any): Promise<any> {
 		return this.repository.update(id, { ...data, updatedAt: new Date() })
+	}
+
+	async submitForApproval(id: string): Promise<any> {
+		const doc = await this.repository.findById(id)
+		if (!doc || doc.deletedAt) throw new GraphQLValidationError('Sales enquiry not found')
+		const wf = deriveSalesEnquiryWorkflowStatus(doc)
+		if (wf !== RECORD_APPROVAL_DRAFT && wf !== RECORD_APPROVAL_REJECTED) {
+			throw new GraphQLValidationError('Only draft or rejected enquiries can be sent for approval')
+		}
+		const now = new Date()
+		return this.repository.update(id, {
+			status: 'submitted',
+			approvalStatus: RECORD_APPROVAL_PENDING,
+			approvalRequestedAt: now,
+			approvedAt: null,
+			approvedBy: null,
+			updatedAt: now,
+		})
+	}
+
+	async approveApproval(id: string, decidedByUserId: string): Promise<any> {
+		const doc = await this.repository.findById(id)
+		if (!doc || doc.deletedAt) throw new GraphQLValidationError('Sales enquiry not found')
+		if (deriveSalesEnquiryWorkflowStatus(doc) !== RECORD_APPROVAL_PENDING) {
+			throw new GraphQLValidationError('Only enquiries pending approval can be approved')
+		}
+		const now = new Date()
+		return this.repository.update(id, {
+			status: 'under_review',
+			approvalStatus: RECORD_APPROVAL_APPROVED,
+			approvedAt: now,
+			approvedBy: decidedByUserId,
+			updatedAt: now,
+		})
+	}
+
+	async declineApproval(id: string, decidedByUserId: string): Promise<any> {
+		const doc = await this.repository.findById(id)
+		if (!doc || doc.deletedAt) throw new GraphQLValidationError('Sales enquiry not found')
+		if (deriveSalesEnquiryWorkflowStatus(doc) !== RECORD_APPROVAL_PENDING) {
+			throw new GraphQLValidationError('Only enquiries pending approval can be declined')
+		}
+		const now = new Date()
+		return this.repository.update(id, {
+			status: 'approval_declined',
+			approvalStatus: RECORD_APPROVAL_REJECTED,
+			approvedAt: now,
+			approvedBy: decidedByUserId,
+			updatedAt: now,
+		})
 	}
 
 	async findById(id: string): Promise<any> {

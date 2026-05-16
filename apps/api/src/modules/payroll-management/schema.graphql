@@ -30,4 +30,5 @@ extend type Mutation {
   createPayrollManagement(input: PayrollManagementInput!): PayrollManagement!
   updatePayrollManagement(id: ID!, input: PayrollManagementInput!): PayrollManagement!
   deletePayrollManagement(id: ID!): Boolean!
+  submitPayrollManagementForApproval(id: ID!): PayrollManagement!
 }

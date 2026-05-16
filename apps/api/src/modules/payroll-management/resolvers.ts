@@ -1,6 +1,11 @@
 import { PayrollManagementService } from './service';
+import { ApprovalRequestService, MODULE_KEY_PAYROLL } from '../approval-request/service';
+import type { GraphQLContext } from '~/types/graphql.context';
+import { GraphQLAuthError } from '@repo/errors';
+import { assertAuthenticated } from '../auth/authz';
 
 const service = new PayrollManagementService();
+const approvalService = new ApprovalRequestService();
 
 function iso(d: unknown): string | null {
   if (d == null) return null;
@@ -19,15 +24,29 @@ const payrollmanagementResolvers = {
     },
   },
   Mutation: {
-    createPayrollManagement: async (_: any, { input }: any, context: any) => {
+    createPayrollManagement: async (_: any, { input }: any, context: GraphQLContext) => {
       return service.create(input, context.user?.id || 'system');
     },
     updatePayrollManagement: async (_: any, { id, input }: any) => {
-      return service.update(id, input);
+      const { status: _ignoredStatus, ...rest } = input ?? {};
+      return service.update(id, rest);
     },
     deletePayrollManagement: async (_: any, { id }: { id: string }) => {
       await service.delete(id);
       return true;
+    },
+    submitPayrollManagementForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx);
+      const row = await service.getById(id);
+      if (!row) throw new GraphQLAuthError('Payroll management record not found');
+      const ctxOrg = ctx.user?.organizationId;
+      if (ctxOrg == null || String(ctxOrg) !== String((row as any).organizationId)) {
+        throw new GraphQLAuthError('Forbidden');
+      }
+      await approvalService.ensureApproverConfigured(String((row as any).organizationId), MODULE_KEY_PAYROLL);
+      await service.submitForApproval(id);
+      await approvalService.enqueuePayrollManagementSubmitted(id, ctx.user!.id);
+      return service.getById(id);
     },
   },
   PayrollManagement: {

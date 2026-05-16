@@ -1,3 +1,4 @@
+import { GraphQLValidationError } from '@repo/errors'
 import { VendorBillRepository } from './repository'
 
 export class VendorBillService {
@@ -45,7 +46,11 @@ export class VendorBillService {
   async updateBill(id: string, data: any, userId: string) {
     // Recalculate outstanding if totalAmount changes
     const existing = await this.repository.findById(id)
-    if (!existing) throw new Error('Vendor bill not found')
+    if (!existing || existing.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    const st = String(existing.status)
+    if (st !== 'draft' && st !== 'approval_declined') {
+      throw new GraphQLValidationError('Only draft or declined bills can be edited')
+    }
 
     const updates: any = { ...data, updatedBy: userId }
     if (data.totalAmount !== undefined) {
@@ -56,15 +61,48 @@ export class VendorBillService {
 
   async approveBill(id: string, userId: string) {
     const bill = await this.repository.findById(id)
-    if (!bill) throw new Error('Vendor bill not found')
-    if (bill.status !== 'draft') throw new Error('Only draft bills can be approved')
+    if (!bill || bill.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    if (bill.status !== 'draft') {
+      throw new GraphQLValidationError('Only draft bills can be approved directly (use approval queue when submitted)')
+    }
     return this.repository.update(id, { status: 'approved', updatedBy: userId })
+  }
+
+  async submitForApproval(id: string, userId: string) {
+    const bill = await this.repository.findById(id)
+    if (!bill || bill.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    const st = String(bill.status)
+    if (st !== 'draft' && st !== 'approval_declined') {
+      throw new GraphQLValidationError('Only draft or declined bills can be sent for approval')
+    }
+    return this.repository.update(id, { status: 'submitted', updatedBy: userId })
+  }
+
+  async approveFromApprovalQueue(id: string, userId: string) {
+    const bill = await this.repository.findById(id)
+    if (!bill || bill.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    if (String(bill.status) !== 'submitted') {
+      throw new GraphQLValidationError('Only bills pending approval can be approved')
+    }
+    return this.repository.update(id, { status: 'approved', updatedBy: userId })
+  }
+
+  async declineFromApprovalQueue(id: string, userId: string) {
+    const bill = await this.repository.findById(id)
+    if (!bill || bill.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    if (String(bill.status) !== 'submitted') {
+      throw new GraphQLValidationError('Only bills pending approval can be declined')
+    }
+    return this.repository.update(id, { status: 'approval_declined', updatedBy: userId })
   }
 
   async deleteBill(id: string, userId: string) {
     const bill = await this.repository.findById(id)
-    if (!bill) throw new Error('Vendor bill not found')
-    if (bill.status !== 'draft') throw new Error('Only draft bills can be deleted')
+    if (!bill) throw new GraphQLValidationError('Vendor bill not found')
+    const st = String(bill.status)
+    if (st !== 'draft' && st !== 'approval_declined') {
+      throw new GraphQLValidationError('Only draft or declined bills can be deleted')
+    }
     return this.repository.update(id, { deletedAt: new Date(), deletedBy: userId })
   }
 
@@ -75,7 +113,9 @@ export class VendorBillService {
   async applyPayment(billId: string, amount: number): Promise<void> {
     const bill = await this.repository.findById(billId)
     if (!bill) throw new Error(`Vendor bill ${billId} not found`)
-    if (bill.status === 'paid') throw new Error(`Bill ${bill.billNumber} is already fully paid`)
+    if (!['approved', 'partially_paid'].includes(String(bill.status))) {
+      throw new Error(`Bill ${bill.billNumber} must be approved before applying payments`)
+    }
 
     const newPaid = bill.paidAmount + amount
     const newOutstanding = bill.totalAmount - newPaid

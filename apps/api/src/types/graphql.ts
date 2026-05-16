@@ -115,6 +115,36 @@ export type ApplicantInput = {
   source: Scalars['String']['input'];
 };
 
+export enum ApprovalDecision {
+  Approved = 'APPROVED',
+  Rejected = 'REJECTED'
+}
+
+export type ApprovalRequest = {
+  __typename?: 'ApprovalRequest';
+  assigneeApproverUserId: Scalars['ID']['output'];
+  createdAt: Maybe<Scalars['String']['output']>;
+  decidedAt: Maybe<Scalars['String']['output']>;
+  decidedByUserId: Maybe<Scalars['ID']['output']>;
+  entityId: Scalars['ID']['output'];
+  entityType: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  moduleKey: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+  requesterDisplayName: Maybe<Scalars['String']['output']>;
+  requesterUserId: Scalars['ID']['output'];
+  resolutionNote: Maybe<Scalars['String']['output']>;
+  status: ApprovalRequestStatus;
+  title: Scalars['String']['output'];
+  updatedAt: Maybe<Scalars['String']['output']>;
+};
+
+export enum ApprovalRequestStatus {
+  Approved = 'APPROVED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
 export type Asset = {
   __typename?: 'Asset';
   assetName: Scalars['String']['output'];
@@ -541,7 +571,7 @@ export type CreateGrnInput = {
   organizationId: Scalars['ID']['input'];
   purchaseOrderId: InputMaybe<Scalars['ID']['input']>;
   receivedDate: Scalars['String']['input'];
-  /** draft | confirmed (default confirmed) */
+  /** draft | submitted | approval_declined | confirmed (default draft) */
   status: InputMaybe<Scalars['String']['input']>;
   vendorId: InputMaybe<Scalars['ID']['input']>;
   vendorName: InputMaybe<Scalars['String']['input']>;
@@ -620,6 +650,15 @@ export type CreateMaterialReceiptInput = {
   vendorName: InputMaybe<Scalars['String']['input']>;
   warehouseId: InputMaybe<Scalars['ID']['input']>;
   warehouseName: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateModuleWorkspaceRecordInput = {
+  approvalModuleKey: Scalars['String']['input'];
+  detail: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  routePath: Scalars['String']['input'];
+  snapshot: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
 };
 
 /** Create a tenant organization and its first ORG_ADMIN user (platform admins only). */
@@ -1727,6 +1766,45 @@ export type MilestoneInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ModulePermission = {
+  __typename?: 'ModulePermission';
+  canCreate: Scalars['Boolean']['output'];
+  canDelete: Scalars['Boolean']['output'];
+  canUpdate: Scalars['Boolean']['output'];
+  canView: Scalars['Boolean']['output'];
+  moduleKey: Scalars['String']['output'];
+};
+
+export type ModulePermissionInput = {
+  canCreate: Scalars['Boolean']['input'];
+  canDelete: Scalars['Boolean']['input'];
+  canUpdate: Scalars['Boolean']['input'];
+  canView: Scalars['Boolean']['input'];
+  moduleKey: Scalars['String']['input'];
+};
+
+export type ModuleWorkspaceRecord = {
+  __typename?: 'ModuleWorkspaceRecord';
+  approvalModuleKey: Scalars['String']['output'];
+  createdAt: Maybe<Scalars['String']['output']>;
+  createdByUserId: Maybe<Scalars['ID']['output']>;
+  detail: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['ID']['output'];
+  routePath: Scalars['String']['output'];
+  snapshot: Maybe<Scalars['String']['output']>;
+  status: ModuleWorkspaceStatus;
+  title: Scalars['String']['output'];
+  updatedAt: Maybe<Scalars['String']['output']>;
+};
+
+export enum ModuleWorkspaceStatus {
+  Approved = 'APPROVED',
+  Draft = 'DRAFT',
+  PendingApproval = 'PENDING_APPROVAL',
+  Rejected = 'REJECTED'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   activateBudget: Budget;
@@ -1790,6 +1868,7 @@ export type Mutation = {
   createLeaveType: LeaveType;
   createLoanRepayment: LoanRepayment;
   createMaterialReceipt: MaterialReceipt;
+  createModuleWorkspaceRecord: ModuleWorkspaceRecord;
   createOpportunity: Opportunity;
   createOrganization: Organization;
   createOrganizationWithOrgAdmin: Organization;
@@ -1901,10 +1980,30 @@ export type Mutation = {
   rejectLeaveApplication: LeaveApplication;
   rejectLeaveReinstatement: LeaveReinstatement;
   rejectReturnAuthorization: ReturnAuthorization;
+  resolveApprovalRequest: ApprovalRequest;
   seedIndividualPriceListFromCatalog: IndividualPriceList;
   seedSystemRoles: Array<Role>;
   sendQuotation: SendQuotationResult;
+  /** Replace module-level approver assignments for an organization (org admin: own org only). */
+  setOrganizationModuleApprovers: Organization;
+  setUserModulePermissions: User;
+  submitCustomerInvoiceForApproval: CustomerInvoice;
+  submitDeliveryChallanForApproval: DeliveryChallan;
+  submitGRNForApproval: Grn;
+  submitLeadForApproval: Lead;
+  submitMaterialReceiptForApproval: MaterialReceipt;
+  submitModuleWorkspaceRecordForApproval: ModuleWorkspaceRecord;
+  submitPayrollManagementForApproval: PayrollManagement;
+  submitPayrollUiRecordForApproval: PayrollUiRecord;
+  submitProjectForApproval: Project;
   submitPurchaseOrder: PurchaseOrder;
+  submitQuotationForApproval: Quotation;
+  submitSalesEnquiryForApproval: SalesEnquiry;
+  /** Draft → pending approval inbox for the Sales approver configured under Org admin → Approvals. */
+  submitSalesOrder: SalesOrder;
+  submitSalesReturnForApproval: SalesReturn;
+  submitVendorBillForApproval: VendorBill;
+  submitVendorForApproval: Vendor;
   transferBankFunds: BankTransferResult;
   updateAllocationSchedule: AllocationSchedule;
   updateApplicant: Applicant;
@@ -1940,6 +2039,7 @@ export type Mutation = {
   updateLeaveType: LeaveType;
   updateLoanRepayment: LoanRepayment;
   updateMaterialReceipt: MaterialReceipt;
+  updateModuleWorkspaceRecord: ModuleWorkspaceRecord;
   updateOpportunity: Opportunity;
   updateOrganization: Organization;
   updatePayrollManagement: PayrollManagement;
@@ -2282,6 +2382,11 @@ export type MutationCreateLoanRepaymentArgs = {
 
 export type MutationCreateMaterialReceiptArgs = {
   input: CreateMaterialReceiptInput;
+};
+
+
+export type MutationCreateModuleWorkspaceRecordArgs = {
+  input: CreateModuleWorkspaceRecordInput;
 };
 
 
@@ -2844,6 +2949,13 @@ export type MutationRejectReturnAuthorizationArgs = {
 };
 
 
+export type MutationResolveApprovalRequestArgs = {
+  decision: ApprovalDecision;
+  id: Scalars['ID']['input'];
+  note: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationSeedIndividualPriceListFromCatalogArgs = {
   customerId: Scalars['ID']['input'];
   organizationId: Scalars['String']['input'];
@@ -2855,7 +2967,94 @@ export type MutationSendQuotationArgs = {
 };
 
 
+export type MutationSetOrganizationModuleApproversArgs = {
+  assignments: Array<OrganizationModuleApproverInput>;
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type MutationSetUserModulePermissionsArgs = {
+  permissions: Array<ModulePermissionInput>;
+  userId: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitCustomerInvoiceForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitDeliveryChallanForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitGrnForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitLeadForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitMaterialReceiptForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitModuleWorkspaceRecordForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitPayrollManagementForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitPayrollUiRecordForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitProjectForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationSubmitPurchaseOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitQuotationForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitSalesEnquiryForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitSalesOrderArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitSalesReturnForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitVendorBillForApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSubmitVendorForApprovalArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -3066,6 +3265,14 @@ export type MutationUpdateLoanRepaymentArgs = {
 export type MutationUpdateMaterialReceiptArgs = {
   id: Scalars['ID']['input'];
   input: UpdateMaterialReceiptInput;
+};
+
+
+export type MutationUpdateModuleWorkspaceRecordArgs = {
+  detail: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  snapshot: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3298,10 +3505,24 @@ export type Organization = {
   createdAt: Scalars['String']['output'];
   email: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  moduleApprovers: Array<OrganizationModuleApprover>;
   name: Scalars['String']['output'];
   phone: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
+};
+
+/** Which user under the organization acts as workflow approver for a given ERP module. */
+export type OrganizationModuleApprover = {
+  __typename?: 'OrganizationModuleApprover';
+  approverUserId: Maybe<Scalars['ID']['output']>;
+  moduleKey: Scalars['String']['output'];
+};
+
+export type OrganizationModuleApproverInput = {
+  /** Set to omit or empty to clear the approver for this module. */
+  approverUserId: InputMaybe<Scalars['ID']['input']>;
+  moduleKey: Scalars['String']['input'];
 };
 
 export type PoLineItem = {
@@ -3347,6 +3568,7 @@ export type PayrollManagementInput = {
 
 export type PayrollUiRecord = {
   __typename?: 'PayrollUiRecord';
+  approvalStatus: Scalars['String']['output'];
   category: Scalars['String']['output'];
   code: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
@@ -3458,6 +3680,8 @@ export type Project = {
   endDate: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  /** draft | submitted | approval_declined | approved — omitted on legacy rows means approved */
+  orgApprovalStatus: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
   seqNo: Maybe<Scalars['String']['output']>;
   startDate: Maybe<Scalars['String']['output']>;
@@ -3584,6 +3808,9 @@ export type Query = {
   materialreceipts: Array<MaterialReceipt>;
   materialreceiptsByPO: Array<MaterialReceipt>;
   me: Maybe<User>;
+  moduleWorkspaceRecords: Array<ModuleWorkspaceRecord>;
+  /** Approval tasks assigned to the current user (same organization). */
+  myPendingApprovalRequests: Array<ApprovalRequest>;
   opportunities: Array<Opportunity>;
   opportunity: Maybe<Opportunity>;
   organization: Maybe<Organization>;
@@ -4255,6 +4482,14 @@ export type QueryMaterialreceiptsByPoArgs = {
 };
 
 
+export type QueryModuleWorkspaceRecordsArgs = {
+  limit: InputMaybe<Scalars['Int']['input']>;
+  organizationId: Scalars['ID']['input'];
+  page: InputMaybe<Scalars['Int']['input']>;
+  routePath: Scalars['String']['input'];
+};
+
+
 export type QueryOpportunitiesArgs = {
   limit: InputMaybe<Scalars['Int']['input']>;
   organizationId: Scalars['String']['input'];
@@ -4892,6 +5127,14 @@ export type ReconciliationRulePatch = {
   priority: InputMaybe<Scalars['Int']['input']>;
 };
 
+/** Unified workflow state stored on approvable ERP records (extend per module). */
+export enum RecordApprovalWorkflowStatus {
+  Approved = 'APPROVED',
+  Draft = 'DRAFT',
+  PendingApproval = 'PENDING_APPROVAL',
+  Rejected = 'REJECTED'
+}
+
 export type Recruitment = {
   __typename?: 'Recruitment';
   applicantId: Scalars['String']['output'];
@@ -5065,6 +5308,11 @@ export type SalaryRangeInput = {
 
 export type SalesEnquiry = {
   __typename?: 'SalesEnquiry';
+  approvalRequestedAt: Maybe<Scalars['String']['output']>;
+  /** Org approval workflow (Draft → Pending → Approved/Rejected). Derived for legacy rows. */
+  approvalStatus: RecordApprovalWorkflowStatus;
+  approvedAt: Maybe<Scalars['String']['output']>;
+  approvedBy: Maybe<Scalars['ID']['output']>;
   assignedTo: Maybe<Scalars['ID']['output']>;
   budget: Maybe<Scalars['Float']['output']>;
   clientId: Scalars['ID']['output'];
@@ -5601,6 +5849,7 @@ export type User = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
+  modulePermissions: Maybe<Array<ModulePermission>>;
   organizationId: Maybe<Scalars['ID']['output']>;
   roles: Maybe<Array<Scalars['String']['output']>>;
   seqNo: Maybe<Scalars['String']['output']>;
@@ -5627,6 +5876,8 @@ export type Vendor = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   notes: Maybe<Scalars['String']['output']>;
+  /** draft | submitted | approval_declined | approved — omitted on legacy rows means approved */
+  orgApprovalStatus: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
   paymentTerms: Maybe<Scalars['String']['output']>;
   phone: Maybe<Scalars['String']['output']>;
@@ -5898,6 +6149,9 @@ export type ResolversTypes = ResolversObject<{
   AllocationScheduleInput: ResolverTypeWrapper<Partial<AllocationScheduleInput>>;
   Applicant: ResolverTypeWrapper<Partial<Applicant>>;
   ApplicantInput: ResolverTypeWrapper<Partial<ApplicantInput>>;
+  ApprovalDecision: ResolverTypeWrapper<Partial<ApprovalDecision>>;
+  ApprovalRequest: ResolverTypeWrapper<Partial<ApprovalRequest>>;
+  ApprovalRequestStatus: ResolverTypeWrapper<Partial<ApprovalRequestStatus>>;
   Asset: ResolverTypeWrapper<Partial<Asset>>;
   AssetInput: ResolverTypeWrapper<Partial<AssetInput>>;
   Attendance: ResolverTypeWrapper<Partial<Attendance>>;
@@ -5940,6 +6194,7 @@ export type ResolversTypes = ResolversObject<{
   CreateLeaveReinstatementInput: ResolverTypeWrapper<Partial<CreateLeaveReinstatementInput>>;
   CreateLeaveTypeInput: ResolverTypeWrapper<Partial<CreateLeaveTypeInput>>;
   CreateMaterialReceiptInput: ResolverTypeWrapper<Partial<CreateMaterialReceiptInput>>;
+  CreateModuleWorkspaceRecordInput: ResolverTypeWrapper<Partial<CreateModuleWorkspaceRecordInput>>;
   CreateOrgAdminUserInput: ResolverTypeWrapper<Partial<CreateOrgAdminUserInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
   CreateOrganizationWithOrgAdminInput: ResolverTypeWrapper<Partial<CreateOrganizationWithOrgAdminInput>>;
@@ -6035,10 +6290,16 @@ export type ResolversTypes = ResolversObject<{
   MaterialReceipt: ResolverTypeWrapper<Partial<MaterialReceipt>>;
   Milestone: ResolverTypeWrapper<Partial<Milestone>>;
   MilestoneInput: ResolverTypeWrapper<Partial<MilestoneInput>>;
+  ModulePermission: ResolverTypeWrapper<Partial<ModulePermission>>;
+  ModulePermissionInput: ResolverTypeWrapper<Partial<ModulePermissionInput>>;
+  ModuleWorkspaceRecord: ResolverTypeWrapper<Partial<ModuleWorkspaceRecord>>;
+  ModuleWorkspaceStatus: ResolverTypeWrapper<Partial<ModuleWorkspaceStatus>>;
   Mutation: ResolverTypeWrapper<{}>;
   Opportunity: ResolverTypeWrapper<Partial<Opportunity>>;
   OpportunityInput: ResolverTypeWrapper<Partial<OpportunityInput>>;
   Organization: ResolverTypeWrapper<Partial<Organization>>;
+  OrganizationModuleApprover: ResolverTypeWrapper<Partial<OrganizationModuleApprover>>;
+  OrganizationModuleApproverInput: ResolverTypeWrapper<Partial<OrganizationModuleApproverInput>>;
   POLineItem: ResolverTypeWrapper<Partial<PoLineItem>>;
   POLineItemInput: ResolverTypeWrapper<Partial<PoLineItemInput>>;
   PayrollManagement: ResolverTypeWrapper<Partial<PayrollManagement>>;
@@ -6067,6 +6328,7 @@ export type ResolversTypes = ResolversObject<{
   ReconciliationRule: ResolverTypeWrapper<Partial<ReconciliationRule>>;
   ReconciliationRuleInput: ResolverTypeWrapper<Partial<ReconciliationRuleInput>>;
   ReconciliationRulePatch: ResolverTypeWrapper<Partial<ReconciliationRulePatch>>;
+  RecordApprovalWorkflowStatus: ResolverTypeWrapper<Partial<RecordApprovalWorkflowStatus>>;
   Recruitment: ResolverTypeWrapper<Partial<Recruitment>>;
   RecruitmentInput: ResolverTypeWrapper<Partial<RecruitmentInput>>;
   RefundCashSaleInput: ResolverTypeWrapper<Partial<RefundCashSaleInput>>;
@@ -6158,6 +6420,7 @@ export type ResolversParentTypes = ResolversObject<{
   AllocationScheduleInput: Partial<AllocationScheduleInput>;
   Applicant: Partial<Applicant>;
   ApplicantInput: Partial<ApplicantInput>;
+  ApprovalRequest: Partial<ApprovalRequest>;
   Asset: Partial<Asset>;
   AssetInput: Partial<AssetInput>;
   Attendance: Partial<Attendance>;
@@ -6200,6 +6463,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateLeaveReinstatementInput: Partial<CreateLeaveReinstatementInput>;
   CreateLeaveTypeInput: Partial<CreateLeaveTypeInput>;
   CreateMaterialReceiptInput: Partial<CreateMaterialReceiptInput>;
+  CreateModuleWorkspaceRecordInput: Partial<CreateModuleWorkspaceRecordInput>;
   CreateOrgAdminUserInput: Partial<CreateOrgAdminUserInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
   CreateOrganizationWithOrgAdminInput: Partial<CreateOrganizationWithOrgAdminInput>;
@@ -6295,10 +6559,15 @@ export type ResolversParentTypes = ResolversObject<{
   MaterialReceipt: Partial<MaterialReceipt>;
   Milestone: Partial<Milestone>;
   MilestoneInput: Partial<MilestoneInput>;
+  ModulePermission: Partial<ModulePermission>;
+  ModulePermissionInput: Partial<ModulePermissionInput>;
+  ModuleWorkspaceRecord: Partial<ModuleWorkspaceRecord>;
   Mutation: {};
   Opportunity: Partial<Opportunity>;
   OpportunityInput: Partial<OpportunityInput>;
   Organization: Partial<Organization>;
+  OrganizationModuleApprover: Partial<OrganizationModuleApprover>;
+  OrganizationModuleApproverInput: Partial<OrganizationModuleApproverInput>;
   POLineItem: Partial<PoLineItem>;
   POLineItemInput: Partial<PoLineItemInput>;
   PayrollManagement: Partial<PayrollManagement>;
@@ -6459,6 +6728,25 @@ export type ApplicantResolvers<ContextType = GraphQLContext, ParentType extends 
   skills: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   source: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ApprovalRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ApprovalRequest'] = ResolversParentTypes['ApprovalRequest']> = ResolversObject<{
+  assigneeApproverUserId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  decidedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  decidedByUserId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  entityId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  entityType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  requesterDisplayName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  requesterUserId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  resolutionNote: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['ApprovalRequestStatus'], ParentType, ContextType>;
+  title: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -7294,6 +7582,30 @@ export type MilestoneResolvers<ContextType = GraphQLContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ModulePermissionResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ModulePermission'] = ResolversParentTypes['ModulePermission']> = ResolversObject<{
+  canCreate: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  canDelete: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  canUpdate: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  canView: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ModuleWorkspaceRecordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ModuleWorkspaceRecord'] = ResolversParentTypes['ModuleWorkspaceRecord']> = ResolversObject<{
+  approvalModuleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdByUserId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  detail: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  routePath: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  snapshot: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status: Resolver<ResolversTypes['ModuleWorkspaceStatus'], ParentType, ContextType>;
+  title: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   activateBudget: Resolver<ResolversTypes['Budget'], ParentType, ContextType, RequireFields<MutationActivateBudgetArgs, 'id'>>;
   adjustStock: Resolver<ResolversTypes['InventoryControl'], ParentType, ContextType, RequireFields<MutationAdjustStockArgs, 'binLocation' | 'itemId' | 'quantity' | 'reason'>>;
@@ -7356,6 +7668,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationCreateLeaveTypeArgs, 'input'>>;
   createLoanRepayment: Resolver<ResolversTypes['LoanRepayment'], ParentType, ContextType, RequireFields<MutationCreateLoanRepaymentArgs, 'input'>>;
   createMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationCreateMaterialReceiptArgs, 'input'>>;
+  createModuleWorkspaceRecord: Resolver<ResolversTypes['ModuleWorkspaceRecord'], ParentType, ContextType, RequireFields<MutationCreateModuleWorkspaceRecordArgs, 'input'>>;
   createOpportunity: Resolver<ResolversTypes['Opportunity'], ParentType, ContextType, RequireFields<MutationCreateOpportunityArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createOrganizationWithOrgAdmin: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationWithOrgAdminArgs, 'input'>>;
@@ -7467,10 +7780,28 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   rejectLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationRejectLeaveApplicationArgs, 'id' | 'reason'>>;
   rejectLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationRejectLeaveReinstatementArgs, 'id'>>;
   rejectReturnAuthorization: Resolver<ResolversTypes['ReturnAuthorization'], ParentType, ContextType, RequireFields<MutationRejectReturnAuthorizationArgs, 'id'>>;
+  resolveApprovalRequest: Resolver<ResolversTypes['ApprovalRequest'], ParentType, ContextType, RequireFields<MutationResolveApprovalRequestArgs, 'decision' | 'id'>>;
   seedIndividualPriceListFromCatalog: Resolver<ResolversTypes['IndividualPriceList'], ParentType, ContextType, RequireFields<MutationSeedIndividualPriceListFromCatalogArgs, 'customerId' | 'organizationId'>>;
   seedSystemRoles: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
   sendQuotation: Resolver<ResolversTypes['SendQuotationResult'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
+  setOrganizationModuleApprovers: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationSetOrganizationModuleApproversArgs, 'assignments' | 'organizationId'>>;
+  setUserModulePermissions: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserModulePermissionsArgs, 'permissions' | 'userId'>>;
+  submitCustomerInvoiceForApproval: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationSubmitCustomerInvoiceForApprovalArgs, 'id'>>;
+  submitDeliveryChallanForApproval: Resolver<ResolversTypes['DeliveryChallan'], ParentType, ContextType, RequireFields<MutationSubmitDeliveryChallanForApprovalArgs, 'id'>>;
+  submitGRNForApproval: Resolver<ResolversTypes['GRN'], ParentType, ContextType, RequireFields<MutationSubmitGrnForApprovalArgs, 'id'>>;
+  submitLeadForApproval: Resolver<ResolversTypes['Lead'], ParentType, ContextType, RequireFields<MutationSubmitLeadForApprovalArgs, 'id'>>;
+  submitMaterialReceiptForApproval: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationSubmitMaterialReceiptForApprovalArgs, 'id'>>;
+  submitModuleWorkspaceRecordForApproval: Resolver<ResolversTypes['ModuleWorkspaceRecord'], ParentType, ContextType, RequireFields<MutationSubmitModuleWorkspaceRecordForApprovalArgs, 'id'>>;
+  submitPayrollManagementForApproval: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationSubmitPayrollManagementForApprovalArgs, 'id'>>;
+  submitPayrollUiRecordForApproval: Resolver<ResolversTypes['PayrollUiRecord'], ParentType, ContextType, RequireFields<MutationSubmitPayrollUiRecordForApprovalArgs, 'id'>>;
+  submitProjectForApproval: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationSubmitProjectForApprovalArgs, 'id'>>;
   submitPurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationSubmitPurchaseOrderArgs, 'id'>>;
+  submitQuotationForApproval: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationSubmitQuotationForApprovalArgs, 'id'>>;
+  submitSalesEnquiryForApproval: Resolver<ResolversTypes['SalesEnquiry'], ParentType, ContextType, RequireFields<MutationSubmitSalesEnquiryForApprovalArgs, 'id'>>;
+  submitSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationSubmitSalesOrderArgs, 'id'>>;
+  submitSalesReturnForApproval: Resolver<ResolversTypes['SalesReturn'], ParentType, ContextType, RequireFields<MutationSubmitSalesReturnForApprovalArgs, 'id'>>;
+  submitVendorBillForApproval: Resolver<ResolversTypes['VendorBill'], ParentType, ContextType, RequireFields<MutationSubmitVendorBillForApprovalArgs, 'id'>>;
+  submitVendorForApproval: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationSubmitVendorForApprovalArgs, 'id'>>;
   transferBankFunds: Resolver<ResolversTypes['BankTransferResult'], ParentType, ContextType, RequireFields<MutationTransferBankFundsArgs, 'input'>>;
   updateAllocationSchedule: Resolver<ResolversTypes['AllocationSchedule'], ParentType, ContextType, RequireFields<MutationUpdateAllocationScheduleArgs, 'id' | 'input'>>;
   updateApplicant: Resolver<ResolversTypes['Applicant'], ParentType, ContextType, RequireFields<MutationUpdateApplicantArgs, 'id' | 'input'>>;
@@ -7506,6 +7837,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateLeaveType: Resolver<ResolversTypes['LeaveType'], ParentType, ContextType, RequireFields<MutationUpdateLeaveTypeArgs, 'id' | 'input'>>;
   updateLoanRepayment: Resolver<ResolversTypes['LoanRepayment'], ParentType, ContextType, RequireFields<MutationUpdateLoanRepaymentArgs, 'id' | 'input'>>;
   updateMaterialReceipt: Resolver<ResolversTypes['MaterialReceipt'], ParentType, ContextType, RequireFields<MutationUpdateMaterialReceiptArgs, 'id' | 'input'>>;
+  updateModuleWorkspaceRecord: Resolver<ResolversTypes['ModuleWorkspaceRecord'], ParentType, ContextType, RequireFields<MutationUpdateModuleWorkspaceRecordArgs, 'id'>>;
   updateOpportunity: Resolver<ResolversTypes['Opportunity'], ParentType, ContextType, RequireFields<MutationUpdateOpportunityArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
@@ -7566,10 +7898,17 @@ export type OrganizationResolvers<ContextType = GraphQLContext, ParentType exten
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  moduleApprovers: Resolver<Array<ResolversTypes['OrganizationModuleApprover']>, ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OrganizationModuleApproverResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrganizationModuleApprover'] = ResolversParentTypes['OrganizationModuleApprover']> = ResolversObject<{
+  approverUserId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -7597,6 +7936,7 @@ export type PayrollManagementResolvers<ContextType = GraphQLContext, ParentType 
 }>;
 
 export type PayrollUiRecordResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PayrollUiRecord'] = ResolversParentTypes['PayrollUiRecord']> = ResolversObject<{
+  approvalStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   category: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -7683,6 +8023,7 @@ export type ProjectResolvers<ContextType = GraphQLContext, ParentType extends Re
   endDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  orgApprovalStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   startDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -7809,6 +8150,8 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   materialreceipts: Resolver<Array<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptsArgs, 'organizationId'>>;
   materialreceiptsByPO: Resolver<Array<ResolversTypes['MaterialReceipt']>, ParentType, ContextType, RequireFields<QueryMaterialreceiptsByPoArgs, 'purchaseOrderId'>>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  moduleWorkspaceRecords: Resolver<Array<ResolversTypes['ModuleWorkspaceRecord']>, ParentType, ContextType, RequireFields<QueryModuleWorkspaceRecordsArgs, 'organizationId' | 'routePath'>>;
+  myPendingApprovalRequests: Resolver<Array<ResolversTypes['ApprovalRequest']>, ParentType, ContextType>;
   opportunities: Resolver<Array<ResolversTypes['Opportunity']>, ParentType, ContextType, RequireFields<QueryOpportunitiesArgs, 'organizationId'>>;
   opportunity: Resolver<Maybe<ResolversTypes['Opportunity']>, ParentType, ContextType, RequireFields<QueryOpportunityArgs, 'id'>>;
   organization: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
@@ -8079,6 +8422,10 @@ export type SalaryRangeResolvers<ContextType = GraphQLContext, ParentType extend
 }>;
 
 export type SalesEnquiryResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesEnquiry'] = ResolversParentTypes['SalesEnquiry']> = ResolversObject<{
+  approvalRequestedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  approvalStatus: Resolver<ResolversTypes['RecordApprovalWorkflowStatus'], ParentType, ContextType>;
+  approvedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  approvedBy: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   assignedTo: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   budget: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   clientId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -8257,6 +8604,7 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   firstName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  modulePermissions: Resolver<Maybe<Array<ResolversTypes['ModulePermission']>>, ParentType, ContextType>;
   organizationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   roles: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8283,6 +8631,7 @@ export type VendorResolvers<ContextType = GraphQLContext, ParentType extends Res
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  orgApprovalStatus: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   paymentTerms: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8436,6 +8785,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   AllocationLine: AllocationLineResolvers<ContextType>;
   AllocationSchedule: AllocationScheduleResolvers<ContextType>;
   Applicant: ApplicantResolvers<ContextType>;
+  ApprovalRequest: ApprovalRequestResolvers<ContextType>;
   Asset: AssetResolvers<ContextType>;
   Attendance: AttendanceResolvers<ContextType>;
   AuthPayload: AuthPayloadResolvers<ContextType>;
@@ -8495,9 +8845,12 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   MRNLineItem: MrnLineItemResolvers<ContextType>;
   MaterialReceipt: MaterialReceiptResolvers<ContextType>;
   Milestone: MilestoneResolvers<ContextType>;
+  ModulePermission: ModulePermissionResolvers<ContextType>;
+  ModuleWorkspaceRecord: ModuleWorkspaceRecordResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;
   Opportunity: OpportunityResolvers<ContextType>;
   Organization: OrganizationResolvers<ContextType>;
+  OrganizationModuleApprover: OrganizationModuleApproverResolvers<ContextType>;
   POLineItem: PoLineItemResolvers<ContextType>;
   PayrollManagement: PayrollManagementResolvers<ContextType>;
   PayrollUiRecord: PayrollUiRecordResolvers<ContextType>;

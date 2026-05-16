@@ -1,6 +1,7 @@
+import { GraphQLValidationError } from '@repo/errors'
 import { GRNRepository } from './repository'
 
-const GRN_STATUSES = new Set(['draft', 'confirmed'])
+const GRN_STATUSES = new Set(['draft', 'submitted', 'approval_declined', 'confirmed'])
 
 function parseDate(value: unknown, fallback: Date): Date {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
@@ -64,9 +65,9 @@ export class GRNService {
     const statusRaw =
       data.status != null && String(data.status).trim() !== ''
         ? String(data.status).trim().toLowerCase()
-        : 'confirmed'
+        : 'draft'
     if (!GRN_STATUSES.has(statusRaw)) {
-      throw new Error('status must be draft or confirmed')
+      throw new Error('Invalid GRN status')
     }
 
     const grnNumber = await this.generateGRNNumber(organizationId)
@@ -103,12 +104,22 @@ export class GRNService {
   }
 
   async updateGRN(id: string, input: Record<string, unknown>) {
+    const existing = await this.repository.findById(id)
+    if (!existing || (existing as any).deletedAt) throw new GraphQLValidationError('GRN not found')
+    const cur = String((existing as any).status ?? '')
+    if (cur === 'submitted') {
+      throw new GraphQLValidationError('GRN is pending approval and cannot be edited')
+    }
+
     const payload: Record<string, unknown> = {}
 
     if (input.status != null && String(input.status).trim() !== '') {
       const s = String(input.status).trim().toLowerCase()
+      if (s === 'confirmed' || s === 'submitted') {
+        throw new GraphQLValidationError('Use the approval workflow to submit or confirm this GRN')
+      }
       if (!GRN_STATUSES.has(s)) {
-        throw new Error('status must be draft or confirmed')
+        throw new Error('Invalid GRN status')
       }
       payload.status = s
     }
@@ -134,6 +145,52 @@ export class GRNService {
     if (!updated) {
       throw new Error('GRN not found')
     }
+    return updated
+  }
+
+  async submitForOrgApproval(id: string, userId: string) {
+    const row = await this.repository.findById(id)
+    if (!row || (row as any).deletedAt) throw new GraphQLValidationError('GRN not found')
+    const st = String((row as any).status)
+    if (st !== 'draft' && st !== 'approval_declined') {
+      throw new GraphQLValidationError('Only draft or declined GRNs can be sent for approval')
+    }
+    const payload: Record<string, unknown> = { status: 'submitted' }
+    if (userId && /^[a-fA-F0-9]{24}$/.test(userId)) {
+      payload.updatedBy = userId
+    }
+    const updated = await this.repository.update(id, payload as any)
+    if (!updated) throw new GraphQLValidationError('GRN not found')
+    return updated
+  }
+
+  async approveFromApprovalQueue(id: string, userId: string) {
+    const row = await this.repository.findById(id)
+    if (!row || (row as any).deletedAt) throw new GraphQLValidationError('GRN not found')
+    if (String((row as any).status) !== 'submitted') {
+      throw new GraphQLValidationError('Only GRNs pending approval can be approved')
+    }
+    const payload: Record<string, unknown> = { status: 'confirmed' }
+    if (userId && /^[a-fA-F0-9]{24}$/.test(userId)) {
+      payload.updatedBy = userId
+    }
+    const updated = await this.repository.update(id, payload as any)
+    if (!updated) throw new GraphQLValidationError('GRN not found')
+    return updated
+  }
+
+  async declineFromApprovalQueue(id: string, userId: string) {
+    const row = await this.repository.findById(id)
+    if (!row || (row as any).deletedAt) throw new GraphQLValidationError('GRN not found')
+    if (String((row as any).status) !== 'submitted') {
+      throw new GraphQLValidationError('Only GRNs pending approval can be declined')
+    }
+    const payload: Record<string, unknown> = { status: 'approval_declined' }
+    if (userId && /^[a-fA-F0-9]{24}$/.test(userId)) {
+      payload.updatedBy = userId
+    }
+    const updated = await this.repository.update(id, payload as any)
+    if (!updated) throw new GraphQLValidationError('GRN not found')
     return updated
   }
 

@@ -15,6 +15,11 @@ const vendorSchema = new Schema({
   paymentTerms: { type: String }, // e.g. "Net 30", "Net 60"
   notes: { type: String },
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  /** Org approval lifecycle: draft → submitted → approved | approval_declined. Omitted on legacy rows means approved. */
+  orgApprovalStatus: {
+    type: String,
+    enum: ['draft', 'submitted', 'approval_declined', 'approved'],
+  },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
   updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },

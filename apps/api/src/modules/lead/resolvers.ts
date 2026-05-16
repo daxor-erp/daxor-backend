@@ -1,5 +1,7 @@
 import { LeadService } from './service';
 import { OpportunityService } from '../opportunity/service';
+import { GraphQLAuthError } from '@repo/errors';
+import { assertAuthenticated } from '../auth/authz';
 
 const service = new LeadService();
 const opportunityService = new OpportunityService();
@@ -32,6 +34,15 @@ export const resolvers = {
     deleteLead: async (_: any, { id }: { id: string }) => {
       await service.delete(id);
       return true;
+    },
+    submitLeadForApproval: async (_: any, { id }: { id: string }, context: any) => {
+      assertAuthenticated(context);
+      const lead = await service.getById(id);
+      if (!lead || (lead as any).isDeleted) throw new GraphQLAuthError('Lead not found');
+      /** CRM leads no longer use org-admin approval queues; same end state as an immediate approval. */
+      await service.submitForApproval(id);
+      await service.approveFromQueue(id);
+      return service.getById(id);
     },
     convertLeadToOpportunity: async (_: any, { id }: { id: string }, context: any) => {
       try {

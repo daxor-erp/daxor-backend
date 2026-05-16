@@ -97,5 +97,6 @@ extend type Mutation {
 	createQuotation(input: CreateQuotationInput!): Quotation!
 	updateQuotation(id: ID!, input: UpdateQuotationInput!): Quotation!
 	deleteQuotation(id: ID!): Boolean!
+	submitQuotationForApproval(id: ID!): Quotation!
 	sendQuotation(id: ID!): SendQuotationResult!
 }

@@ -7,6 +7,10 @@ const projectSchema = new Schema({
 	startDate: { type: Date },
 	endDate: { type: Date },
 	organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	orgApprovalStatus: {
+		type: String,
+		enum: ['draft', 'submitted', 'approval_declined', 'approved'],
+	},
 	status: { type: String, enum: ['active', 'inactive', 'completed', 'deleted'], default: 'active' },
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	createdAt: { type: Date, default: Date.now },

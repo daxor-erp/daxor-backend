@@ -46,7 +46,7 @@ export class CustomerInvoiceService {
 		const bill = await this.repository.findById(invoiceId)
 		if (!bill) throw new Error('Invoice not found')
 		const status = bill.status as string
-		if (['draft', 'cancelled', 'paid'].includes(status)) {
+		if (['draft', 'cancelled', 'paid', 'submitted', 'approval_declined'].includes(status)) {
 			throw new Error(`Cannot apply payment to invoice in status "${status}"`)
 		}
 		const total = Number(bill.totalAmount ?? 0)
@@ -98,7 +98,7 @@ export class CustomerInvoiceService {
 		const bill = await this.repository.findById(invoiceId)
 		if (!bill) throw new Error('Invoice not found')
 		const status = bill.status as string
-		if (['draft', 'cancelled', 'paid'].includes(status)) {
+		if (['draft', 'cancelled', 'paid', 'submitted', 'approval_declined'].includes(status)) {
 			throw new Error(`Cannot apply finance charge to invoice in status "${status}"`)
 		}
 		const charge = Math.round(Number(chargeAmount) * 100) / 100
@@ -126,5 +126,33 @@ export class CustomerInvoiceService {
 			totalAmount,
 			updatedAt: new Date(),
 		})
+	}
+
+	async submitForApproval(id: string, userId: string): Promise<any> {
+		const bill = await this.repository.findById(id)
+		if (!bill || (bill as any).deletedAt) throw new Error('Invoice not found')
+		const st = String((bill as any).status)
+		if (st !== 'draft' && st !== 'approval_declined') {
+			throw new Error('Only draft or declined invoices can be submitted for approval')
+		}
+		return this.repository.update(id, { status: 'submitted', updatedBy: userId, updatedAt: new Date() })
+	}
+
+	async approveApproval(id: string, userId: string): Promise<any> {
+		const bill = await this.repository.findById(id)
+		if (!bill || (bill as any).deletedAt) throw new Error('Invoice not found')
+		if (String((bill as any).status) !== 'submitted') {
+			throw new Error('Only invoices pending approval can be approved')
+		}
+		return this.repository.update(id, { status: 'approved', updatedBy: userId, updatedAt: new Date() })
+	}
+
+	async declineApproval(id: string, userId: string): Promise<any> {
+		const bill = await this.repository.findById(id)
+		if (!bill || (bill as any).deletedAt) throw new Error('Invoice not found')
+		if (String((bill as any).status) !== 'submitted') {
+			throw new Error('Only invoices pending approval can be declined')
+		}
+		return this.repository.update(id, { status: 'approval_declined', updatedBy: userId, updatedAt: new Date() })
 	}
 }
