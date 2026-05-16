@@ -30,7 +30,7 @@ const LeadSchema = new Schema<ILead>({
   email: { type: String },
   phone: { type: String },
   source: { type: String },
-  status: { type: String, default: 'new', enum: ['new', 'contacted', 'qualified', 'unqualified', 'converted'] },
+  status: { type: String, default: 'new', enum: ['new', 'contacted', 'qualified', 'unqualified', 'converted', 'pending_approval', 'approval_rejected'] },
   rating: { type: String, enum: ['hot', 'warm', 'cold'] },
   estimatedValue: { type: Number },
   expectedCloseDate: { type: Date },

@@ -23,10 +23,10 @@ const vendorBillSchema = new Schema({
   paidAmount: { type: Number, default: 0 },       // updated as payments are applied
   outstandingAmount: { type: Number, default: 0 }, // totalAmount - paidAmount
   notes: { type: String },
-  // draft → approved → partially_paid → paid → cancelled
+  // draft → submitted → approved → partially_paid → paid → cancelled
   status: {
     type: String,
-    enum: ['draft', 'approved', 'partially_paid', 'paid', 'cancelled'],
+    enum: ['draft', 'submitted', 'approval_declined', 'approved', 'partially_paid', 'paid', 'cancelled'],
     default: 'draft',
   },
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },

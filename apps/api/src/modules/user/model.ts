@@ -18,6 +18,15 @@ const userSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 	deletedAt: { type: Date },
 	deletedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+	modulePermissions: [
+		{
+			moduleKey: { type: String, required: true },
+			canCreate: { type: Boolean, default: false },
+			canUpdate: { type: Boolean, default: false },
+			canDelete: { type: Boolean, default: false },
+			canView: { type: Boolean, default: false },
+		},
+	],
 }, { timestamps: false })
 
 userSchema.index({ email: 1 })

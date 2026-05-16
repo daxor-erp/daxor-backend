@@ -1,3 +1,15 @@
+"""Which user under the organization acts as workflow approver for a given ERP module."""
+type OrganizationModuleApprover {
+	moduleKey: String!
+	approverUserId: ID
+}
+
+input OrganizationModuleApproverInput {
+	moduleKey: String!
+	"""Set to omit or empty to clear the approver for this module."""
+	approverUserId: ID
+}
+
 type Organization {
 	id: ID!
 	seqNo: String!
@@ -7,6 +19,7 @@ type Organization {
 	phone: String
 	email: String
 	status: String!
+	moduleApprovers: [OrganizationModuleApprover!]!
 	createdAt: String!
 }
 
@@ -51,4 +64,6 @@ extend type Mutation {
 	createOrganizationWithOrgAdmin(input: CreateOrganizationWithOrgAdminInput!): Organization!
 	updateOrganization(id: ID!, input: UpdateOrganizationInput!): Organization!
 	deleteOrganization(id: ID!): Organization!
+	"""Replace module-level approver assignments for an organization (org admin: own org only)."""
+	setOrganizationModuleApprovers(organizationId: ID!, assignments: [OrganizationModuleApproverInput!]!): Organization!
 }

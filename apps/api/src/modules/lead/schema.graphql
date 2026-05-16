@@ -44,5 +44,6 @@ extend type Mutation {
   createLead(input: LeadInput!): Lead!
   updateLead(id: ID!, input: LeadInput!): Lead!
   deleteLead(id: ID!): Boolean!
+  submitLeadForApproval(id: ID!): Lead!
   convertLeadToOpportunity(id: ID!): ID!
 }

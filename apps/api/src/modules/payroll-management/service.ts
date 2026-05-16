@@ -1,3 +1,4 @@
+import { GraphQLValidationError } from '@repo/errors';
 import { PayrollManagementRepository } from './repository';
 import { IPayrollManagement } from './model';
 
@@ -10,7 +11,12 @@ export class PayrollManagementService {
 
   async create(data: Partial<IPayrollManagement>, userId: string) {
     const docNumber = await this.generateDocNumber(data.organizationId!);
-    const payload = this.normalizeInput({ ...data, docNumber, createdBy: userId });
+    const payload = this.normalizeInput({
+      ...data,
+      docNumber,
+      createdBy: userId,
+      status: 'DRAFT',
+    });
     return this.repository.create(payload as IPayrollManagement);
   }
 
@@ -31,6 +37,34 @@ export class PayrollManagementService {
 
   async delete(id: string) {
     await this.repository.update(id, { isDeleted: true } as Partial<IPayrollManagement>);
+  }
+
+  async submitForApproval(id: string): Promise<IPayrollManagement> {
+    const doc = await this.getById(id);
+    if (!doc) throw new GraphQLValidationError('Payroll management record not found');
+    const st = String(doc.status ?? '').toUpperCase();
+    if (st !== 'DRAFT' && st !== 'APPROVAL_DECLINED' && st !== 'PENDING_REVIEW') {
+      throw new GraphQLValidationError('Only draft or declined payroll runs can be sent for approval');
+    }
+    return this.repository.update(id, { status: 'SUBMITTED' } as Partial<IPayrollManagement>);
+  }
+
+  async approveApproval(id: string): Promise<IPayrollManagement> {
+    const doc = await this.getById(id);
+    if (!doc) throw new GraphQLValidationError('Payroll management record not found');
+    if (String(doc.status ?? '').toUpperCase() !== 'SUBMITTED') {
+      throw new GraphQLValidationError('Only payroll runs pending approval can be approved');
+    }
+    return this.repository.update(id, { status: 'APPROVED' } as Partial<IPayrollManagement>);
+  }
+
+  async declineApproval(id: string): Promise<IPayrollManagement> {
+    const doc = await this.getById(id);
+    if (!doc) throw new GraphQLValidationError('Payroll management record not found');
+    if (String(doc.status ?? '').toUpperCase() !== 'SUBMITTED') {
+      throw new GraphQLValidationError('Only payroll runs pending approval can be declined');
+    }
+    return this.repository.update(id, { status: 'APPROVAL_DECLINED' } as Partial<IPayrollManagement>);
   }
 
   private normalizeInput(

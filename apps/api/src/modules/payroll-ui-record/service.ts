@@ -62,6 +62,32 @@ export class PayrollUiRecordService {
     await this.repository.update(id, { isDeleted: true } as Partial<IPayrollUiRecord>)
   }
 
+  async submitForApproval(id: string): Promise<any> {
+    const row = await this.repository.findById(id)
+    if (!row || row.isDeleted) throw new Error('Payroll UI record not found')
+    const st = String((row as any).approvalStatus ?? 'none')
+    if (st !== 'none' && st !== 'declined') throw new Error('Record is not eligible to submit for approval')
+    return this.repository.update(id, { approvalStatus: 'pending' } as Partial<IPayrollUiRecord>)
+  }
+
+  async approveFromQueue(id: string): Promise<any> {
+    const row = await this.repository.findById(id)
+    if (!row || row.isDeleted) throw new Error('Payroll UI record not found')
+    if (String((row as any).approvalStatus) !== 'pending') {
+      throw new Error('Only records pending approval can be approved')
+    }
+    return this.repository.update(id, { approvalStatus: 'approved' } as Partial<IPayrollUiRecord>)
+  }
+
+  async declineFromQueue(id: string): Promise<any> {
+    const row = await this.repository.findById(id)
+    if (!row || row.isDeleted) throw new Error('Payroll UI record not found')
+    if (String((row as any).approvalStatus) !== 'pending') {
+      throw new Error('Only records pending approval can be declined')
+    }
+    return this.repository.update(id, { approvalStatus: 'declined' } as Partial<IPayrollUiRecord>)
+  }
+
   private parseDataJson(raw: string): Record<string, unknown> {
     if (raw == null || typeof raw !== 'string') throw new Error('Invalid data payload')
     const t = raw.trim()

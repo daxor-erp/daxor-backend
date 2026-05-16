@@ -1,6 +1,11 @@
 import { PayrollUiRecordService } from './service'
+import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService } from '../approval-request/service'
 
 const service = new PayrollUiRecordService()
+const approvalService = new ApprovalRequestService()
 
 function iso(d: unknown): string {
   if (d == null) return ''
@@ -53,10 +58,20 @@ const payrollUiRecordResolvers = {
       await service.delete(id)
       return true
     },
+    submitPayrollUiRecordForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const row = await service.getById(id)
+      if (!row) throw new GraphQLAuthError('Record not found')
+      await approvalService.ensureApproverConfigured(String((row as any).organizationId), 'payroll')
+      await service.submitForApproval(id)
+      await approvalService.enqueuePayrollUiRecordSubmitted(id, ctx.user!.id)
+      return service.getById(id)
+    },
   },
   PayrollUiRecord: {
     id: (p: { _id?: unknown; id?: string }) => String((p as any)._id ?? p.id),
     data: (p: { data?: unknown }) => dataToString(p.data),
+    approvalStatus: (p: { approvalStatus?: string }) => String(p.approvalStatus ?? 'none'),
     createdAt: (p: { createdAt?: unknown }) => iso(p.createdAt),
     updatedAt: (p: { updatedAt?: unknown }) => iso(p.updatedAt),
   },

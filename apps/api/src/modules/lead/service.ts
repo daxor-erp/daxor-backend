@@ -65,8 +65,39 @@ export class LeadService {
   async convertToOpportunity(id: string) {
     const lead = await this.repository.findById(id);
     if (!lead) throw new Error('Lead not found');
-    
+    if (lead.status === 'pending_approval') {
+      throw new Error('Approve or decline this lead before converting');
+    }
+
     await this.repository.update(id, { status: 'converted' } as any);
     return lead;
+  }
+
+  async submitForApproval(id: string): Promise<any> {
+    const lead = await this.repository.findById(id)
+    if (!lead || lead.isDeleted) throw new Error('Lead not found')
+    const st = String(lead.status)
+    if (!['new', 'contacted', 'qualified', 'approval_rejected'].includes(st)) {
+      throw new Error('This lead cannot be submitted for approval in its current state')
+    }
+    return this.repository.update(id, { status: 'pending_approval' } as any)
+  }
+
+  async approveFromQueue(id: string): Promise<any> {
+    const lead = await this.repository.findById(id)
+    if (!lead) throw new Error('Lead not found')
+    if (String(lead.status) !== 'pending_approval') {
+      throw new Error('Only leads pending approval can be approved')
+    }
+    return this.repository.update(id, { status: 'qualified' } as any)
+  }
+
+  async rejectFromQueue(id: string): Promise<any> {
+    const lead = await this.repository.findById(id)
+    if (!lead) throw new Error('Lead not found')
+    if (String(lead.status) !== 'pending_approval') {
+      throw new Error('Only leads pending approval can be declined')
+    }
+    return this.repository.update(id, { status: 'approval_rejected' } as any)
   }
 }

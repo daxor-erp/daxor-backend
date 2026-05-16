@@ -14,6 +14,8 @@ type Vendor {
   paymentTerms: String
   notes: String
   organizationId: ID!
+  """draft | submitted | approval_declined | approved — omitted on legacy rows means approved"""
+  orgApprovalStatus: String!
   status: String!
   createdAt: String!
   updatedAt: String!
@@ -59,5 +61,6 @@ extend type Query {
 extend type Mutation {
   createVendor(input: CreateVendorInput!): Vendor!
   updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
+  submitVendorForApproval(id: ID!): Vendor!
   deleteVendor(id: ID!): Boolean!
 }

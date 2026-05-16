@@ -23,7 +23,7 @@ const customerInvoiceSchema = new Schema({
 	taxAmount: { type: Number, default: 0 },
 	totalAmount: { type: Number, required: true, default: 0 },
 	paidAmount: { type: Number, default: 0 },
-	status: { type: String, enum: ['draft', 'approved', 'sent', 'partially_paid', 'paid', 'overdue', 'cancelled'], default: 'draft' },
+	status: { type: String, enum: ['draft', 'submitted', 'approval_declined', 'approved', 'sent', 'partially_paid', 'paid', 'overdue', 'cancelled'], default: 'draft' },
 	items: [invoiceItemSchema],
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 	createdAt: { type: Date, default: Date.now },

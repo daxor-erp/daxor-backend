@@ -1,7 +1,11 @@
 import { VendorService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService, MODULE_KEY_PURCHASES } from '../approval-request/service'
 
 const service = new VendorService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
   Query: {
@@ -32,9 +36,24 @@ export const resolvers = {
       await service.deleteVendor(id, ctx.user?.id ?? '')
       return true
     },
+
+    submitVendorForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const row = await service.getVendorById(id)
+      if (!row || (row as any).deletedAt) throw new GraphQLAuthError('Vendor not found')
+      const ctxOrg = ctx.user?.organizationId
+      if (ctxOrg == null || String(ctxOrg) !== String((row as any).organizationId)) {
+        throw new GraphQLAuthError('Forbidden')
+      }
+      await approvalService.ensureApproverConfigured(String((row as any).organizationId), MODULE_KEY_PURCHASES)
+      await service.submitForOrgApproval(id, ctx.user!.id)
+      await approvalService.enqueueVendorSubmitted(id, ctx.user!.id)
+      return service.getVendorById(id)
+    },
   },
 
   Vendor: {
     id: (parent: any) => parent._id || parent.id,
+    orgApprovalStatus: (parent: any) => parent.orgApprovalStatus ?? 'approved',
   },
 }

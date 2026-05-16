@@ -41,4 +41,5 @@ extend type Mutation {
 	createCustomerInvoice(input: CreateCustomerInvoiceInput!): CustomerInvoice!
 	updateCustomerInvoice(id: ID!, input: UpdateCustomerInvoiceInput!): CustomerInvoice!
 	deleteCustomerInvoice(id: ID!): CustomerInvoice!
+	submitCustomerInvoiceForApproval(id: ID!): CustomerInvoice!
 }

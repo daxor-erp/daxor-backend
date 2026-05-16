@@ -1,7 +1,11 @@
 import { SalesOrderService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService, MODULE_KEY_SALES } from '../approval-request/service'
 
 const service = new SalesOrderService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
 	Query: {
@@ -36,6 +40,16 @@ export const resolvers = {
 		deleteSalesOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => 
 			service.update(id, { deletedAt: new Date(), deletedBy: ctx.user?.id }),
 
+		submitSalesOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			const before = await service.findById(id)
+			if (!before || (before as any).deletedAt) throw new GraphQLAuthError('Sales order not found')
+			if ((before as any).cashSale === true) throw new GraphQLAuthError('Cash sales are not routed for approval.')
+			await approvalService.ensureApproverConfigured(String((before as any).organizationId), MODULE_KEY_SALES)
+			const submitted = await service.submit(id, ctx.user!.id)
+			await approvalService.enqueueSalesOrderSubmitted(id, ctx.user!.id)
+			return submitted
+		},
 		refundCashSale: async (_: unknown, { input }: any, ctx: GraphQLContext) =>
 			service.refundCashSale(input, ctx.user?.id ?? ''),
 	},

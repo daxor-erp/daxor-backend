@@ -1,7 +1,11 @@
 import { VendorBillService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService, MODULE_KEY_PAYABLES } from '../approval-request/service'
 
 const service = new VendorBillService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
   Query: {
@@ -32,6 +36,20 @@ export const resolvers = {
 
     approveVendorBill: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
       service.approveBill(id, ctx.user?.id ?? ''),
+
+    submitVendorBillForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const bill = await service.getBillById(id)
+      if (!bill || (bill as any).deletedAt) throw new GraphQLAuthError('Vendor bill not found')
+      const ctxOrg = ctx.user?.organizationId
+      if (ctxOrg == null || String(ctxOrg) !== String((bill as any).organizationId)) {
+        throw new GraphQLAuthError('Forbidden')
+      }
+      await approvalService.ensureApproverConfigured(String((bill as any).organizationId), MODULE_KEY_PAYABLES)
+      await service.submitForApproval(id, ctx.user!.id)
+      await approvalService.enqueueVendorBillSubmitted(id, ctx.user!.id)
+      return service.getBillById(id)
+    },
 
     deleteVendorBill: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       await service.deleteBill(id, ctx.user?.id ?? '')

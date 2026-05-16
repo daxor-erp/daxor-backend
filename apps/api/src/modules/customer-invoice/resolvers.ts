@@ -1,7 +1,11 @@
 import { CustomerInvoiceService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated } from '../auth/authz'
+import { ApprovalRequestService } from '../approval-request/service'
 
 const service = new CustomerInvoiceService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
 	Query: {
@@ -41,6 +45,15 @@ export const resolvers = {
 				...(input.customerId ? { clientId: input.customerId } : {}),
 				updatedBy: ctx.user?.id,
 			}),
+		submitCustomerInvoiceForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			const before = await service.findById(id)
+			if (!before || (before as any).deletedAt) throw new GraphQLAuthError('Invoice not found')
+			await approvalService.ensureApproverConfigured(String((before as any).organizationId), 'sales')
+			await service.submitForApproval(id, ctx.user!.id)
+			await approvalService.enqueueCustomerInvoiceSubmitted(id, ctx.user!.id)
+			return service.findById(id)
+		},
 		deleteCustomerInvoice: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => 
 			service.update(id, { deletedAt: new Date(), deletedBy: ctx.user?.id }),
 	},

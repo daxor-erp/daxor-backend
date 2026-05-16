@@ -34,7 +34,7 @@ input CreateGRNInput {
   lineItems: [GRNLineItemInput!]!
   notes: String
   organizationId: ID!
-  """draft | confirmed (default confirmed)"""
+  """draft | submitted | approval_declined | confirmed (default draft)"""
   status: String
 }
 
@@ -53,5 +53,6 @@ extend type Query {
 extend type Mutation {
   createGRN(input: CreateGRNInput!): GRN!
   updateGRN(id: ID!, input: UpdateGRNInput!): GRN!
+  submitGRNForApproval(id: ID!): GRN!
   deleteGRN(id: ID!): Boolean!
 }

@@ -13,6 +13,11 @@ type SalesEnquiry {
 	budget: Float
 	currency: String
 	status: String!
+	"""Org approval workflow (Draft → Pending → Approved/Rejected). Derived for legacy rows."""
+	approvalStatus: RecordApprovalWorkflowStatus!
+	approvalRequestedAt: String
+	approvedAt: String
+	approvedBy: ID
 	assignedTo: ID
 	priority: String!
 	notes: String
@@ -66,5 +71,6 @@ extend type Query {
 extend type Mutation {
 	createSalesEnquiry(input: CreateSalesEnquiryInput!): SalesEnquiry!
 	updateSalesEnquiry(id: ID!, input: UpdateSalesEnquiryInput!): SalesEnquiry!
+	submitSalesEnquiryForApproval(id: ID!): SalesEnquiry!
 	deleteSalesEnquiry(id: ID!): SalesEnquiry!
 }

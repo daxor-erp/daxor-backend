@@ -1,7 +1,11 @@
 import { PurchaseOrderService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated, isOrgAdmin } from '../auth/authz'
+import { ApprovalRequestService, APPROVAL_ENTITY_PURCHASE_ORDER } from '../approval-request/service'
 
 const service = new PurchaseOrderService()
+const approvalService = new ApprovalRequestService()
 
 export const resolvers = {
   Query: {
@@ -23,10 +27,28 @@ export const resolvers = {
       await service.softDelete(id, ctx.user?.id ?? '')
       return true
     },
-    submitPurchaseOrder: (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
-      service.submit(id, ctx.user?.id ?? ''),
-    approvePurchaseOrder: (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
-      service.approve(id, ctx.user?.id ?? ''),
+    submitPurchaseOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const poBefore = await service.findById(id)
+      if (!poBefore || poBefore.deletedAt) throw new GraphQLAuthError('Purchase order not found')
+      await approvalService.ensureApproverConfiguredForPurchases(String(poBefore.organizationId))
+      const submitted = await service.submit(id, ctx.user!.id)
+      await approvalService.enqueuePurchaseOrderSubmitted(id, ctx.user!.id)
+      return submitted
+    },
+    approvePurchaseOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const pending = await approvalService.findPendingByEntity(APPROVAL_ENTITY_PURCHASE_ORDER, id)
+      if (pending) {
+        const isAssignee = String(pending.assigneeApproverUserId) === String(ctx.user!.id)
+        if (!isAssignee && !isOrgAdmin(ctx)) {
+          throw new GraphQLAuthError(
+            'Only the designated approver (or organization admin) can approve this PO.',
+          )
+        }
+      }
+      return service.approve(id, ctx.user!.id)
+    },
     receivePurchaseOrder: (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
       service.receive(id, ctx.user?.id ?? ''),
     billPurchaseOrder: (_: unknown, { id, billDate, dueDate }: any, ctx: GraphQLContext) =>

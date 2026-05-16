@@ -1,5 +1,13 @@
 import type { Request, Response } from 'express'
 
+export type GraphQLUserModulePermission = {
+	moduleKey: string
+	canCreate: boolean
+	canUpdate: boolean
+	canDelete: boolean
+	canView: boolean
+}
+
 export type GraphQLContext = {
 	req: Request
 	res: Response
@@ -9,5 +17,7 @@ export type GraphQLContext = {
 		role?: string
 		roles?: string[]
 		organizationId?: string | null
+		/** Loaded from DB each request — ERP sidebar ACL for mutations (create/update/delete). */
+		modulePermissions?: GraphQLUserModulePermission[]
 	}
 }

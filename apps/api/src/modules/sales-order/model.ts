@@ -24,7 +24,7 @@ const salesOrderSchema = new Schema({
 	totalAmount: { type: Number, required: true, default: 0 },
 	status: {
 		type: String,
-		enum: ['draft', 'submitted', 'approved', 'active', 'completed', 'cancelled', 'refunded'],
+		enum: ['draft', 'submitted', 'approved', 'rejected', 'active', 'completed', 'cancelled', 'refunded'],
 		default: 'draft',
 	},
 	cashSale: { type: Boolean, default: false },

@@ -1,3 +1,11 @@
+type ModulePermission {
+	moduleKey: String!
+	canCreate: Boolean!
+	canUpdate: Boolean!
+	canDelete: Boolean!
+	canView: Boolean!
+}
+
 type User {
 	id: ID!
 	seqNo: String
@@ -8,7 +16,16 @@ type User {
 	roles: [String!]
 	status: String!
 	organizationId: ID
+	modulePermissions: [ModulePermission!]
 	createdAt: String!
+}
+
+input ModulePermissionInput {
+	moduleKey: String!
+	canCreate: Boolean!
+	canUpdate: Boolean!
+	canDelete: Boolean!
+	canView: Boolean!
 }
 
 type UserList {
@@ -46,4 +63,5 @@ extend type Mutation {
 	createUser(input: CreateUserInput!): User!
 	updateUser(id: ID!, input: UpdateUserInput!): User!
 	deleteUser(id: ID!): User!
+	setUserModulePermissions(userId: ID!, permissions: [ModulePermissionInput!]!): User!
 }

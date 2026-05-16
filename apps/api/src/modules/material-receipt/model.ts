@@ -26,7 +26,7 @@ const materialReceiptSchema = new Schema(
     warehouseName: { type: String },
     lineItems: [mrnLineItemSchema],
     totalAmount: { type: Number, default: 0 },
-    status: { type: String, enum: ['draft', 'confirmed', 'cancelled'], default: 'draft' },
+    status: { type: String, enum: ['draft', 'submitted', 'approval_declined', 'confirmed', 'cancelled'], default: 'draft' },
     notes: { type: String },
     organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
