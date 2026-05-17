@@ -19,6 +19,26 @@ export const resolvers = {
 			const rows = await approvalService.listPendingForAssignee(uid)
 			return rows ?? []
 		},
+		myApprovalRequests: async (
+			_: unknown,
+			args: {
+				status?: 'PENDING' | 'APPROVED' | 'REJECTED' | null
+				role?: 'REQUESTER' | 'APPROVER' | 'ANY' | null
+				limit?: number | null
+				skip?: number | null
+			},
+			ctx: GraphQLContext,
+		) => {
+			assertAuthenticated(ctx)
+			const uid = ctx.user!.id
+			const rows = await approvalService.listForUser(uid, {
+				status: args.status ?? undefined,
+				role: args.role ?? 'ANY',
+				limit: args.limit ?? 50,
+				skip: args.skip ?? 0,
+			})
+			return rows ?? []
+		},
 	},
 	Mutation: {
 		resolveApprovalRequest: async (

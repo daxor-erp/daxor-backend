@@ -1,0 +1,112 @@
+type MaintenancePart {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String!
+	costPerUnit: Float!
+	lineTotal: Float!
+}
+
+type AssetMaintenance {
+	id: ID!
+	organizationId: ID!
+	docNumber: String!
+	assetId: ID!
+	assetCode: String
+	assetName: String
+	maintenanceType: String!
+	priority: String!
+	scheduledDate: String!
+	startedAt: String
+	completedAt: String
+	downtimeHours: Float!
+	description: String!
+	assignedToUserId: ID
+	assignedToName: String
+	vendorId: ID
+	partsUsed: [MaintenancePart!]!
+	laborHours: Float!
+	laborRate: Float!
+	partsCost: Float!
+	laborCost: Float!
+	totalCost: Float!
+	nextScheduledDate: String
+	intervalDays: Int
+	status: String!
+	findings: String
+	actionsTaken: String
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input MaintenancePartInput {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String
+	costPerUnit: Float
+}
+
+input CreateAssetMaintenanceInput {
+	organizationId: ID!
+	docNumber: String!
+	assetId: ID!
+	assetCode: String
+	assetName: String
+	maintenanceType: String
+	priority: String
+	scheduledDate: String!
+	description: String!
+	assignedToUserId: ID
+	assignedToName: String
+	vendorId: ID
+	partsUsed: [MaintenancePartInput!]
+	laborHours: Float
+	laborRate: Float
+	intervalDays: Int
+	status: String
+	findings: String
+	actionsTaken: String
+	notes: String
+}
+
+input UpdateAssetMaintenanceInput {
+	docNumber: String
+	assetId: ID
+	maintenanceType: String
+	priority: String
+	scheduledDate: String
+	description: String
+	assignedToUserId: ID
+	assignedToName: String
+	vendorId: ID
+	partsUsed: [MaintenancePartInput!]
+	laborHours: Float
+	laborRate: Float
+	intervalDays: Int
+	status: String
+	findings: String
+	actionsTaken: String
+	notes: String
+}
+
+input CompleteMaintenanceInput {
+	findings: String
+	actionsTaken: String
+	downtimeHours: Float
+}
+
+extend type Query {
+	assetMaintenance(id: ID!): AssetMaintenance
+	assetMaintenances(organizationId: ID!, status: String, assetId: ID, maintenanceType: String, search: String): [AssetMaintenance!]!
+	upcomingMaintenance(organizationId: ID!, days: Int): [AssetMaintenance!]!
+}
+
+extend type Mutation {
+	createAssetMaintenance(input: CreateAssetMaintenanceInput!): AssetMaintenance!
+	updateAssetMaintenance(id: ID!, input: UpdateAssetMaintenanceInput!): AssetMaintenance!
+	deleteAssetMaintenance(id: ID!): AssetMaintenance!
+	startAssetMaintenance(id: ID!): AssetMaintenance!
+	completeAssetMaintenance(id: ID!, input: CompleteMaintenanceInput!): AssetMaintenance!
+}

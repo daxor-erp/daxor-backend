@@ -35,7 +35,7 @@ export async function createPendingApprovalRequest(
 
 	const requesterDisplayName = await resolveRequesterName(deps, opts.requesterUserId)
 
-	return deps.repository.create({
+	const created = await deps.repository.create({
 		organizationId: opts.organizationId,
 		moduleKey: opts.moduleKey,
 		entityType: opts.entityType,
@@ -46,4 +46,30 @@ export async function createPendingApprovalRequest(
 		requesterDisplayName,
 		assigneeApproverUserId: assigneeId,
 	})
+
+	// Notify the assigned approver. Best-effort — failures must not block submission.
+	if (deps.notificationService) {
+		await deps.notificationService.notify({
+			organizationId: String(opts.organizationId),
+			recipientUserId: String(assigneeId),
+			actorUserId: String(opts.requesterUserId),
+			kind: 'APPROVAL_REQUEST',
+			severity: 'WARNING',
+			title: `Approval needed: ${opts.title}`,
+			message: `${requesterDisplayName} submitted a ${humanizeEntity(opts.entityType)} for your approval.`,
+			link: '/notifications',
+			referenceModule: 'approval-request',
+			referenceId: String((created as any)?._id ?? (created as any)?.id ?? ''),
+			moduleKey: opts.moduleKey,
+		})
+	}
+
+	return created
+}
+
+function humanizeEntity(entityType: string): string {
+	return String(entityType || '')
+		.replace(/_/g, ' ')
+		.toLowerCase()
+		.replace(/\b\w/g, (c) => c.toUpperCase())
 }

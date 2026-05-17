@@ -1,0 +1,60 @@
+type TaxRate {
+	id: ID!
+	organizationId: ID!
+	name: String!
+	code: String!
+	ratePercent: Float!
+	taxType: String!
+	appliesTo: String!
+	hsnSacCode: String
+	description: String
+	isCompound: Boolean!
+	isInclusive: Boolean!
+	status: String!
+	effectiveFrom: String
+	effectiveTo: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateTaxRateInput {
+	organizationId: ID!
+	name: String!
+	code: String!
+	ratePercent: Float!
+	taxType: String
+	appliesTo: String
+	hsnSacCode: String
+	description: String
+	isCompound: Boolean
+	isInclusive: Boolean
+	status: String
+	effectiveFrom: String
+	effectiveTo: String
+}
+
+input UpdateTaxRateInput {
+	name: String
+	code: String
+	ratePercent: Float
+	taxType: String
+	appliesTo: String
+	hsnSacCode: String
+	description: String
+	isCompound: Boolean
+	isInclusive: Boolean
+	status: String
+	effectiveFrom: String
+	effectiveTo: String
+}
+
+extend type Query {
+	taxRate(id: ID!): TaxRate
+	taxRates(organizationId: ID!, status: String, appliesTo: String, search: String): [TaxRate!]!
+}
+
+extend type Mutation {
+	createTaxRate(input: CreateTaxRateInput!): TaxRate!
+	updateTaxRate(id: ID!, input: UpdateTaxRateInput!): TaxRate!
+	deleteTaxRate(id: ID!): TaxRate!
+}

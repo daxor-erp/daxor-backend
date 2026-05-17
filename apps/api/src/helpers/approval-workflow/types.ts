@@ -17,6 +17,7 @@ import type { SalesReturnService } from '~/modules/sales-return/service'
 import type { DeliveryChallanService } from '~/modules/delivery-challan/service'
 import type { GRNService } from '~/modules/grn/service'
 import type { MaterialReceiptService } from '~/modules/material-receipt/service'
+import type { NotificationService } from '~/modules/notification/service'
 
 export type ApprovalDecision = 'APPROVED' | 'REJECTED'
 
@@ -58,4 +59,5 @@ export interface ApprovalWorkflowDeps {
 	deliveryChallanService: DeliveryChallanService
 	grnService: GRNService
 	materialReceiptService: MaterialReceiptService
+	notificationService: NotificationService
 }

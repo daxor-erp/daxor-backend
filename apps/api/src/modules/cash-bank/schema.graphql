@@ -54,6 +54,8 @@ input BankAccountInput {
   branchName: String!
   accountType: String!
   currency: String
+  """Initial balance for the account. Used as currentBalance on create."""
+  openingBalance: Float
   organizationId: String!
 }
 

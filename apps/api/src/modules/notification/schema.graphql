@@ -1,0 +1,80 @@
+enum NotificationKind {
+	APPROVAL_REQUEST
+	APPROVAL_APPROVED
+	APPROVAL_REJECTED
+	INVOICE_OVERDUE
+	BILL_DUE
+	LOW_STOCK
+	NEW_LEAD
+	MENTION
+	SYSTEM
+	BROADCAST
+	MAINTENANCE
+	ANNOUNCEMENT
+	ALERT
+}
+
+enum NotificationSeverity {
+	INFO
+	SUCCESS
+	WARNING
+	DANGER
+}
+
+type Notification {
+	id: ID!
+	organizationId: ID!
+	recipientUserId: ID!
+	actorUserId: ID
+	kind: NotificationKind!
+	severity: NotificationSeverity!
+	title: String!
+	message: String
+	link: String
+	referenceModule: String
+	referenceId: ID
+	moduleKey: String
+	isRead: Boolean!
+	readAt: String
+	archivedAt: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+extend type Query {
+	"""Notifications addressed to the current user (newest first)."""
+	myNotifications(unreadOnly: Boolean, limit: Int, skip: Int): [Notification!]!
+	"""Unread count for the current user."""
+	myUnreadNotificationCount: Int!
+}
+
+"""Audience for a manual sendNotification call. Exactly one field should be set."""
+input SendNotificationAudienceInput {
+	"""Send to one or more specific user IDs."""
+	userIds: [ID!]
+	"""Send to every active user in the given organization (org admin: own org only)."""
+	allUsersInOrganizationId: ID
+	"""Send to every active ORG_ADMIN across all organizations (super admin only)."""
+	allOrgAdmins: Boolean
+}
+
+input SendNotificationInput {
+	kind: NotificationKind!
+	severity: NotificationSeverity
+	title: String!
+	message: String
+	link: String
+	audience: SendNotificationAudienceInput!
+}
+
+extend type Mutation {
+	markNotificationRead(id: ID!): Notification!
+	markAllNotificationsRead: Int!
+	archiveNotification(id: ID!): Notification!
+	archiveAllNotifications: Int!
+	"""Send a notification (broadcast/maintenance/announcement/alert).
+	Super admin can target all org admins or specific users in any org.
+	Org admin can target all users in their own org or specific users in their own org.
+	Returns the number of notifications created."""
+	sendNotification(input: SendNotificationInput!): Int!
+}

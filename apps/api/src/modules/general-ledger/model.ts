@@ -22,6 +22,7 @@ export interface IGeneralLedger extends IBaseEntity {
 
 export interface IChartOfAccounts extends IBaseEntity {
   accountCode: string;
+  accountNumber?: string;
   accountName: string;
   accountType: string;
   parentAccount?: string;
@@ -29,6 +30,7 @@ export interface IChartOfAccounts extends IBaseEntity {
   isActive: boolean;
   organizationId: string;
   isDeleted: boolean;
+  description?: string;
 }
 
 const GeneralLedgerSchema = new Schema<IGeneralLedger>({
@@ -51,7 +53,8 @@ const GeneralLedgerSchema = new Schema<IGeneralLedger>({
 }, { timestamps: true });
 
 const ChartOfAccountsSchema = new Schema<IChartOfAccounts>({
-  accountCode: { type: String, required: true, unique: true },
+  accountCode: { type: String, required: true },
+  accountNumber: String,
   accountName: { type: String, required: true },
   accountType: { type: String, required: true },
   parentAccount: String,
@@ -59,7 +62,11 @@ const ChartOfAccountsSchema = new Schema<IChartOfAccounts>({
   isActive: { type: Boolean, default: true },
   organizationId: { type: String, required: true, index: true },
   isDeleted: { type: Boolean, default: false },
+  description: String,
 }, { timestamps: true });
+
+// accountCode must be unique within an organization, not globally (multi-tenant safety).
+ChartOfAccountsSchema.index({ organizationId: 1, accountCode: 1 }, { unique: true });
 
 export const GeneralLedger = mongoose.model<IGeneralLedger>('GeneralLedger', GeneralLedgerSchema);
 export const ChartOfAccounts = mongoose.model<IChartOfAccounts>('ChartOfAccounts', ChartOfAccountsSchema);

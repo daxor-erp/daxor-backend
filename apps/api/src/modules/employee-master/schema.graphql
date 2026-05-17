@@ -1,0 +1,159 @@
+type EmployeeBank {
+	bankName: String
+	accountNumber: String
+	ifscCode: String
+	branchName: String
+}
+
+type EmployeeEmergencyContact {
+	name: String
+	relation: String
+	phone: String
+}
+
+type EmployeeMaster {
+	id: ID!
+	organizationId: ID!
+	userId: ID
+	employeeCode: String!
+	firstName: String!
+	lastName: String!
+	dateOfBirth: String
+	gender: String
+	bloodGroup: String
+	nationality: String
+	maritalStatus: String
+	personalEmail: String
+	workEmail: String
+	phone: String
+	alternatePhone: String
+	address: String
+	city: String
+	state: String
+	country: String
+	pincode: String
+	designation: String
+	department: String
+	reportsToUserId: ID
+	dateOfJoining: String!
+	dateOfConfirmation: String
+	dateOfRelieving: String
+	employmentType: String
+	workLocation: String
+	shiftMasterId: ID
+	basicSalary: Float!
+	currency: String!
+	panNumber: String
+	aadhaarNumber: String
+	uanNumber: String
+	esiNumber: String
+	bankDetails: EmployeeBank
+	emergencyContact: EmployeeEmergencyContact
+	status: String!
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input EmployeeBankInput {
+	bankName: String
+	accountNumber: String
+	ifscCode: String
+	branchName: String
+}
+
+input EmployeeEmergencyContactInput {
+	name: String
+	relation: String
+	phone: String
+}
+
+input CreateEmployeeMasterInput {
+	organizationId: ID!
+	userId: ID
+	employeeCode: String!
+	firstName: String!
+	lastName: String!
+	dateOfBirth: String
+	gender: String
+	bloodGroup: String
+	nationality: String
+	maritalStatus: String
+	personalEmail: String
+	workEmail: String
+	phone: String
+	alternatePhone: String
+	address: String
+	city: String
+	state: String
+	country: String
+	pincode: String
+	designation: String
+	department: String
+	reportsToUserId: ID
+	dateOfJoining: String!
+	dateOfConfirmation: String
+	employmentType: String
+	workLocation: String
+	shiftMasterId: ID
+	basicSalary: Float
+	currency: String
+	panNumber: String
+	aadhaarNumber: String
+	uanNumber: String
+	esiNumber: String
+	bankDetails: EmployeeBankInput
+	emergencyContact: EmployeeEmergencyContactInput
+	status: String
+	notes: String
+}
+
+input UpdateEmployeeMasterInput {
+	employeeCode: String
+	firstName: String
+	lastName: String
+	dateOfBirth: String
+	gender: String
+	bloodGroup: String
+	nationality: String
+	maritalStatus: String
+	personalEmail: String
+	workEmail: String
+	phone: String
+	alternatePhone: String
+	address: String
+	city: String
+	state: String
+	country: String
+	pincode: String
+	designation: String
+	department: String
+	reportsToUserId: ID
+	dateOfJoining: String
+	dateOfConfirmation: String
+	dateOfRelieving: String
+	employmentType: String
+	workLocation: String
+	shiftMasterId: ID
+	basicSalary: Float
+	currency: String
+	panNumber: String
+	aadhaarNumber: String
+	uanNumber: String
+	esiNumber: String
+	bankDetails: EmployeeBankInput
+	emergencyContact: EmployeeEmergencyContactInput
+	status: String
+	notes: String
+}
+
+extend type Query {
+	employeeMaster(id: ID!): EmployeeMaster
+	employeeMasters(organizationId: ID!, status: String, department: String, search: String): [EmployeeMaster!]!
+}
+
+extend type Mutation {
+	createEmployeeMaster(input: CreateEmployeeMasterInput!): EmployeeMaster!
+	updateEmployeeMaster(id: ID!, input: UpdateEmployeeMasterInput!): EmployeeMaster!
+	deleteEmployeeMaster(id: ID!): EmployeeMaster!
+}

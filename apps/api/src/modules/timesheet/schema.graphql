@@ -1,0 +1,82 @@
+type TimesheetEntry {
+	id: ID!
+	organizationId: ID!
+	employeeUserId: ID!
+	projectId: ID
+	workOrderId: ID
+	taskName: String
+	entryDate: String!
+	hours: Float!
+	billable: Boolean!
+	billRate: Float!
+	costRate: Float!
+	notes: String
+	status: String!
+	submittedAt: String
+	approvedAt: String
+	approvedByUserId: ID
+	rejectionReason: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+type TimesheetWeeklySummary {
+	totalHours: Float!
+	billableHours: Float!
+	approvedHours: Float!
+	pending: Float!
+	draft: Float!
+}
+
+input CreateTimesheetEntryInput {
+	organizationId: ID!
+	employeeUserId: ID!
+	projectId: ID
+	workOrderId: ID
+	taskName: String
+	entryDate: String!
+	hours: Float!
+	billable: Boolean
+	billRate: Float
+	costRate: Float
+	notes: String
+}
+
+input UpdateTimesheetEntryInput {
+	projectId: ID
+	workOrderId: ID
+	taskName: String
+	entryDate: String
+	hours: Float
+	billable: Boolean
+	billRate: Float
+	costRate: Float
+	notes: String
+}
+
+extend type Query {
+	timesheetEntry(id: ID!): TimesheetEntry
+	timesheetEntries(
+		organizationId: ID!
+		employeeUserId: ID
+		projectId: ID
+		status: String
+		startDate: String
+		endDate: String
+		billable: Boolean
+	): [TimesheetEntry!]!
+	timesheetWeeklySummary(
+		organizationId: ID!
+		employeeUserId: ID!
+		weekStart: String!
+		weekEnd: String!
+	): TimesheetWeeklySummary!
+}
+
+extend type Mutation {
+	createTimesheetEntry(input: CreateTimesheetEntryInput!): TimesheetEntry!
+	updateTimesheetEntry(id: ID!, input: UpdateTimesheetEntryInput!): TimesheetEntry!
+	deleteTimesheetEntry(id: ID!): TimesheetEntry!
+	submitTimesheetEntry(id: ID!): TimesheetEntry!
+	resolveTimesheetEntry(id: ID!, decision: String!, reason: String): TimesheetEntry!
+}

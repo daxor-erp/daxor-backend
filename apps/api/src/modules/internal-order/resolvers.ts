@@ -2,7 +2,7 @@ import { InternalOrderService } from './service';
 
 const service = new InternalOrderService();
 
-export const internalorderResolvers = {
+export const resolvers = {
   Query: {
     internalorder: async (_: any, { id }: { id: string }) => {
       return service.getById(id);
@@ -24,3 +24,5 @@ export const internalorderResolvers = {
     },
   },
 };
+
+export const internalorderResolvers = resolvers

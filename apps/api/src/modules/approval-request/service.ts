@@ -18,6 +18,7 @@ import { SalesReturnService } from '../sales-return/service'
 import { DeliveryChallanService } from '../delivery-challan/service'
 import { GRNService } from '../grn/service'
 import { MaterialReceiptService } from '../material-receipt/service'
+import { NotificationService } from '../notification/service'
 import {
 	APPROVAL_ENTITY_CUSTOMER_INVOICE,
 	APPROVAL_ENTITY_MODULE_WORKSPACE,
@@ -92,6 +93,7 @@ export class ApprovalRequestService {
 			deliveryChallanService: new DeliveryChallanService(),
 			grnService: new GRNService(),
 			materialReceiptService: new MaterialReceiptService(),
+			notificationService: new NotificationService(),
 		}
 	}
 
@@ -105,6 +107,13 @@ export class ApprovalRequestService {
 
 	async listPendingForAssignee(assigneeUserId: string): Promise<any[]> {
 		return this.deps.repository.listPendingForAssignee(assigneeUserId)
+	}
+
+	async listForUser(
+		userId: string,
+		opts: { status?: string; role?: 'REQUESTER' | 'APPROVER' | 'ANY'; limit?: number; skip?: number } = {},
+	): Promise<any[]> {
+		return this.deps.repository.listForUser(userId, opts)
 	}
 
 	async ensureApproverConfiguredForPurchases(organizationId: string): Promise<void> {
@@ -326,6 +335,34 @@ export class ApprovalRequestService {
 			resolutionNote: note ?? undefined,
 			updatedAt: now,
 		})
+
+		// Best-effort notification to the original requester.
+		try {
+			const decider = await this.deps.userService.findById(ctxUserId)
+			const deciderName = decider
+				? `${decider.firstName ?? ''} ${decider.lastName ?? ''}`.trim() || decider.email
+				: 'An approver'
+			const isApproved = decision === 'APPROVED'
+			await this.deps.notificationService.notify({
+				organizationId: String(row.organizationId),
+				recipientUserId: String(row.requesterUserId),
+				actorUserId: String(ctxUserId),
+				kind: isApproved ? 'APPROVAL_APPROVED' : 'APPROVAL_REJECTED',
+				severity: isApproved ? 'SUCCESS' : 'DANGER',
+				title: isApproved
+					? `Approved: ${row.title}`
+					: `Rejected: ${row.title}`,
+				message: note
+					? `${deciderName} ${isApproved ? 'approved' : 'rejected'} your request. Note: ${note}`
+					: `${deciderName} ${isApproved ? 'approved' : 'rejected'} your request.`,
+				link: '/notifications',
+				referenceModule: 'approval-request',
+				referenceId: String(row._id ?? row.id ?? id),
+				moduleKey: String(row.moduleKey ?? ''),
+			})
+		} catch {
+			// swallowed — notifications are best-effort
+		}
 
 		return this.deps.repository.findById(id)
 	}

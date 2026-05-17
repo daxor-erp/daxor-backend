@@ -2,7 +2,7 @@ import { ExciseInvoiceService } from './service';
 
 const service = new ExciseInvoiceService();
 
-export const exciseinvoiceResolvers = {
+export const resolvers = {
   Query: {
     exciseinvoice: async (_: any, { id }: { id: string }) => {
       return service.getById(id);
@@ -24,3 +24,5 @@ export const exciseinvoiceResolvers = {
     },
   },
 };
+
+export const exciseinvoiceResolvers = resolvers

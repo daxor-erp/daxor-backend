@@ -2,7 +2,7 @@ import { ProductionPlanningService } from './service';
 
 const service = new ProductionPlanningService();
 
-export const productionplanningResolvers = {
+export const resolvers = {
   Query: {
     productionplanning: async (_: any, { id }: { id: string }) => {
       return service.getById(id);
@@ -27,3 +27,5 @@ export const productionplanningResolvers = {
     id: (p: any) => p._id || p.id,
   },
 };
+
+export const productionplanningResolvers = resolvers

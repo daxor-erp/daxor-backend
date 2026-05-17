@@ -1,0 +1,25 @@
+type Document {
+	id: ID!
+	organizationId: ID!
+	uploadedByUserId: ID
+	parentModule: String!
+	parentId: ID!
+	filename: String!
+	mimeType: String
+	sizeBytes: Int!
+	category: String
+	description: String
+	downloadUrl: String!
+	createdAt: String!
+	updatedAt: String!
+}
+
+extend type Query {
+	documents(parentModule: String!, parentId: ID!): [Document!]!
+	organizationDocuments(organizationId: ID!, parentModule: String): [Document!]!
+	document(id: ID!): Document
+}
+
+extend type Mutation {
+	deleteDocument(id: ID!): Document!
+}

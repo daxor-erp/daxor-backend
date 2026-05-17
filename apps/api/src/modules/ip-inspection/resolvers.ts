@@ -2,7 +2,7 @@ import { IpInspectionService } from './service';
 
 const service = new IpInspectionService();
 
-export const ipinspectionResolvers = {
+export const resolvers = {
   Query: {
     ipinspection: async (_: any, { id }: { id: string }) => {
       return service.getById(id);
@@ -24,3 +24,5 @@ export const ipinspectionResolvers = {
     },
   },
 };
+
+export const ipinspectionResolvers = resolvers

@@ -7,7 +7,7 @@ import { ApprovalRequestService, MODULE_KEY_SALES } from '../approval-request/se
 const service = new DeliveryChallanService()
 const approvalService = new ApprovalRequestService()
 
-export const deliverychallanResolvers = {
+export const resolvers = {
   Query: {
     deliverychallan: async (_: any, { id }: { id: string }) => {
       return service.getById(id)
@@ -45,5 +45,3 @@ export const deliverychallanResolvers = {
     },
   },
 }
-
-export const resolvers = deliverychallanResolvers

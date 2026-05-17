@@ -6,6 +6,22 @@ type ModulePermission {
 	canView: Boolean!
 }
 
+type DashboardWidgetPreferences {
+	hiddenWidgets: [String!]!
+	widgetOrder: [String!]!
+}
+
+type DashboardPreferences {
+	erp: DashboardWidgetPreferences
+	admin: DashboardWidgetPreferences
+	orgAdmin: DashboardWidgetPreferences
+}
+
+input DashboardWidgetPreferencesInput {
+	hiddenWidgets: [String!]!
+	widgetOrder: [String!]!
+}
+
 type User {
 	id: ID!
 	seqNo: String
@@ -17,6 +33,7 @@ type User {
 	status: String!
 	organizationId: ID
 	modulePermissions: [ModulePermission!]
+	dashboardPreferences: DashboardPreferences
 	createdAt: String!
 }
 
@@ -64,4 +81,5 @@ extend type Mutation {
 	updateUser(id: ID!, input: UpdateUserInput!): User!
 	deleteUser(id: ID!): User!
 	setUserModulePermissions(userId: ID!, permissions: [ModulePermissionInput!]!): User!
+	updateMyDashboardPreferences(dashboard: String!, input: DashboardWidgetPreferencesInput!): User!
 }

@@ -1,0 +1,93 @@
+type DeliveryItem {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String!
+	notes: String
+}
+
+type DeliveryOrder {
+	id: ID!
+	organizationId: ID!
+	docNumber: String!
+	salesOrderId: ID
+	customerId: ID
+	customerName: String
+	deliveryDate: String!
+	expectedArrival: String
+	actualArrival: String
+	shippingAddress: String
+	carrier: String
+	trackingNumber: String
+	vehicleNumber: String
+	driverName: String
+	driverPhone: String
+	items: [DeliveryItem!]!
+	totalQuantity: Float!
+	status: String!
+	dispatchedAt: String
+	deliveredAt: String
+	signedBy: String
+	signedAt: String
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input DeliveryItemInput {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String
+	notes: String
+}
+
+input CreateDeliveryOrderInput {
+	organizationId: ID!
+	docNumber: String!
+	salesOrderId: ID
+	customerId: ID
+	customerName: String
+	deliveryDate: String!
+	expectedArrival: String
+	shippingAddress: String
+	carrier: String
+	trackingNumber: String
+	vehicleNumber: String
+	driverName: String
+	driverPhone: String
+	items: [DeliveryItemInput!]!
+	notes: String
+	status: String
+}
+
+input UpdateDeliveryOrderInput {
+	docNumber: String
+	salesOrderId: ID
+	customerId: ID
+	customerName: String
+	deliveryDate: String
+	expectedArrival: String
+	shippingAddress: String
+	carrier: String
+	trackingNumber: String
+	vehicleNumber: String
+	driverName: String
+	driverPhone: String
+	items: [DeliveryItemInput!]
+	notes: String
+	status: String
+}
+
+extend type Query {
+	deliveryOrder(id: ID!): DeliveryOrder
+	deliveryOrders(organizationId: ID!, status: String, customerId: ID, salesOrderId: ID, search: String): [DeliveryOrder!]!
+}
+
+
+extend type Mutation {
+	createDeliveryOrder(input: CreateDeliveryOrderInput!): DeliveryOrder!
+	updateDeliveryOrder(id: ID!, input: UpdateDeliveryOrderInput!): DeliveryOrder!
+	deleteDeliveryOrder(id: ID!): DeliveryOrder!
+	transitionDeliveryOrderStatus(id: ID!, status: String!, signedBy: String): DeliveryOrder!
+}

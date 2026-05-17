@@ -22,6 +22,9 @@ export async function dropLegacyCodeFieldIndexes(connection: Connection): Promis
 		['vendorbills', ['vendorBillCode_1', 'billCode_1', 'code_1']],
 		['customerinvoices', ['invoiceCode_1', 'code_1']],
 		['warehouses', ['warehouseCode_1', 'code_1']],
+		// Multi-tenant fix: accountCode must be unique per organization, not globally.
+		// New compound index { organizationId: 1, accountCode: 1 } replaces this legacy one.
+		['chartofaccounts', ['accountCode_1']],
 	]
 
 	for (const [collectionName, indexNames] of drops) {
