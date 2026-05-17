@@ -22,12 +22,14 @@ type GeneralLedger {
 type ChartOfAccounts {
   id: ID!
   accountCode: String!
+  accountNumber: String
   accountName: String!
   accountType: String!
   parentAccount: String
   level: Int!
   isActive: Boolean!
   organizationId: String!
+  description: String
   createdAt: String!
   updatedAt: String!
 }
@@ -48,13 +50,17 @@ input GeneralLedgerInput {
 }
 
 input ChartOfAccountsInput {
-  accountCode: String!
+  """accountCode is generated server-side based on accountType. Ignored if supplied."""
+  accountCode: String
+  """Optional human-entered identifier (e.g. legacy ledger number)."""
+  accountNumber: String
   accountName: String!
   accountType: String!
   parentAccount: String
   level: Int
   isActive: Boolean
   organizationId: String!
+  description: String
 }
 
 extend type Query {

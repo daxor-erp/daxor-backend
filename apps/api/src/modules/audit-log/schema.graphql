@@ -1,0 +1,30 @@
+type AuditLog {
+	id: ID!
+	userId: ID
+	action: String!
+	entityType: String!
+	entityId: ID
+	oldValuesJson: String
+	newValuesJson: String
+	ipAddress: String
+	userAgent: String
+	createdAt: String!
+}
+
+type AuditLogPage {
+	data: [AuditLog!]!
+	total: Int!
+	page: Int!
+	pages: Int!
+}
+
+extend type Query {
+	auditLogs(
+		entityType: String
+		entityId: ID
+		userId: ID
+		action: String
+		page: Int
+		limit: Int
+	): AuditLogPage!
+}

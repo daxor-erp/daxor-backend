@@ -35,7 +35,27 @@ export class GeneralLedgerService {
   }
 
   async createChartOfAccount(data: Partial<IChartOfAccounts>) {
-    return this.coaRepository.create(data as IChartOfAccounts);
+    const accountCode = await this.generateAccountCode(data.organizationId!, data.accountType!);
+    const { accountCode: _ignored, ...rest } = data;
+    return this.coaRepository.create({ ...rest, accountCode } as IChartOfAccounts);
+  }
+
+  private async generateAccountCode(organizationId: string, accountType: string): Promise<string> {
+    const baseByType: Record<string, number> = {
+      asset: 1000,
+      liability: 2000,
+      equity: 3000,
+      revenue: 4000,
+      expense: 5000,
+    };
+    const base = baseByType[String(accountType).toLowerCase()] ?? 9000;
+    const existing = await this.coaRepository.findByOrganization(organizationId);
+    const sameTypePrefix = String(base).slice(0, 1);
+    const usedNumeric = existing
+      .map((a: any) => Number(String(a.accountCode || '').trim()))
+      .filter((n: number) => Number.isFinite(n) && String(n).startsWith(sameTypePrefix));
+    const next = usedNumeric.length ? Math.max(...usedNumeric) + 1 : base;
+    return String(next);
   }
 
   async getChartOfAccounts(organizationId: string, filters: any) {

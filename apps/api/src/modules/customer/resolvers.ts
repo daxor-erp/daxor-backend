@@ -73,9 +73,17 @@ export const resolvers = {
     id: (parent: any) => parent._id?.toString() || parent.id,
     organizationId: (parent: any) => String(parent.organizationId ?? ''),
     invoiceBillable: (parent: any) => parent.invoiceBillable !== false,
-    createdAt: (parent: any) =>
-      parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt,
-    updatedAt: (parent: any) =>
-      parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt,
+    createdAt: (parent: any) => {
+      const d = parent.createdAt
+      if (d instanceof Date) return d.toISOString()
+      if (typeof d === 'string' && d.length > 0) return d
+      return new Date(0).toISOString()
+    },
+    updatedAt: (parent: any) => {
+      const d = parent.updatedAt ?? parent.createdAt
+      if (d instanceof Date) return d.toISOString()
+      if (typeof d === 'string' && d.length > 0) return d
+      return new Date(0).toISOString()
+    },
   },
 }

@@ -1,0 +1,82 @@
+type BOMComponent {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String!
+	scrapPercent: Float!
+	standardCost: Float!
+	notes: String
+}
+
+type BillOfMaterials {
+	id: ID!
+	organizationId: ID!
+	parentItemId: ID!
+	parentItemName: String!
+	bomCode: String!
+	version: String!
+	description: String
+	quantityProduced: Float!
+	unit: String!
+	components: [BOMComponent!]!
+	laborCost: Float!
+	overheadCost: Float!
+	totalMaterialCost: Float!
+	totalCost: Float!
+	status: String!
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input BOMComponentInput {
+	itemId: ID
+	itemName: String!
+	quantity: Float!
+	unit: String
+	scrapPercent: Float
+	standardCost: Float
+	notes: String
+}
+
+input CreateBOMInput {
+	organizationId: ID!
+	parentItemId: ID!
+	parentItemName: String!
+	bomCode: String!
+	version: String
+	description: String
+	quantityProduced: Float
+	unit: String
+	components: [BOMComponentInput!]!
+	laborCost: Float
+	overheadCost: Float
+	status: String
+	notes: String
+}
+
+input UpdateBOMInput {
+	parentItemId: ID
+	parentItemName: String
+	bomCode: String
+	version: String
+	description: String
+	quantityProduced: Float
+	unit: String
+	components: [BOMComponentInput!]
+	laborCost: Float
+	overheadCost: Float
+	status: String
+	notes: String
+}
+
+extend type Query {
+	billOfMaterials(id: ID!): BillOfMaterials
+	billsOfMaterials(organizationId: ID!, status: String, parentItemId: ID, search: String): [BillOfMaterials!]!
+}
+
+extend type Mutation {
+	createBillOfMaterials(input: CreateBOMInput!): BillOfMaterials!
+	updateBillOfMaterials(id: ID!, input: UpdateBOMInput!): BillOfMaterials!
+	deleteBillOfMaterials(id: ID!): BillOfMaterials!
+}

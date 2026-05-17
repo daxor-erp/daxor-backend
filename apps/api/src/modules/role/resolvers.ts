@@ -5,7 +5,7 @@ import { RESOURCES, ACTIONS } from './permissions'
 
 const roleService = new RoleService()
 
-export const roleResolvers = {
+export const resolvers = {
   Query: {
     role: async (_: any, { id }: { id: string }, context: GraphQLContext) => {
       requirePermission(context, RESOURCES.ROLE, ACTIONS.READ)
@@ -55,3 +55,5 @@ export const roleResolvers = {
     id: (parent: any) => parent._id || parent.id,
   },
 }
+
+export const roleResolvers = resolvers

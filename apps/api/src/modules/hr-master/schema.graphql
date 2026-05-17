@@ -1,0 +1,44 @@
+type HrMaster {
+	id: ID!
+	organizationId: ID!
+	kind: String!
+	code: String!
+	name: String!
+	description: String
+	metadataJson: String
+	active: Boolean!
+	sortOrder: Int!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateHrMasterInput {
+	organizationId: ID!
+	kind: String!
+	code: String!
+	name: String!
+	description: String
+	metadataJson: String
+	active: Boolean
+	sortOrder: Int
+}
+
+input UpdateHrMasterInput {
+	code: String
+	name: String
+	description: String
+	metadataJson: String
+	active: Boolean
+	sortOrder: Int
+}
+
+extend type Query {
+	hrMaster(id: ID!): HrMaster
+	hrMasters(organizationId: ID!, kind: String!, active: Boolean, search: String): [HrMaster!]!
+}
+
+extend type Mutation {
+	createHrMaster(input: CreateHrMasterInput!): HrMaster!
+	updateHrMaster(id: ID!, input: UpdateHrMasterInput!): HrMaster!
+	deleteHrMaster(id: ID!): HrMaster!
+}

@@ -1,0 +1,72 @@
+type IntercompanyJournalLine {
+	organizationId: ID!
+	account: String!
+	accountName: String
+	costCenter: String
+	debit: Float!
+	credit: Float!
+	description: String
+}
+
+type IntercompanyJournalEntry {
+	id: ID!
+	originatingOrganizationId: ID!
+	docNumber: String!
+	entryDate: String!
+	description: String
+	allocationId: ID
+	lines: [IntercompanyJournalLine!]!
+	totalDebit: Float!
+	totalCredit: Float!
+	status: String!
+	postedAt: String
+	postedByUserId: ID
+	reversalOfId: ID
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input IntercompanyJournalLineInput {
+	organizationId: ID!
+	account: String!
+	accountName: String
+	costCenter: String
+	debit: Float
+	credit: Float
+	description: String
+}
+
+input CreateIntercompanyJournalInput {
+	originatingOrganizationId: ID!
+	docNumber: String!
+	entryDate: String!
+	description: String
+	allocationId: ID
+	lines: [IntercompanyJournalLineInput!]!
+	notes: String
+	status: String
+}
+
+input UpdateIntercompanyJournalInput {
+	docNumber: String
+	entryDate: String
+	description: String
+	allocationId: ID
+	lines: [IntercompanyJournalLineInput!]
+	notes: String
+	status: String
+}
+
+extend type Query {
+	intercompanyJournalEntry(id: ID!): IntercompanyJournalEntry
+	intercompanyJournalEntries(originatingOrganizationId: ID!, status: String, allocationId: ID, search: String): [IntercompanyJournalEntry!]!
+}
+
+extend type Mutation {
+	createIntercompanyJournalEntry(input: CreateIntercompanyJournalInput!): IntercompanyJournalEntry!
+	updateIntercompanyJournalEntry(id: ID!, input: UpdateIntercompanyJournalInput!): IntercompanyJournalEntry!
+	deleteIntercompanyJournalEntry(id: ID!): IntercompanyJournalEntry!
+	postIntercompanyJournalEntry(id: ID!): IntercompanyJournalEntry!
+	reverseIntercompanyJournalEntry(id: ID!): IntercompanyJournalEntry!
+}

@@ -39,7 +39,7 @@ function goodsReceiptToGraphQL(doc: unknown) {
   };
 }
 
-export const goodsreceiptResolvers = {
+export const resolvers = {
   Query: {
     goodsreceipt: async (_: unknown, { id }: { id: string }) => {
       const row = await service.getById(id);
@@ -75,6 +75,3 @@ export const goodsreceiptResolvers = {
     },
   },
 };
-
-/** Required for @graphql-tools/load-files + mergeResolvers (same pattern as delivery-challan). */
-export const resolvers = goodsreceiptResolvers;

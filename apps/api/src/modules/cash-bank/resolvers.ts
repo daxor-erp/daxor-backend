@@ -97,9 +97,23 @@ export const resolvers = {
   },
   CashBank: {
     id: (p: any) => p._id || p.id,
-    transactionDate: (p: any) => p.transactionDate ? new Date(p.transactionDate).toISOString() : null,
-    createdAt: (p: any) => p.createdAt ? new Date(p.createdAt).toISOString() : null,
+    transactionDate: (p: any) => {
+      const d = p.transactionDate ?? p.createdAt
+      return d ? new Date(d).toISOString() : new Date(0).toISOString()
+    },
+    createdAt: (p: any) => p.createdAt ? new Date(p.createdAt).toISOString() : new Date(0).toISOString(),
     reconciliationDate: (p: any) => (p.reconciliationDate ? new Date(p.reconciliationDate).toISOString() : null),
+    // Defensive fallbacks: schema marks these non-null but legacy rows may lack them.
+    transactionNumber: (p: any) => p.transactionNumber ?? '',
+    transactionType: (p: any) => p.transactionType ?? '',
+    bankAccount: (p: any) => p.bankAccount ?? '',
+    referenceModule: (p: any) => p.referenceModule ?? '',
+    referenceId: (p: any) => p.referenceId != null ? String(p.referenceId) : '',
+    currency: (p: any) => p.currency ?? 'INR',
+    paymentMethod: (p: any) => p.paymentMethod ?? '',
+    description: (p: any) => p.description ?? '',
+    reconciliationStatus: (p: any) => p.reconciliationStatus ?? 'UNRECONCILED',
+    organizationId: (p: any) => p.organizationId != null ? String(p.organizationId) : '',
   },
   BankAccount: {
     id: (p: any) => p._id || p.id,

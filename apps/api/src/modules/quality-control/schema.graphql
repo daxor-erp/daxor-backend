@@ -1,0 +1,100 @@
+type QCDefect {
+	code: String!
+	description: String
+	severity: String!
+	quantity: Float!
+	rootCause: String
+	correctiveAction: String
+}
+
+type QCInspection {
+	id: ID!
+	organizationId: ID!
+	docNumber: String!
+	inspectionDate: String!
+	inspectorUserId: ID
+	inspectorName: String
+	sourceModule: String!
+	sourceId: ID
+	itemId: ID
+	itemName: String!
+	batchNumber: String
+	quantityInspected: Float!
+	quantityPassed: Float!
+	quantityFailed: Float!
+	quantityReworked: Float!
+	defects: [QCDefect!]!
+	outcome: String!
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+type QCOutcomeSummary {
+	outcome: String!
+	count: Int!
+	quantityInspected: Float!
+	quantityPassed: Float!
+	quantityFailed: Float!
+}
+
+input QCDefectInput {
+	code: String!
+	description: String
+	severity: String
+	quantity: Float
+	rootCause: String
+	correctiveAction: String
+}
+
+input CreateQCInspectionInput {
+	organizationId: ID!
+	docNumber: String!
+	inspectionDate: String!
+	inspectorUserId: ID
+	inspectorName: String
+	sourceModule: String!
+	sourceId: ID
+	itemId: ID
+	itemName: String!
+	batchNumber: String
+	quantityInspected: Float!
+	quantityPassed: Float
+	quantityFailed: Float
+	quantityReworked: Float
+	defects: [QCDefectInput!]
+	outcome: String
+	notes: String
+}
+
+input UpdateQCInspectionInput {
+	docNumber: String
+	inspectionDate: String
+	inspectorUserId: ID
+	inspectorName: String
+	sourceModule: String
+	sourceId: ID
+	itemId: ID
+	itemName: String
+	batchNumber: String
+	quantityInspected: Float
+	quantityPassed: Float
+	quantityFailed: Float
+	quantityReworked: Float
+	defects: [QCDefectInput!]
+	outcome: String
+	notes: String
+}
+
+extend type Query {
+	qcInspection(id: ID!): QCInspection
+	qcInspections(organizationId: ID!, outcome: String, sourceModule: String, sourceId: ID, search: String): [QCInspection!]!
+	qcOutcomeSummary(organizationId: ID!): [QCOutcomeSummary!]!
+}
+
+extend type Mutation {
+	createQCInspection(input: CreateQCInspectionInput!): QCInspection!
+	updateQCInspection(id: ID!, input: UpdateQCInspectionInput!): QCInspection!
+	deleteQCInspection(id: ID!): QCInspection!
+	setQCInspectionOutcome(id: ID!, outcome: String!, notes: String): QCInspection!
+}

@@ -1,0 +1,77 @@
+type AllocationLine {
+	targetOrganizationId: ID!
+	targetOrganizationName: String
+	percentage: Float!
+	amount: Float!
+	costCenter: String
+	notes: String
+}
+
+type IntercompanyAllocation {
+	id: ID!
+	organizationId: ID!
+	scheduleCode: String!
+	name: String!
+	description: String
+	sourceAccount: String!
+	basisAmount: Float!
+	basisDate: String!
+	allocationMethod: String!
+	lines: [AllocationLine!]!
+	totalAllocated: Float!
+	status: String!
+	postedAt: String
+	postedByUserId: ID
+	journalEntryId: ID
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+input AllocationLineInput {
+	targetOrganizationId: ID!
+	targetOrganizationName: String
+	percentage: Float!
+	costCenter: String
+	notes: String
+}
+
+input CreateIntercompanyAllocationInput {
+	organizationId: ID!
+	scheduleCode: String!
+	name: String!
+	description: String
+	sourceAccount: String!
+	basisAmount: Float!
+	basisDate: String!
+	allocationMethod: String
+	lines: [AllocationLineInput!]!
+	notes: String
+	status: String
+}
+
+input UpdateIntercompanyAllocationInput {
+	scheduleCode: String
+	name: String
+	description: String
+	sourceAccount: String
+	basisAmount: Float
+	basisDate: String
+	allocationMethod: String
+	lines: [AllocationLineInput!]
+	notes: String
+	status: String
+}
+
+extend type Query {
+	intercompanyAllocation(id: ID!): IntercompanyAllocation
+	intercompanyAllocations(organizationId: ID!, status: String, search: String): [IntercompanyAllocation!]!
+}
+
+extend type Mutation {
+	createIntercompanyAllocation(input: CreateIntercompanyAllocationInput!): IntercompanyAllocation!
+	updateIntercompanyAllocation(id: ID!, input: UpdateIntercompanyAllocationInput!): IntercompanyAllocation!
+	deleteIntercompanyAllocation(id: ID!): IntercompanyAllocation!
+	postIntercompanyAllocation(id: ID!): IntercompanyAllocation!
+	reverseIntercompanyAllocation(id: ID!): IntercompanyAllocation!
+}

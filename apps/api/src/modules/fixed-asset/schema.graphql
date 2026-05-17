@@ -1,0 +1,112 @@
+type DepreciationEntry {
+	periodEndDate: String!
+	amount: Float!
+	accumulatedDepreciation: Float!
+	bookValue: Float!
+	method: String!
+	notes: String
+	postedAt: String!
+}
+
+type FixedAsset {
+	id: ID!
+	organizationId: ID!
+	assetCode: String!
+	name: String!
+	description: String
+	category: String!
+	assignedToUserId: ID
+	siteLocationId: ID
+	vendorId: ID
+	purchaseDate: String!
+	commissionedDate: String
+	disposalDate: String
+	acquisitionCost: Float!
+	salvageValue: Float!
+	usefulLifeMonths: Int!
+	depreciationMethod: String!
+	depreciationRatePercent: Float
+	accumulatedDepreciation: Float!
+	bookValue: Float!
+	status: String!
+	barcode: String
+	serialNumber: String
+	warrantyExpiryDate: String
+	depreciationHistory: [DepreciationEntry!]!
+	notes: String
+	createdAt: String!
+	updatedAt: String!
+}
+
+type FixedAssetCategorySummary {
+	category: String!
+	count: Int!
+	acquisitionCost: Float!
+	accumulatedDepreciation: Float!
+	bookValue: Float!
+}
+
+input CreateFixedAssetInput {
+	organizationId: ID!
+	assetCode: String!
+	name: String!
+	description: String
+	category: String
+	assignedToUserId: ID
+	siteLocationId: ID
+	vendorId: ID
+	purchaseDate: String!
+	commissionedDate: String
+	acquisitionCost: Float!
+	salvageValue: Float
+	usefulLifeMonths: Int!
+	depreciationMethod: String
+	depreciationRatePercent: Float
+	status: String
+	barcode: String
+	serialNumber: String
+	warrantyExpiryDate: String
+	notes: String
+}
+
+input UpdateFixedAssetInput {
+	assetCode: String
+	name: String
+	description: String
+	category: String
+	assignedToUserId: ID
+	siteLocationId: ID
+	vendorId: ID
+	purchaseDate: String
+	commissionedDate: String
+	acquisitionCost: Float
+	salvageValue: Float
+	usefulLifeMonths: Int
+	depreciationMethod: String
+	depreciationRatePercent: Float
+	status: String
+	barcode: String
+	serialNumber: String
+	warrantyExpiryDate: String
+	notes: String
+}
+
+input PostDepreciationInput {
+	periodEndDate: String!
+	amount: Float
+	notes: String
+}
+
+extend type Query {
+	fixedAsset(id: ID!): FixedAsset
+	fixedAssets(organizationId: ID!, status: String, category: String, search: String): [FixedAsset!]!
+	fixedAssetSummaryByCategory(organizationId: ID!): [FixedAssetCategorySummary!]!
+}
+
+extend type Mutation {
+	createFixedAsset(input: CreateFixedAssetInput!): FixedAsset!
+	updateFixedAsset(id: ID!, input: UpdateFixedAssetInput!): FixedAsset!
+	deleteFixedAsset(id: ID!): FixedAsset!
+	postFixedAssetDepreciation(id: ID!, input: PostDepreciationInput!): FixedAsset!
+	disposeFixedAsset(id: ID!, disposalDate: String!, notes: String): FixedAsset!
+}

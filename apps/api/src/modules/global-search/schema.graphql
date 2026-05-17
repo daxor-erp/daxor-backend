@@ -1,0 +1,13 @@
+type SearchHit {
+	id: ID!
+	kind: String!
+	title: String!
+	subtitle: String
+	link: String!
+	matchedField: String
+}
+
+extend type Query {
+	"""Cross-collection search inside the current organization."""
+	globalSearch(organizationId: ID!, query: String!, limitPerKind: Int): [SearchHit!]!
+}

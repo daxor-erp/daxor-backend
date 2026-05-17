@@ -60,10 +60,16 @@ export class CashBankService {
     } as Partial<ICashBank>);
   }
 
-  async createBankAccount(data: Partial<IBankAccount>) {
+  async createBankAccount(data: Partial<IBankAccount> & { openingBalance?: number }) {
     const accountHolder =
       (data.accountHolder && String(data.accountHolder).trim()) || data.accountName || '';
-    return this.baRepository.create({ ...data, accountHolder } as IBankAccount);
+    const opening = Number(data.openingBalance ?? 0)
+    const { openingBalance: _ignore, ...rest } = data
+    return this.baRepository.create({
+      ...rest,
+      accountHolder,
+      currentBalance: Number.isFinite(opening) ? opening : 0,
+    } as IBankAccount);
   }
 
   async getBankAccounts(organizationId: string) {

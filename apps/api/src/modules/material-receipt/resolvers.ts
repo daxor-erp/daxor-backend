@@ -7,7 +7,7 @@ import { ApprovalRequestService, MODULE_KEY_PURCHASES } from '../approval-reques
 const service = new MaterialReceiptService()
 const approvalService = new ApprovalRequestService()
 
-export const materialreceiptResolvers = {
+export const resolvers = {
   Query: {
     materialreceipt: (_: unknown, { id }: { id: string }) => service.getById(id),
     materialreceipts: (_: unknown, { organizationId, page, limit, status }: any) =>
@@ -49,3 +49,5 @@ export const materialreceiptResolvers = {
     updatedAt: (p: any) => (p.updatedAt ? new Date(p.updatedAt).toISOString() : null),
   },
 }
+
+export const materialreceiptResolvers = resolvers

@@ -27,6 +27,20 @@ const userSchema = new Schema({
 			canView: { type: Boolean, default: false },
 		},
 	],
+	dashboardPreferences: {
+		erp: {
+			hiddenWidgets: [{ type: String }],
+			widgetOrder: [{ type: String }],
+		},
+		admin: {
+			hiddenWidgets: [{ type: String }],
+			widgetOrder: [{ type: String }],
+		},
+		orgAdmin: {
+			hiddenWidgets: [{ type: String }],
+			widgetOrder: [{ type: String }],
+		},
+	},
 }, { timestamps: false })
 
 userSchema.index({ email: 1 })

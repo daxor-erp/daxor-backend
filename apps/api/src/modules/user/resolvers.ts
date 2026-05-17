@@ -67,6 +67,27 @@ function toGraphQLModulePermissions(parent: { modulePermissions?: unknown }): Ar
 	}))
 }
 
+const DASHBOARD_KEYS = ['erp', 'admin', 'orgAdmin'] as const
+type DashboardKey = (typeof DASHBOARD_KEYS)[number]
+
+function toGraphQLWidgetPrefs(row: any): { hiddenWidgets: string[]; widgetOrder: string[] } | null {
+	if (!row) return null
+	const hidden = Array.isArray(row.hiddenWidgets) ? row.hiddenWidgets.map(String) : []
+	const order = Array.isArray(row.widgetOrder) ? row.widgetOrder.map(String) : []
+	if (!hidden.length && !order.length) return null
+	return { hiddenWidgets: hidden, widgetOrder: order }
+}
+
+function toGraphQLDashboardPreferences(parent: { dashboardPreferences?: any }) {
+	const dp = parent?.dashboardPreferences
+	if (!dp) return null
+	return {
+		erp: toGraphQLWidgetPrefs(dp.erp),
+		admin: toGraphQLWidgetPrefs(dp.admin),
+		orgAdmin: toGraphQLWidgetPrefs(dp.orgAdmin),
+	}
+}
+
 export const resolvers = {
 	Query: {
 		user: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
@@ -197,6 +218,25 @@ export const resolvers = {
 			})
 			return user
 		},
+		updateMyDashboardPreferences: async (
+			_: unknown,
+			{ dashboard, input }: { dashboard: string; input: { hiddenWidgets: string[]; widgetOrder: string[] } },
+			ctx: GraphQLContext,
+		) => {
+			assertAuthenticated(ctx)
+			if (!DASHBOARD_KEYS.includes(dashboard as DashboardKey)) {
+				throw new GraphQLAuthError(`Unknown dashboard: ${dashboard}`)
+			}
+			const userId = ctx.user!.id
+			const hiddenWidgets = (input.hiddenWidgets ?? []).map(String)
+			const widgetOrder = (input.widgetOrder ?? []).map(String)
+			await userService.updateUser(
+				userId,
+				{ [`dashboardPreferences.${dashboard}`]: { hiddenWidgets, widgetOrder } },
+				userId,
+			)
+			return userService.findById(userId)
+		},
 		setUserModulePermissions: async (
 			_: unknown,
 			{ userId, permissions }: { userId: string; permissions: any[] },
@@ -244,5 +284,6 @@ export const resolvers = {
 			p.organizationId != null ? String(p.organizationId) : null,
 		roles: (p: { roles?: string[] }) => p.roles ?? [],
 		modulePermissions: (p: { modulePermissions?: unknown }) => toGraphQLModulePermissions(p),
+		dashboardPreferences: (p: { dashboardPreferences?: unknown }) => toGraphQLDashboardPreferences(p),
 	},
 }

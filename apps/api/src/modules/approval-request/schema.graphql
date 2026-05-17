@@ -17,6 +17,12 @@ enum ApprovalDecision {
 	REJECTED
 }
 
+enum ApprovalRequestRole {
+	REQUESTER
+	APPROVER
+	ANY
+}
+
 type ApprovalRequest {
 	id: ID!
 	organizationId: ID!
@@ -38,6 +44,17 @@ type ApprovalRequest {
 extend type Query {
 	"""Approval tasks assigned to the current user (same organization)."""
 	myPendingApprovalRequests: [ApprovalRequest!]!
+
+	"""
+	Approval requests the current user is involved in, either as requester
+	or as assigned approver. Filter by status and/or role.
+	"""
+	myApprovalRequests(
+		status: ApprovalRequestStatus
+		role: ApprovalRequestRole = ANY
+		limit: Int = 50
+		skip: Int = 0
+	): [ApprovalRequest!]!
 }
 
 extend type Mutation {

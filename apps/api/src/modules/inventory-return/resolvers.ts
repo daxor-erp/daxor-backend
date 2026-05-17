@@ -2,7 +2,7 @@ import { InventoryReturnService } from './service';
 
 const service = new InventoryReturnService();
 
-export const inventoryreturnResolvers = {
+export const resolvers = {
   Query: {
     inventoryreturn: async (_: any, { id }: { id: string }) => {
       return service.getById(id);
@@ -24,3 +24,5 @@ export const inventoryreturnResolvers = {
     },
   },
 };
+
+export const inventoryreturnResolvers = resolvers
