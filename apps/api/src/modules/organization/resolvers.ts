@@ -62,6 +62,15 @@ export const resolvers = {
 			if (status && String(o.status) !== String(status)) return []
 			return [o]
 		},
+		subTenants: async (_: unknown, { parentOrganizationId }: { parentOrganizationId: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			if (isPlatformAdmin(ctx)) return service.findChildren(parentOrganizationId)
+			const my = orgIdString(ctx)
+			if (!my || String(my) !== String(parentOrganizationId)) {
+				throw new GraphQLAuthError('You can only list sub-tenants of your own organization')
+			}
+			return service.findChildren(parentOrganizationId)
+		},
 	},
 	Mutation: {
 		createOrganization: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
@@ -71,6 +80,20 @@ export const resolvers = {
 		createOrganizationWithOrgAdmin: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
 			assertPlatformAdmin(ctx)
 			return service.createWithOrgAdmin(input, ctx.user!.id)
+		},
+		createSubTenantWithAdmin: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			if (!isOrgAdmin(ctx) && !isPlatformAdmin(ctx)) {
+				throw new GraphQLAuthError('Only an organization admin can create sub-tenants')
+			}
+			const parentId = orgIdString(ctx)
+			if (!parentId) throw new GraphQLAuthError('No parent organization in context')
+			const parent = await service.findById(parentId)
+			if (!parent || parent.deletedAt) throw new GraphQLValidationError('Parent organization not found')
+			if (!parent.allowSubTenants) {
+				throw new GraphQLAuthError('Sub-tenants are not enabled for your organization. Ask a platform admin to enable allowSubTenants.')
+			}
+			return service.createWithOrgAdmin(input, ctx.user!.id, parentId)
 		},
 		updateOrganization: async (_: unknown, { id, input }: any, ctx: GraphQLContext) => {
 			assertAuthenticated(ctx)
@@ -82,7 +105,8 @@ export const resolvers = {
 				if (!oid || String(id) !== oid) {
 					throw new GraphQLAuthError('You can only update your own organization')
 				}
-				const { status: _st, ...safe } = input
+				// ORG_ADMIN cannot flip status or allowSubTenants on themselves
+				const { status: _st, allowSubTenants: _ast, ...safe } = input
 				return service.update(id, { ...safe, updatedBy: ctx.user?.id })
 			}
 			throw new GraphQLAuthError('Forbidden')
@@ -140,6 +164,9 @@ export const resolvers = {
 	Organization: {
 		id: (p: { _id?: unknown; id?: string }) => String(p?._id ?? p?.id ?? ''),
 		seqNo: (p: { seqNo?: string }) => p?.seqNo ?? '',
+		parentOrganizationId: (p: { parentOrganizationId?: unknown }) =>
+			p?.parentOrganizationId != null ? String(p.parentOrganizationId) : null,
+		allowSubTenants: (p: { allowSubTenants?: boolean }) => Boolean(p?.allowSubTenants),
 		moduleApprovers: (
 			parent: { moduleApprovers?: { moduleKey?: string; approverUserId?: unknown }[] },
 		) => {

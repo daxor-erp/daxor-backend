@@ -9,6 +9,10 @@ const organizationSchema = new Schema({
 	email: { type: String },
 	phone: { type: String },
 	address: { type: String },
+	/** Parent tenant if this is a sub-tenant; null/undefined for root tenants. */
+	parentOrganizationId: { type: Schema.Types.ObjectId, ref: 'Organization', default: null, index: true },
+	/** When true, this org's ORG_ADMIN users may provision sub-tenants beneath them. */
+	allowSubTenants: { type: Boolean, default: false },
 	status: { type: String, enum: ['active', 'inactive', 'suspended', 'deleted'], default: 'active' },
 	/** ERP module → user who may approve workflow requests for that module (within this org). */
 	moduleApprovers: {

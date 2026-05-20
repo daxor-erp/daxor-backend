@@ -1,10 +1,11 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { EmployeeMasterRepository } from './repository'
+import { User } from '../user/model'
 
 export interface EmployeeMasterInput {
 	organizationId: string
 	userId?: string | null
-	employeeCode: string
+	employeeCode?: string
 	firstName: string
 	lastName: string
 	dateOfBirth?: string | Date | null
@@ -50,12 +51,42 @@ export class EmployeeMasterService {
 
 	async create(input: EmployeeMasterInput): Promise<any> {
 		this.validate(input)
+		const employeeCode = input.employeeCode?.trim()
+			? input.employeeCode.trim().toUpperCase()
+			: await this.generateEmployeeCode(input.organizationId)
+		const userId = input.userId?.toString().trim()
+			? input.userId
+			: await this.provisionUser(input)
 		return this.repository.create({
 			...input,
-			employeeCode: input.employeeCode.trim().toUpperCase(),
+			userId,
+			employeeCode,
 			firstName: input.firstName.trim(),
 			lastName: input.lastName.trim(),
 		})
+	}
+
+	private async provisionUser(input: EmployeeMasterInput): Promise<string> {
+		const firstName = input.firstName.trim()
+		const lastName = input.lastName.trim()
+		const email = (input.workEmail || input.personalEmail || '').trim().toLowerCase()
+		const fallbackEmail = email || `${firstName}.${lastName}.${Date.now()}@noemail.local`.toLowerCase().replace(/\s+/g, '-')
+		const user = await User.create({
+			firstName,
+			lastName,
+			email: fallbackEmail,
+			phone: input.phone,
+			organizationId: input.organizationId,
+			roles: ['employee'],
+			userType: 'employee',
+			status: 'active',
+		})
+		return String(user._id)
+	}
+
+	private async generateEmployeeCode(organizationId: string): Promise<string> {
+		const count = await (this.repository as any).model.countDocuments({ organizationId }).exec()
+		return `EMP-${String(count + 1).padStart(4, '0')}`
 	}
 
 	async update(id: string, input: Partial<EmployeeMasterInput>): Promise<any> {
@@ -80,7 +111,6 @@ export class EmployeeMasterService {
 
 	private validate(input: EmployeeMasterInput) {
 		if (!input.organizationId) throw new GraphQLValidationError('organizationId is required')
-		if (!input.employeeCode?.trim()) throw new GraphQLValidationError('Employee code is required')
 		if (!input.firstName?.trim() || !input.lastName?.trim()) {
 			throw new GraphQLValidationError('First + last name are required')
 		}

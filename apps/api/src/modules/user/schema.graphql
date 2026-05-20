@@ -32,6 +32,7 @@ type User {
 	roles: [String!]
 	status: String!
 	organizationId: ID
+	currency: String
 	modulePermissions: [ModulePermission!]
 	dashboardPreferences: DashboardPreferences
 	createdAt: String!
@@ -67,6 +68,7 @@ input UpdateUserInput {
 	lastName: String
 	roles: [String!]
 	status: String
+	currency: String
 }
 
 extend type Query {

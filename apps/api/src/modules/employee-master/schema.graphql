@@ -71,7 +71,7 @@ input EmployeeEmergencyContactInput {
 input CreateEmployeeMasterInput {
 	organizationId: ID!
 	userId: ID
-	employeeCode: String!
+	employeeCode: String
 	firstName: String!
 	lastName: String!
 	dateOfBirth: String
