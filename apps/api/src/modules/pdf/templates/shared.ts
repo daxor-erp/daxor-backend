@@ -1,7 +1,24 @@
 /**
  * Shared PDF rendering helpers. Each document template imports these to keep a
- * consistent print shell, INR currency formatting, and date formatting.
+ * consistent print shell, currency formatting, and date formatting.
+ *
+ * The active currency is module-scoped — `renderDocumentToHtml` sets it before
+ * invoking a template so all `pdfMoney()` calls in that render use the right
+ * symbol & locale. Defaults to INR when nothing is set.
  */
+
+import { formatMoney, getCurrencyMeta, type CurrencyCode } from '../../../lib/format-money'
+
+let activeCurrency: CurrencyCode = 'INR'
+
+export function setActiveCurrency(code?: string | null): void {
+	const valid: CurrencyCode[] = ['INR', 'USD', 'SGD', 'MYR']
+	activeCurrency = (valid.includes(code as CurrencyCode) ? (code as CurrencyCode) : 'INR')
+}
+
+export function getActiveCurrency(): CurrencyCode {
+	return activeCurrency
+}
 
 export function escapeHtml(s: unknown): string {
 	return String(s ?? '')
@@ -14,7 +31,11 @@ export function escapeHtml(s: unknown): string {
 
 export function pdfMoney(n: unknown): string {
 	const num = Number.isFinite(Number(n)) ? Number(n) : 0
-	return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+	return formatMoney(num, activeCurrency)
+}
+
+export function pdfCurrencySymbol(): string {
+	return getCurrencyMeta(activeCurrency).symbol
 }
 
 export function pdfDate(value: unknown, fallback = '—'): string {
@@ -26,7 +47,7 @@ export function pdfDate(value: unknown, fallback = '—'): string {
 				? new Date(Number(value))
 				: new Date(value as string)
 	if (Number.isNaN(raw.getTime())) return fallback
-	return raw.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+	return raw.toLocaleDateString(getCurrencyMeta(activeCurrency).locale, { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 export interface PdfShellOptions {

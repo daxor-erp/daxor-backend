@@ -1,0 +1,46 @@
+type OnboardingTask {
+  title: String!
+  done: Boolean!
+  doneAt: String
+  notes: String
+}
+
+type Onboarding {
+  id: ID!
+  organizationId: String!
+  employeeId: String!
+  startedAt: String!
+  expectedCompletionDate: String
+  completedAt: String
+  tasks: [OnboardingTask!]!
+  status: String!
+  createdAt: String!
+}
+
+input OnboardingTaskInput {
+  title: String!
+  done: Boolean
+  notes: String
+}
+
+input OnboardingInput {
+  organizationId: String!
+  employeeId: String!
+  startedAt: String
+  expectedCompletionDate: String
+  tasks: [OnboardingTaskInput!]
+  status: String
+}
+
+extend type Query {
+  onboarding(id: ID!): Onboarding
+  onboardings(organizationId: String!): [Onboarding!]!
+  onboardingForEmployee(employeeId: String!): Onboarding
+}
+
+extend type Mutation {
+  createOnboarding(input: OnboardingInput!): Onboarding!
+  updateOnboarding(id: ID!, input: OnboardingInput!): Onboarding!
+  toggleOnboardingTask(id: ID!, index: Int!, done: Boolean!): Onboarding!
+  deleteOnboarding(id: ID!): Boolean!
+}

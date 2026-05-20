@@ -10,10 +10,13 @@ import { PDFService } from '~/modules/pdf/service'
 import { renderDocumentToHtml } from '~/modules/pdf/document-renderer'
 import { isPdfDocumentType, PDF_DOCUMENT_TYPES } from '~/modules/pdf/templates'
 import { DocumentService } from '~/modules/document/service'
+import { Payslip } from '~/modules/payslip/model'
+import { renderPayslipHtml } from '~/modules/payslip/pdf'
+import { exportPayrollRunAsNeftCsv } from '~/modules/payslip/neft-export'
 
 const userRepo = new UserRepository()
 
-async function resolveAuthedUser(req: express.Request): Promise<{ id: string; organizationId: string | null; isPlatformAdmin: boolean } | null> {
+async function resolveAuthedUser(req: express.Request): Promise<{ id: string; organizationId: string | null; isPlatformAdmin: boolean; currency: string } | null> {
 	const token = req.headers.authorization?.replace('Bearer ', '')
 	if (!token) return null
 	try {
@@ -27,6 +30,7 @@ async function resolveAuthedUser(req: express.Request): Promise<{ id: string; or
 			id: String(dbUser._id ?? decoded.id),
 			organizationId: dbUser.organizationId != null ? String(dbUser.organizationId) : null,
 			isPlatformAdmin,
+			currency: String((dbUser as any).currency || 'INR'),
 		}
 	} catch {
 		return null
@@ -115,6 +119,7 @@ export class Server {
 					const { html, filename } = await renderDocumentToHtml(type, String(id), {
 						userOrganizationId: user.organizationId,
 						isPlatformAdmin: user.isPlatformAdmin,
+						currency: user.currency,
 					})
 					const pdfService = new PDFService()
 					const pdf = await pdfService.generatePDF(html)
@@ -179,6 +184,39 @@ export class Server {
 				}
 			},
 		)
+
+		// Payslip PDF — render a single payslip and stream as PDF
+		this.app.get('/api/payslip/:id/pdf', async (req, res) => {
+			try {
+				const user = await resolveAuthedUser(req)
+				if (!user) return res.status(401).json({ error: 'Authentication required' })
+				const p = await Payslip.findById(String(req.params.id)).exec()
+				if (!p) return res.status(404).json({ error: 'Not found' })
+				const html = renderPayslipHtml(p, user.currency)
+				const pdf = await new PDFService().generatePDF(html)
+				res.setHeader('Content-Type', 'application/pdf')
+				res.setHeader('Content-Disposition', `inline; filename="payslip-${p.employeeCode}-${p.payPeriodEnd.toISOString().slice(0,7)}.pdf"`)
+				res.send(pdf)
+			} catch (err) {
+				console.error('Payslip PDF failed', err)
+				res.status(500).json({ error: 'PDF generation failed' })
+			}
+		})
+
+		// NEFT bulk file — CSV download for a payroll run
+		this.app.get('/api/payroll-run/:id/neft.csv', async (req, res) => {
+			try {
+				const user = await resolveAuthedUser(req)
+				if (!user) return res.status(401).json({ error: 'Authentication required' })
+				const csv = await exportPayrollRunAsNeftCsv(String(req.params.id))
+				res.setHeader('Content-Type', 'text/csv')
+				res.setHeader('Content-Disposition', `attachment; filename="payroll-${req.params.id}-neft.csv"`)
+				res.send(csv)
+			} catch (err) {
+				console.error('NEFT export failed', err)
+				res.status(500).json({ error: 'NEFT export failed' })
+			}
+		})
 
 		// Document download — streams the file from disk
 		this.app.get('/api/documents/:id/download', async (req, res) => {

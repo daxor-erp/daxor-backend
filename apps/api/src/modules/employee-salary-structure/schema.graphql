@@ -1,0 +1,67 @@
+type StructureComponent {
+  payComponentId: String!
+  amount: Float!
+}
+
+type StatutoryOverrides {
+  pfOptIn: Boolean!
+  pfRate: Float!
+  pfWageCeiling: Float
+  esiOptIn: Boolean!
+  tdsRegime: String!
+  oldRegimeDeductions: Float
+  tdsMonthlyOverride: Float
+}
+
+input StatutoryOverridesInput {
+  pfOptIn: Boolean
+  pfRate: Float
+  pfWageCeiling: Float
+  esiOptIn: Boolean
+  tdsRegime: String
+  oldRegimeDeductions: Float
+  tdsMonthlyOverride: Float
+}
+
+type EmployeeSalaryStructure {
+  id: ID!
+  organizationId: String!
+  employeeId: String!
+  effectiveFrom: String!
+  effectiveTo: String
+  ctcAnnual: Float!
+  basicMonthly: Float!
+  components: [StructureComponent!]!
+  statutory: StatutoryOverrides!
+  status: String!
+  createdAt: String!
+}
+
+input StructureComponentInput {
+  payComponentId: String!
+  amount: Float!
+}
+
+input EmployeeSalaryStructureInput {
+  organizationId: String!
+  employeeId: String!
+  effectiveFrom: String!
+  effectiveTo: String
+  ctcAnnual: Float
+  basicMonthly: Float
+  components: [StructureComponentInput!]
+  statutory: StatutoryOverridesInput
+  status: String
+}
+
+extend type Query {
+  employeeSalaryStructure(id: ID!): EmployeeSalaryStructure
+  employeeSalaryStructures(organizationId: String!): [EmployeeSalaryStructure!]!
+  activeSalaryStructureForEmployee(employeeId: String!): EmployeeSalaryStructure
+}
+
+extend type Mutation {
+  createEmployeeSalaryStructure(input: EmployeeSalaryStructureInput!): EmployeeSalaryStructure!
+  updateEmployeeSalaryStructure(id: ID!, input: EmployeeSalaryStructureInput!): EmployeeSalaryStructure!
+  deleteEmployeeSalaryStructure(id: ID!): Boolean!
+}

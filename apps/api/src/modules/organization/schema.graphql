@@ -19,6 +19,8 @@ type Organization {
 	phone: String
 	email: String
 	status: String!
+	parentOrganizationId: ID
+	allowSubTenants: Boolean!
 	moduleApprovers: [OrganizationModuleApprover!]!
 	createdAt: String!
 }
@@ -52,16 +54,21 @@ input UpdateOrganizationInput {
 	phone: String
 	email: String
 	status: String
+	allowSubTenants: Boolean
 }
 
 extend type Query {
 	organization(id: ID!): Organization
 	organizations(page: Int, limit: Int, search: String): [Organization!]!
+	"""Direct child tenants of a parent (one level deep)."""
+	subTenants(parentOrganizationId: ID!): [Organization!]!
 }
 
 extend type Mutation {
 	createOrganization(input: CreateOrganizationInput!): Organization!
 	createOrganizationWithOrgAdmin(input: CreateOrganizationWithOrgAdminInput!): Organization!
+	"""ORG_ADMIN of a tenant with allowSubTenants creates a child tenant + its admin."""
+	createSubTenantWithAdmin(input: CreateOrganizationWithOrgAdminInput!): Organization!
 	updateOrganization(id: ID!, input: UpdateOrganizationInput!): Organization!
 	deleteOrganization(id: ID!): Organization!
 	"""Replace module-level approver assignments for an organization (org admin: own org only)."""

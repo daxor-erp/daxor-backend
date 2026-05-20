@@ -30,10 +30,12 @@ import { Organization } from '../organization/model'
 import { Customer } from '../customer/model'
 import { Vendor } from '../vendor/model'
 import { Client } from '../client/model'
+import { setActiveCurrency } from './templates/shared'
 
 export interface RenderContext {
 	userOrganizationId: string | null
 	isPlatformAdmin: boolean
+	currency?: string
 }
 
 async function pickOrg(orgId: unknown): Promise<any> {
@@ -50,6 +52,7 @@ function assertOrgAccess(docOrgId: unknown, ctx: RenderContext): void {
 }
 
 export async function renderDocumentToHtml(type: PdfDocumentType, id: string, ctx: RenderContext): Promise<{ html: string; filename: string }> {
+	setActiveCurrency(ctx.currency)
 	switch (type) {
 		case 'quotation': {
 			const doc: any = await Quotation.findById(id).lean()

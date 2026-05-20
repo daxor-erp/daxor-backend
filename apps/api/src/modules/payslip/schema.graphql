@@ -1,0 +1,47 @@
+type PayslipLine {
+  code: String!
+  name: String!
+  type: String!
+  amount: Float!
+}
+
+type Payslip {
+  id: ID!
+  organizationId: String!
+  payrollRunId: String!
+  employeeId: String!
+  employeeCode: String!
+  employeeName: String!
+  payPeriodStart: String!
+  payPeriodEnd: String!
+  workingDays: Float!
+  paidDays: Float!
+  lopDays: Float!
+  earnings: [PayslipLine!]!
+  deductions: [PayslipLine!]!
+  grossEarnings: Float!
+  totalDeductions: Float!
+  pfEmployee: Float!
+  pfEmployer: Float!
+  esiEmployee: Float!
+  esiEmployer: Float!
+  tds: Float!
+  netPay: Float!
+  status: String!
+  payoutId: String
+  payoutStatus: String
+  createdAt: String!
+}
+
+extend type Query {
+  payslip(id: ID!): Payslip
+  payslipsByRun(payrollRunId: String!): [Payslip!]!
+  payslipsByEmployee(employeeId: String!): [Payslip!]!
+}
+
+extend type Mutation {
+  computePayrollRun(payrollRunId: ID!): [Payslip!]!
+  deletePayslip(id: ID!): Boolean!
+  exportPayrollRunNeft(payrollRunId: ID!): String!
+  # disburseViaRazorpayX(payrollRunId: ID!): String!  # commented: not used
+}

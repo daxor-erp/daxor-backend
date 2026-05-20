@@ -1,0 +1,60 @@
+type AppraisalGoal {
+  title: String!
+  weight: Float!
+  selfRating: Float
+  managerRating: Float
+  comments: String
+}
+
+type Appraisal {
+  id: ID!
+  organizationId: String!
+  employeeId: String!
+  reviewerId: String
+  cycle: String!
+  periodStart: String!
+  periodEnd: String!
+  goals: [AppraisalGoal!]!
+  selfReview: String
+  managerReview: String
+  overallRating: Float
+  recommendedHikePercent: Float
+  status: String!
+  finalizedAt: String
+  createdAt: String!
+}
+
+input AppraisalGoalInput {
+  title: String!
+  weight: Float
+  selfRating: Float
+  managerRating: Float
+  comments: String
+}
+
+input AppraisalInput {
+  organizationId: String!
+  employeeId: String!
+  reviewerId: String
+  cycle: String!
+  periodStart: String!
+  periodEnd: String!
+  goals: [AppraisalGoalInput!]
+  selfReview: String
+  managerReview: String
+  overallRating: Float
+  recommendedHikePercent: Float
+  status: String
+}
+
+extend type Query {
+  appraisal(id: ID!): Appraisal
+  appraisals(organizationId: String!): [Appraisal!]!
+}
+
+extend type Mutation {
+  createAppraisal(input: AppraisalInput!): Appraisal!
+  updateAppraisal(id: ID!, input: AppraisalInput!): Appraisal!
+  transitionAppraisal(id: ID!, status: String!): Appraisal!
+  deleteAppraisal(id: ID!): Boolean!
+}
