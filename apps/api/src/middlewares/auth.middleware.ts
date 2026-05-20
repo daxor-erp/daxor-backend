@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { config } from '~/config'
 import type { GraphQLContext, GraphQLUserModulePermission } from '~/types/graphql.context'
 import { UserRepository } from '~/modules/user/repository'
+import { resolveUserRbacPermissions } from '~/modules/role/resolve-user-rbac'
 
 const userRepository = new UserRepository()
 
@@ -14,8 +15,12 @@ function normalizeModulePermissions(raw: unknown): GraphQLUserModulePermission[]
 		const row = r as Record<string, unknown>
 		const moduleKey = row.moduleKey
 		if (typeof moduleKey !== 'string' || !moduleKey.length) continue
+		const skRaw = row.submoduleKey
+		const submoduleKey =
+			typeof skRaw === 'string' && skRaw.length > 0 ? skRaw : null
 		rows.push({
 			moduleKey,
+			submoduleKey,
 			canCreate: !!row.canCreate,
 			canUpdate: !!row.canUpdate,
 			canDelete: !!row.canDelete,
@@ -69,6 +74,8 @@ export const createContext = async ({
 				? null
 				: String(decoded.organizationId))
 
+		const rbacPermissions = await resolveUserRbacPermissions(roles, organizationId)
+
 		return {
 			req,
 			res,
@@ -79,6 +86,7 @@ export const createContext = async ({
 				role: roles[0],
 				organizationId,
 				modulePermissions: normalizeModulePermissions(dbUser.modulePermissions),
+				rbacPermissions,
 			},
 		}
 	} catch {

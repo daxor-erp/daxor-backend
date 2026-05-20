@@ -1,5 +1,6 @@
 type ModulePermission {
 	moduleKey: String!
+	submoduleKey: String
 	canCreate: Boolean!
 	canUpdate: Boolean!
 	canDelete: Boolean!
@@ -39,6 +40,7 @@ type User {
 
 input ModulePermissionInput {
 	moduleKey: String!
+	submoduleKey: String
 	canCreate: Boolean!
 	canUpdate: Boolean!
 	canDelete: Boolean!

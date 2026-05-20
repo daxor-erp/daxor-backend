@@ -21,6 +21,7 @@ const userSchema = new Schema({
 	modulePermissions: [
 		{
 			moduleKey: { type: String, required: true },
+			submoduleKey: { type: String },
 			canCreate: { type: Boolean, default: false },
 			canUpdate: { type: Boolean, default: false },
 			canDelete: { type: Boolean, default: false },
