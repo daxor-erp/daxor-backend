@@ -20,6 +20,7 @@ import {
 	MODULE_KEY_PURCHASES,
 	MODULE_KEY_QUOTATIONS,
 	MODULE_KEY_SALES,
+	MODULE_KEY_VENDORS,
 } from './constants'
 import { deriveSalesEnquiryWorkflowStatus, RECORD_APPROVAL_PENDING } from './record-approval-status'
 import type { ApprovalWorkflowDeps, PendingApprovalCreateOpts } from './types'
@@ -192,7 +193,7 @@ export async function buildPendingPayloadForSubmit(
 			const title = `Vendor ${code} — ${String((v as any).name ?? '').trim() || 'approval requested'}`
 			return {
 				organizationId: (v as any).organizationId,
-				moduleKey: MODULE_KEY_PURCHASES,
+				moduleKey: MODULE_KEY_VENDORS,
 				entityType,
 				entityId: (v as any)._id ?? (v as any).id,
 				title,

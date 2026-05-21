@@ -1,13 +1,18 @@
 """Which user under the organization acts as workflow approver for a given ERP module."""
 type OrganizationModuleApprover {
 	moduleKey: String!
+	"""Legacy primary approver — mirrors first entry in approverUserIds when present."""
 	approverUserId: ID
+	"""All users designated by org admin who may approve this module (currently used for vendors; extensible elsewhere)."""
+	approverUserIds: [ID!]!
 }
 
 input OrganizationModuleApproverInput {
 	moduleKey: String!
 	"""Set to omit or empty to clear the approver for this module."""
 	approverUserId: ID
+	"""Replace the full approver set for this module (non-null array, possibly empty clears all)."""
+	approverUserIds: [ID!]
 }
 
 type Organization {

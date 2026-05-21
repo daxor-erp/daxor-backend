@@ -17,6 +17,7 @@ type Vendor {
   """draft | submitted | approval_declined | approved — omitted on legacy rows means approved"""
   orgApprovalStatus: String!
   status: String!
+  createdBy: User
   createdAt: String!
   updatedAt: String!
 }
@@ -56,11 +57,20 @@ input UpdateVendorInput {
 extend type Query {
   vendor(id: ID!): Vendor
   vendors(organizationId: ID!, page: Int, limit: Int, status: String, search: String): [Vendor!]!
+  """Users designated as vendors approvers via org-admin Approvals routing (permission-based)."""
+  vendorEligibleApprovers(organizationId: ID!): [User!]!
+  """Queued / historical approval-request rows for a vendor master record (same org only)."""
+  vendorApprovalRequests(vendorId: ID!, limit: Int = 50): [ApprovalRequest!]!
 }
 
 extend type Mutation {
   createVendor(input: CreateVendorInput!): Vendor!
   updateVendor(id: ID!, input: UpdateVendorInput!): Vendor!
-  submitVendorForApproval(id: ID!): Vendor!
+  """
+  Sends a vendor master record for enterprise approval routing.
+  When assigneeApproverUserIds is omitted, all vendors-module approvers receive a parallel task (legacy FAB).
+  Otherwise only the selected IDs are used (must be a subset of org-configured vendors approvers).
+  """
+  submitVendorForApproval(id: ID!, assigneeApproverUserIds: [ID!]): Vendor!
   deleteVendor(id: ID!): Boolean!
 }

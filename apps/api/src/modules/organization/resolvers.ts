@@ -9,6 +9,7 @@ import {
 	isPlatformAdmin,
 	orgIdString,
 } from '../auth/authz'
+import { collectApproverUserIdsFromOrgRow, uniqApproverIds } from '~/helpers/approval-workflow'
 
 const service = new OrganizationService()
 const userService = new UserService()
@@ -96,7 +97,14 @@ export const resolvers = {
 			{
 				organizationId,
 				assignments,
-			}: { organizationId: string; assignments: { moduleKey: string; approverUserId?: string | null }[] },
+			}: {
+				organizationId: string
+				assignments: {
+					moduleKey: string
+					approverUserId?: string | null
+					approverUserIds?: string[] | null
+				}[]
+			},
 			ctx: GraphQLContext,
 		) => {
 			assertAuthenticated(ctx)
@@ -110,27 +118,43 @@ export const resolvers = {
 				if (!oid || String(organizationId) !== oid) throw new GraphQLAuthError('Forbidden')
 			}
 
-			const merged = new Map<string, string | null>()
+			const mergedIds = new Map<string, string[]>()
+
 			for (const row of assignments) {
 				const key = String(row.moduleKey || '').trim()
 				if (!key) continue
-				const uid = row.approverUserId == null || row.approverUserId === '' ? null : String(row.approverUserId)
-				if (uid) merged.set(key, uid)
-				else merged.set(key, null)
+
+				let ids: string[]
+				if (row.approverUserIds != null) {
+					ids = uniqApproverIds(row.approverUserIds.map((x: unknown) => String(x ?? '')))
+				} else if (row.approverUserId == null || row.approverUserId === '') {
+					ids = []
+				} else {
+					ids = [String(row.approverUserId)]
+				}
+
+				mergedIds.set(key, ids)
 			}
 
-			for (const uid of merged.values()) {
-				if (!uid) continue
-				const u = await userService.findById(uid)
-				if (!u || u.deletedAt || String(u.organizationId) !== String(organizationId)) {
-					throw new GraphQLValidationError('Each approver must be an active user in this organization.')
+			for (const idList of mergedIds.values()) {
+				for (const uid of idList) {
+					const u = await userService.findById(uid)
+					if (!u || u.deletedAt || String(u.organizationId) !== String(organizationId)) {
+						throw new GraphQLValidationError(
+							'Each approver must be an active user in this organization.',
+						)
+					}
 				}
 			}
 
-			const moduleApprovers = [...merged.entries()].map(([moduleKey, approverUserId]) => ({
-				moduleKey,
-				...(approverUserId ? { approverUserId } : { approverUserId: null }),
-			}))
+			const moduleApprovers = [...mergedIds.entries()].map(([moduleKey, ids]) => {
+				const uniq = uniqApproverIds(ids)
+				return {
+					moduleKey,
+					approverUserIds: uniq,
+					approverUserId: uniq[0] ?? null,
+				}
+			})
 
 			const updated = await service.update(organizationId, { moduleApprovers, updatedAt: new Date() })
 			if (!updated) throw new GraphQLAuthError('Organization not found')
@@ -141,15 +165,18 @@ export const resolvers = {
 		id: (p: { _id?: unknown; id?: string }) => String(p?._id ?? p?.id ?? ''),
 		seqNo: (p: { seqNo?: string }) => p?.seqNo ?? '',
 		moduleApprovers: (
-			parent: { moduleApprovers?: { moduleKey?: string; approverUserId?: unknown }[] },
+			parent: { moduleApprovers?: { moduleKey?: string; approverUserId?: unknown; approverUserIds?: unknown }[] },
 		) => {
 			const rows = Array.isArray(parent.moduleApprovers) ? parent.moduleApprovers : []
-			return rows
-				.filter((r) => r?.moduleKey)
-				.map((r) => ({
+			return rows.filter((r) => r?.moduleKey).map((r) => {
+				const ids = collectApproverUserIdsFromOrgRow(r)
+				const first = ids[0]
+				return {
 					moduleKey: String(r.moduleKey),
-					approverUserId: r.approverUserId != null ? String(r.approverUserId) : null,
-				}))
+					approverUserIds: ids,
+					approverUserId: first ?? (r.approverUserId != null ? String(r.approverUserId) : null),
+				}
+			})
 		},
 		createdAt: (p: { createdAt?: unknown }) => iso(p?.createdAt) ?? '',
 	},

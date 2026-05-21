@@ -41,6 +41,7 @@ import {
 	ensureApproverConfigured as ensureApproverConfiguredHelper,
 	handleApprovalResolution,
 	initiateApprovalWorkflow,
+	createVendorApprovalRequestsWithAssignees,
 } from '~/helpers/approval-workflow'
 
 export {
@@ -65,6 +66,7 @@ export {
 	MODULE_KEY_QUOTATIONS,
 	MODULE_KEY_PAYROLL,
 	MODULE_KEY_PAYABLES,
+	MODULE_KEY_VENDORS,
 } from '~/helpers/approval-workflow/constants'
 
 export type { ApprovalDecision } from '~/helpers/approval-workflow/types'
@@ -228,16 +230,20 @@ export class ApprovalRequestService {
 		)
 	}
 
-	async enqueueVendorSubmitted(vendorId: string, requesterUserId: string): Promise<any> {
-		return initiateApprovalWorkflow(
-			{
-				action: 'SUBMIT',
-				entityType: APPROVAL_ENTITY_VENDOR,
-				entityId: vendorId,
-				requesterUserId,
-			},
-			this.deps,
-		)
+	async enqueueVendorSubmittedWithApproverSelection(
+		vendorId: string,
+		requesterUserId: string,
+		assigneeUserIds: string[],
+	): Promise<any[]> {
+		return createVendorApprovalRequestsWithAssignees(this.deps, {
+			vendorId,
+			requesterUserId,
+			assigneeUserIds,
+		})
+	}
+
+	async listApprovalRequestsForEntity(entityType: string, entityId: string, limit = 50): Promise<any[]> {
+		return this.deps.repository.listForEntity(entityType, entityId, limit)
 	}
 
 	async enqueueProjectSubmitted(projectId: string, requesterUserId: string): Promise<any> {
@@ -326,6 +332,19 @@ export class ApprovalRequestService {
 		const entityId = String(row.entityId)
 
 		await handleApprovalResolution(this.deps, entityType, entityId, decision, ctxUserId)
+
+		if (entityType === APPROVAL_ENTITY_VENDOR) {
+			const mongoId = String((row as any)._id ?? (row as any).id ?? id)
+			await this.deps.repository.rejectOtherPendingForEntityExcept(
+				entityType,
+				entityId,
+				mongoId,
+				ctxUserId,
+				decision === 'APPROVED'
+					? 'Closed automatically: cleared after vendor was approved.'
+					: 'Closed automatically: cleared after vendor was declined.',
+			)
+		}
 
 		const now = new Date()
 		await this.deps.repository.update(id, {
