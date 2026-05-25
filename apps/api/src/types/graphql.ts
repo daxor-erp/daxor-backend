@@ -182,6 +182,8 @@ export enum ApprovalDecision {
 export type ApprovalRequest = {
   __typename?: 'ApprovalRequest';
   assigneeApproverUserId: Scalars['ID']['output'];
+  /** Hydrated assignee name for timelines and inbox previews. */
+  assigneeDisplayName: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['String']['output']>;
   decidedAt: Maybe<Scalars['String']['output']>;
   decidedByUserId: Maybe<Scalars['ID']['output']>;
@@ -2774,6 +2776,11 @@ export type Mutation = {
   submitSalesReturnForApproval: SalesReturn;
   submitTimesheetEntry: TimesheetEntry;
   submitVendorBillForApproval: VendorBill;
+  /**
+   * Sends a vendor master record for enterprise approval routing.
+   * When assigneeApproverUserIds is omitted, all vendors-module approvers receive a parallel task (legacy FAB).
+   * Otherwise only the selected IDs are used (must be a subset of org-configured vendors approvers).
+   */
   submitVendorForApproval: Vendor;
   toggleOnboardingTask: Onboarding;
   transferBankFunds: BankTransferResult;
@@ -4087,6 +4094,7 @@ export type MutationSubmitVendorBillForApprovalArgs = {
 
 
 export type MutationSubmitVendorForApprovalArgs = {
+  assigneeApproverUserIds: InputMaybe<Array<Scalars['ID']['input']>>;
   id: Scalars['ID']['input'];
 };
 
@@ -4739,13 +4747,18 @@ export type Organization = {
 /** Which user under the organization acts as workflow approver for a given ERP module. */
 export type OrganizationModuleApprover = {
   __typename?: 'OrganizationModuleApprover';
+  /** Legacy primary approver — mirrors first entry in approverUserIds when present. */
   approverUserId: Maybe<Scalars['ID']['output']>;
+  /** All users designated by org admin who may approve this module (currently used for vendors; extensible elsewhere). */
+  approverUserIds: Array<Scalars['ID']['output']>;
   moduleKey: Scalars['String']['output'];
 };
 
 export type OrganizationModuleApproverInput = {
   /** Set to omit or empty to clear the approver for this module. */
   approverUserId: InputMaybe<Scalars['ID']['input']>;
+  /** Replace the full approver set for this module (non-null array, possibly empty clears all). */
+  approverUserIds: InputMaybe<Array<Scalars['ID']['input']>>;
   moduleKey: Scalars['String']['input'];
 };
 
@@ -5251,11 +5264,15 @@ export type Query = {
   usersByOrganization: UserList;
   usersByRole: Array<User>;
   vendor: Maybe<Vendor>;
+  /** Queued / historical approval-request rows for a vendor master record (same org only). */
+  vendorApprovalRequests: Array<ApprovalRequest>;
   vendorBill: Maybe<VendorBill>;
   vendorBills: Array<VendorBill>;
   vendorBillsByVendor: Array<VendorBill>;
   vendorCredit: Maybe<VendorCredit>;
   vendorCredits: Array<VendorCredit>;
+  /** Users designated as vendors approvers via org-admin Approvals routing (permission-based). */
+  vendorEligibleApprovers: Array<User>;
   vendorPayment: Maybe<VendorPayment>;
   vendorPayments: Array<VendorPayment>;
   vendorPaymentsByVendor: Array<VendorPayment>;
@@ -6527,6 +6544,12 @@ export type QueryVendorArgs = {
 };
 
 
+export type QueryVendorApprovalRequestsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  vendorId: Scalars['ID']['input'];
+};
+
+
 export type QueryVendorBillArgs = {
   id: Scalars['ID']['input'];
 };
@@ -6556,6 +6579,11 @@ export type QueryVendorCreditsArgs = {
   organizationId: Scalars['ID']['input'];
   page: InputMaybe<Scalars['Int']['input']>;
   vendorId: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryVendorEligibleApproversArgs = {
+  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -7835,6 +7863,7 @@ export type Vendor = {
   contactPerson: Maybe<Scalars['String']['output']>;
   country: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
+  createdBy: Maybe<User>;
   email: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -8889,6 +8918,7 @@ export type AppraisalGoalResolvers<ContextType = GraphQLContext, ParentType exte
 
 export type ApprovalRequestResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ApprovalRequest'] = ResolversParentTypes['ApprovalRequest']> = ResolversObject<{
   assigneeApproverUserId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  assigneeDisplayName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   decidedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   decidedByUserId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -10539,6 +10569,7 @@ export type OrganizationResolvers<ContextType = GraphQLContext, ParentType exten
 
 export type OrganizationModuleApproverResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['OrganizationModuleApprover'] = ResolversParentTypes['OrganizationModuleApprover']> = ResolversObject<{
   approverUserId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  approverUserIds: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -10976,11 +11007,13 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   usersByOrganization: Resolver<ResolversTypes['UserList'], ParentType, ContextType, RequireFields<QueryUsersByOrganizationArgs, 'organizationId'>>;
   usersByRole: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersByRoleArgs, 'role'>>;
   vendor: Resolver<Maybe<ResolversTypes['Vendor']>, ParentType, ContextType, RequireFields<QueryVendorArgs, 'id'>>;
+  vendorApprovalRequests: Resolver<Array<ResolversTypes['ApprovalRequest']>, ParentType, ContextType, RequireFields<QueryVendorApprovalRequestsArgs, 'limit' | 'vendorId'>>;
   vendorBill: Resolver<Maybe<ResolversTypes['VendorBill']>, ParentType, ContextType, RequireFields<QueryVendorBillArgs, 'id'>>;
   vendorBills: Resolver<Array<ResolversTypes['VendorBill']>, ParentType, ContextType, RequireFields<QueryVendorBillsArgs, 'organizationId'>>;
   vendorBillsByVendor: Resolver<Array<ResolversTypes['VendorBill']>, ParentType, ContextType, RequireFields<QueryVendorBillsByVendorArgs, 'vendorId'>>;
   vendorCredit: Resolver<Maybe<ResolversTypes['VendorCredit']>, ParentType, ContextType, RequireFields<QueryVendorCreditArgs, 'id'>>;
   vendorCredits: Resolver<Array<ResolversTypes['VendorCredit']>, ParentType, ContextType, RequireFields<QueryVendorCreditsArgs, 'organizationId'>>;
+  vendorEligibleApprovers: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryVendorEligibleApproversArgs, 'organizationId'>>;
   vendorPayment: Resolver<Maybe<ResolversTypes['VendorPayment']>, ParentType, ContextType, RequireFields<QueryVendorPaymentArgs, 'id'>>;
   vendorPayments: Resolver<Array<ResolversTypes['VendorPayment']>, ParentType, ContextType, RequireFields<QueryVendorPaymentsArgs, 'organizationId'>>;
   vendorPaymentsByVendor: Resolver<Array<ResolversTypes['VendorPayment']>, ParentType, ContextType, RequireFields<QueryVendorPaymentsByVendorArgs, 'vendorId'>>;
@@ -11465,6 +11498,7 @@ export type VendorResolvers<ContextType = GraphQLContext, ParentType extends Res
   contactPerson: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   country: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   email: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;

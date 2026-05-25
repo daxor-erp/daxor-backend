@@ -1,4 +1,5 @@
 import { MongoBaseRepository } from '../base/mongo-repository'
+import { Types } from 'mongoose'
 import { ApprovalRequest } from './model'
 
 export class ApprovalRequestRepository extends MongoBaseRepository<any> {
@@ -13,6 +14,60 @@ export class ApprovalRequestRepository extends MongoBaseRepository<any> {
 				entityId,
 				status: 'PENDING',
 			})
+			.exec()
+	}
+
+	async countPendingForEntity(entityType: string, entityId: string): Promise<number> {
+		return this.model
+			.countDocuments({
+				entityType,
+				entityId,
+				status: 'PENDING',
+			})
+			.exec()
+	}
+
+	async listForEntity(entityType: string, entityId: string, limit = 50): Promise<any[]> {
+		return this.model
+			.find({ entityType, entityId })
+			.sort({ createdAt: -1 })
+			.limit(Math.max(1, Math.min(limit, 200)))
+			.exec()
+	}
+
+	/**
+	 * When multiple vendor approvers receive parallel assignments, resolving one clears the others.
+	 */
+	async rejectOtherPendingForEntityExcept(
+		entityType: string,
+		entityId: string,
+		exceptMongoId: string,
+		decidedByUserId: string,
+		note: string,
+	): Promise<void> {
+		let oid: Types.ObjectId
+		try {
+			oid = new Types.ObjectId(String(exceptMongoId))
+		} catch {
+			return
+		}
+		await this.model
+			.updateMany(
+				{
+					entityType,
+					entityId,
+					status: 'PENDING',
+					_id: { $ne: oid },
+				},
+				{
+					$set: {
+						status: 'REJECTED',
+						decidedByUserId,
+						decidedAt: new Date(),
+						resolutionNote: note,
+					},
+				},
+			)
 			.exec()
 	}
 

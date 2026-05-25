@@ -1,8 +1,10 @@
 import type { GraphQLContext } from '~/types/graphql.context'
 import { ApprovalRequestService } from './service'
+import { UserService } from '../user/service'
 import { assertAuthenticated, isOrgAdmin } from '../auth/authz'
 
 const approvalService = new ApprovalRequestService()
+const userService = new UserService()
 
 function iso(d: unknown): string | null {
 	if (d == null) return null
@@ -63,6 +65,14 @@ export const resolvers = {
 		requesterUserId: (p: { requesterUserId?: unknown }) => String(p.requesterUserId ?? ''),
 		assigneeApproverUserId: (p: { assigneeApproverUserId?: unknown }) =>
 			String(p.assigneeApproverUserId ?? ''),
+		assigneeDisplayName: async (p: { assigneeApproverUserId?: unknown }) => {
+			const uid = p.assigneeApproverUserId
+			if (uid == null) return null
+			const u = await userService.findById(String(uid))
+			if (!u || u.deletedAt) return null
+			const name = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim()
+			return name || u.email || null
+		},
 		decidedByUserId: (p: { decidedByUserId?: unknown }) =>
 			p.decidedByUserId != null ? String(p.decidedByUserId) : null,
 		decidedAt: (p: { decidedAt?: unknown }) => iso(p.decidedAt) ?? null,

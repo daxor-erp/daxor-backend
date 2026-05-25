@@ -20,6 +20,7 @@ const organizationSchema = new Schema({
 			{
 				moduleKey: { type: String, required: true },
 				approverUserId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+				approverUserIds: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 			},
 		],
 		default: [],

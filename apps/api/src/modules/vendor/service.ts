@@ -58,18 +58,31 @@ export class VendorService {
     return this.repository.update(id, payload)
   }
 
-  async submitForOrgApproval(id: string, userId: string) {
-    const row = await this.repository.findById(id)
-    if (!row || row.deletedAt) throw new GraphQLValidationError('Vendor not found')
-    const ap = String((row as any).orgApprovalStatus ?? 'approved')
-    if (ap !== 'draft' && ap !== 'approval_declined') {
-      throw new GraphQLValidationError('Only draft or declined vendors can be sent for approval')
-    }
-    const uid = userIdForRef(userId)
-    const payload: Record<string, unknown> = { orgApprovalStatus: 'submitted' }
-    if (uid) payload.updatedBy = uid
-    return this.repository.update(id, payload)
-  }
+	async submitForOrgApproval(id: string, userId: string) {
+		const row = await this.repository.findById(id)
+		if (!row || row.deletedAt) throw new GraphQLValidationError('Vendor not found')
+		const ap = String((row as any).orgApprovalStatus ?? 'approved')
+		if (ap !== 'draft' && ap !== 'approval_declined') {
+			throw new GraphQLValidationError('Only draft or declined vendors can be sent for approval')
+		}
+		const uid = userIdForRef(userId)
+		const payload: Record<string, unknown> = { orgApprovalStatus: 'submitted' }
+		if (uid) payload.updatedBy = uid
+		return this.repository.update(id, payload)
+	}
+
+	/**
+	 * Roll back vendor lifecycle if approval queue enqueue fails after transitioning to submitted.
+	 */
+	async revertSubmissionAfterEnqueueFailure(id: string, userId: string) {
+		const row = await this.repository.findById(id)
+		if (!row || row.deletedAt) return row
+		if (String((row as any).orgApprovalStatus ?? '') !== 'submitted') return row
+		const uid = userIdForRef(userId)
+		const payload: Record<string, unknown> = { orgApprovalStatus: 'draft' }
+		if (uid) payload.updatedBy = uid
+		return this.repository.update(id, payload)
+	}
 
   async approveFromApprovalQueue(id: string, userId: string) {
     const row = await this.repository.findById(id)

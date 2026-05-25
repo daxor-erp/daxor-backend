@@ -23,3 +23,5 @@ export const MODULE_KEY_SALES = 'sales'
 export const MODULE_KEY_QUOTATIONS = 'quotations'
 export const MODULE_KEY_PAYROLL = 'payroll'
 export const MODULE_KEY_PAYABLES = 'payables'
+/** Vendor master records (distinct from broader purchases routing). Org-admin Approvals assigns users under this key. */
+export const MODULE_KEY_VENDORS = 'vendors'

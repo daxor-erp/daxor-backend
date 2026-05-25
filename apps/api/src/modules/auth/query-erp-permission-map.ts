@@ -37,7 +37,7 @@ export const ERP_GRAPHQL_QUERY_PERMISSIONS: Record<string, QueryPermissionRule> 
 	...q('sales', 'sales_returns', ['salesreturn', 'salesreturns']),
 	...q('sales', 'sales_create_invoices', ['customerinvoice', 'customerinvoices']),
 	...q('sales', 'sales_delivery_orders', ['deliveryOrder', 'deliveryOrders']),
-	...q('purchases', 'vendors', ['vendor', 'vendors']),
+	...q('purchases', 'vendors', ['vendor', 'vendors', 'vendorEligibleApprovers', 'vendorApprovalRequests']),
 	...q('purchases', 'projects', ['project', 'projects']),
 	...q('purchases', 'purchases_enter_purchase_orders', ['purchaseorder', 'purchaseorders']),
 	...q('purchases', 'material_receipt', ['materialreceipt', 'materialreceipts', 'materialreceiptsByPO']),
