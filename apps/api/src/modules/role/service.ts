@@ -1,5 +1,45 @@
 import { RoleRepository } from './repository'
-import { ROLE_PERMISSIONS } from './permissions'
+import { GraphQLValidationError } from '@repo/errors'
+import {
+	ORG_CUSTOM_ROLE_FORBIDDEN_RESOURCES,
+	RESOURCES,
+	ROLE_PERMISSIONS,
+} from './permissions'
+
+const VALID_ACTIONS = new Set(['create', 'read', 'update', 'delete'])
+const RESOURCE_VALUES = new Set<string>(Object.values(RESOURCES))
+
+/** Validates name + permission rows for roles created/updated by an organization admin. */
+export function validateOrgTenantRoleDefinition(input: {
+	name: string
+	permissions: Array<{ resource: string; actions: string[] }>
+}) {
+	const name = String(input.name || '').trim()
+	if (!/^[A-Z][A-Z0-9_]*$/.test(name)) {
+		throw new GraphQLValidationError(
+			'Role name must be UPPER_SNAKE_CASE starting with a letter (e.g. REGIONAL_LEAD).',
+		)
+	}
+	if (ROLE_PERMISSIONS[name as keyof typeof ROLE_PERMISSIONS]) {
+		throw new GraphQLValidationError('This name is reserved for a built-in role template.')
+	}
+	for (const p of input.permissions || []) {
+		const res = String(p?.resource || '')
+		if (!res || ORG_CUSTOM_ROLE_FORBIDDEN_RESOURCES.has(res)) {
+			throw new GraphQLValidationError(
+				`Resource not allowed in tenant-defined roles: ${res || '(missing)'}`,
+			)
+		}
+		if (!RESOURCE_VALUES.has(res)) {
+			throw new GraphQLValidationError(`Unknown resource: ${res}`)
+		}
+		for (const a of p.actions || []) {
+			if (!VALID_ACTIONS.has(String(a))) {
+				throw new GraphQLValidationError(`Invalid action: ${a}`)
+			}
+		}
+	}
+}
 
 export class RoleService {
   private repository: RoleRepository

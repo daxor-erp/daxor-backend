@@ -2486,6 +2486,7 @@ export type ModulePermission = {
   canUpdate: Scalars['Boolean']['output'];
   canView: Scalars['Boolean']['output'];
   moduleKey: Scalars['String']['output'];
+  submoduleKey: Maybe<Scalars['String']['output']>;
 };
 
 export type ModulePermissionInput = {
@@ -2494,6 +2495,7 @@ export type ModulePermissionInput = {
   canUpdate: Scalars['Boolean']['input'];
   canView: Scalars['Boolean']['input'];
   moduleKey: Scalars['String']['input'];
+  submoduleKey: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ModuleWorkspaceRecord = {
@@ -10105,6 +10107,7 @@ export type ModulePermissionResolvers<ContextType = GraphQLContext, ParentType e
   canUpdate: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   canView: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  submoduleKey: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

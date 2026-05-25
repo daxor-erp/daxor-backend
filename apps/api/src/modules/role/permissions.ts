@@ -134,6 +134,15 @@ export const RESOURCES = {
   ORGANIZATION: 'organization',
 } as const
 
+/** Resources tenant admins must not embed in org-defined roles (privilege escalation). */
+export const ORG_CUSTOM_ROLE_FORBIDDEN_RESOURCES = new Set<string>([
+  RESOURCES.USER,
+  RESOURCES.ROLE,
+  RESOURCES.PERMISSION,
+  RESOURCES.AUDIT_LOG,
+  RESOURCES.ORGANIZATION,
+])
+
 export const ACTIONS = {
   CREATE: 'create',
   READ: 'read',

@@ -31,6 +31,7 @@ async function assertCanAccessUser(ctx: GraphQLContext, targetOrgId: unknown): P
 function normalizeModulePermissions(
 	input: Array<{
 		moduleKey: string
+		submoduleKey?: string | null
 		canCreate: boolean
 		canUpdate: boolean
 		canDelete: boolean
@@ -38,19 +39,22 @@ function normalizeModulePermissions(
 	}>,
 ) {
 	return input.map((row) => {
-		let { moduleKey, canCreate, canUpdate, canDelete, canView } = row
+		let { moduleKey, submoduleKey, canCreate, canUpdate, canDelete, canView } = row
 		if (canCreate || canUpdate || canDelete) canView = true
 		if (!canView) {
 			canCreate = false
 			canUpdate = false
 			canDelete = false
 		}
-		return { moduleKey, canCreate, canUpdate, canDelete, canView }
+		const sk =
+			typeof submoduleKey === 'string' && submoduleKey.length > 0 ? submoduleKey : null
+		return { moduleKey, submoduleKey: sk, canCreate, canUpdate, canDelete, canView }
 	})
 }
 
 function toGraphQLModulePermissions(parent: { modulePermissions?: unknown }): Array<{
 	moduleKey: string
+	submoduleKey: string | null
 	canCreate: boolean
 	canUpdate: boolean
 	canDelete: boolean
@@ -60,6 +64,8 @@ function toGraphQLModulePermissions(parent: { modulePermissions?: unknown }): Ar
 	if (!Array.isArray(rows)) return []
 	return rows.map((r: any) => ({
 		moduleKey: String(r.moduleKey),
+		submoduleKey:
+			r.submoduleKey != null && String(r.submoduleKey).length > 0 ? String(r.submoduleKey) : null,
 		canCreate: !!r.canCreate,
 		canUpdate: !!r.canUpdate,
 		canDelete: !!r.canDelete,
@@ -147,7 +153,7 @@ export const resolvers = {
 				if (!mine || String(payload.organizationId) !== mine) {
 					throw new GraphQLAuthError('Can only create users in your organization')
 				}
-				assertOrgAdminCanAssignRoles(payload.roles)
+				await assertOrgAdminCanAssignRoles(payload.roles, mine)
 			} else if (!isPlatformAdmin(ctx)) {
 				throw new GraphQLAuthError('Forbidden')
 			}
@@ -176,7 +182,10 @@ export const resolvers = {
 				if (targetRoles.includes(ROLES.ORG_ADMIN)) {
 					throw new GraphQLAuthError('Cannot modify an organization administrator account')
 				}
-				assertOrgAdminCanAssignRoles(input.roles)
+				if (input.roles !== undefined && input.roles !== null) {
+					const mine = orgIdString(ctx)
+					if (mine) await assertOrgAdminCanAssignRoles(input.roles, mine)
+				}
 			} else if (!isPlatformAdmin(ctx)) {
 				throw new GraphQLAuthError('Forbidden')
 			}

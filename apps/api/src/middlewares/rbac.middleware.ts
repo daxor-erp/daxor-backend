@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 import type { GraphQLContext } from '~/types/graphql.context'
-import { hasPermission } from '~/modules/role/permissions'
+import { ROLES } from '~/modules/role/permissions'
 
 export const requireAuth = (context: GraphQLContext) => {
   if (!context.user) {
@@ -9,6 +9,21 @@ export const requireAuth = (context: GraphQLContext) => {
     })
   }
   return context.user
+}
+
+function userHasResourceAction(
+  user: NonNullable<GraphQLContext['user']>,
+  resource: string,
+  action: string,
+): boolean {
+  if (!user.roles?.length) return false
+  if (user.roles.includes(ROLES.SUPER_ADMIN)) return true
+  const rows = user.rbacPermissions
+  if (!rows?.length) return false
+  for (const p of rows) {
+    if (p.resource === resource && p.actions.includes(action)) return true
+  }
+  return false
 }
 
 export const requirePermission = (
@@ -24,7 +39,7 @@ export const requirePermission = (
     })
   }
   
-  if (!hasPermission(user.roles, resource, action)) {
+  if (!userHasResourceAction(user, resource, action)) {
     throw new GraphQLError(`Permission denied: ${action} on ${resource}`, {
       extensions: { code: 'FORBIDDEN' }
     })
@@ -39,5 +54,5 @@ export const checkPermission = (
   action: string
 ): boolean => {
   if (!context.user || !context.user.roles) return false
-  return hasPermission(context.user.roles, resource, action)
+  return userHasResourceAction(context.user, resource, action)
 }
