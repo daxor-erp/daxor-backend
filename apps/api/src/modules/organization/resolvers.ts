@@ -10,9 +10,11 @@ import {
 	orgIdString,
 } from '../auth/authz'
 import { collectApproverUserIdsFromOrgRow, uniqApproverIds } from '~/helpers/approval-workflow'
+import { ApprovalRequestService } from '../approval-request/service'
 
 const service = new OrganizationService()
 const userService = new UserService()
+const approvalRequestService = new ApprovalRequestService()
 
 function iso(d: unknown): string | null {
 	if (d == null) return null
@@ -182,6 +184,17 @@ export const resolvers = {
 
 			const updated = await service.update(organizationId, { moduleApprovers, updatedAt: new Date() })
 			if (!updated) throw new GraphQLAuthError('Organization not found')
+
+			const keysWithApprovers = [...mergedIds.entries()]
+				.filter(([, ids]) => ids.length > 0)
+				.map(([moduleKey]) => moduleKey)
+			if (keysWithApprovers.length > 0) {
+				await approvalRequestService.reconcileAllConfiguredModuleApprovals(
+					String(organizationId),
+					keysWithApprovers,
+				)
+			}
+
 			return updated
 		},
 	},

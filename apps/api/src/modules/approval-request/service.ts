@@ -36,12 +36,16 @@ import {
 	APPROVAL_ENTITY_SALES_ENQUIRY,
 	APPROVAL_ENTITY_SALES_ORDER,
 	MODULE_KEY_PURCHASES,
+	MODULE_KEY_SALES,
 	type ApprovalDecision,
 	type ApprovalWorkflowDeps,
 	ensureApproverConfigured as ensureApproverConfiguredHelper,
 	handleApprovalResolution,
 	initiateApprovalWorkflow,
 	createVendorApprovalRequestsWithAssignees,
+	reconcileModuleApprovalsForOrg,
+	reconcileApprovalsForAssignee as reconcileApprovalsForAssigneeOrg,
+	reconcileAllConfiguredModuleApprovals as reconcileAllConfiguredModuleApprovalsOrg,
 } from '~/helpers/approval-workflow'
 
 export {
@@ -107,8 +111,20 @@ export class ApprovalRequestService {
 		return this.deps.repository.findPendingForEntity(entityType, entityId)
 	}
 
-	async listPendingForAssignee(assigneeUserId: string): Promise<any[]> {
-		return this.deps.repository.listPendingForAssignee(assigneeUserId)
+	async listPendingForAssignee(assigneeUserId: string, organizationId?: string): Promise<any[]> {
+		return this.deps.repository.listPendingForAssignee(assigneeUserId, organizationId)
+	}
+
+	async reconcileModuleApprovals(organizationId: string, moduleKey: string): Promise<void> {
+		await reconcileModuleApprovalsForOrg(this.deps, organizationId, moduleKey)
+	}
+
+	async reconcileApprovalsForAssignee(organizationId: string, userId: string): Promise<void> {
+		await reconcileApprovalsForAssigneeOrg(this.deps, organizationId, userId)
+	}
+
+	async reconcileAllConfiguredModuleApprovals(organizationId: string, moduleKeys?: string[]): Promise<void> {
+		await reconcileAllConfiguredModuleApprovalsOrg(this.deps, organizationId, moduleKeys)
 	}
 
 	async listForUser(
@@ -123,7 +139,7 @@ export class ApprovalRequestService {
 	}
 
 	async enqueuePurchaseOrderSubmitted(poId: string, requesterUserId: string): Promise<any> {
-		return initiateApprovalWorkflow(
+		const created = await initiateApprovalWorkflow(
 			{
 				action: 'SUBMIT',
 				entityType: APPROVAL_ENTITY_PURCHASE_ORDER,
@@ -132,6 +148,15 @@ export class ApprovalRequestService {
 			},
 			this.deps,
 		)
+		const po = await this.deps.purchaseOrderService.findById(poId)
+		if (po?.organizationId) {
+			await reconcileModuleApprovalsForOrg(this.deps, String(po.organizationId), MODULE_KEY_PURCHASES)
+		}
+		return created
+	}
+
+	async reconcilePurchaseOrderApprovals(organizationId: string): Promise<void> {
+		await reconcileModuleApprovalsForOrg(this.deps, organizationId, MODULE_KEY_PURCHASES)
 	}
 
 	async enqueueSalesOrderSubmitted(soId: string, requesterUserId: string): Promise<any> {
@@ -147,7 +172,7 @@ export class ApprovalRequestService {
 	}
 
 	async enqueueSalesEnquirySubmitted(enquiryId: string, requesterUserId: string): Promise<any> {
-		return initiateApprovalWorkflow(
+		const created = await initiateApprovalWorkflow(
 			{
 				action: 'SUBMIT',
 				entityType: APPROVAL_ENTITY_SALES_ENQUIRY,
@@ -156,6 +181,15 @@ export class ApprovalRequestService {
 			},
 			this.deps,
 		)
+		const enq = await this.deps.salesEnquiryService.findById(enquiryId)
+		if (enq?.organizationId) {
+			await reconcileModuleApprovalsForOrg(this.deps, String(enq.organizationId), MODULE_KEY_SALES)
+		}
+		return created
+	}
+
+	async reconcileSalesEnquiryApprovals(organizationId: string): Promise<void> {
+		await reconcileModuleApprovalsForOrg(this.deps, organizationId, MODULE_KEY_SALES)
 	}
 
 	async enqueueModuleWorkspaceRecord(recordId: string, requesterUserId: string): Promise<any> {

@@ -8,10 +8,16 @@ export class ApprovalRequestRepository extends MongoBaseRepository<any> {
 	}
 
 	async findPendingForEntity(entityType: string, entityId: string): Promise<any | null> {
+		let entityOid: Types.ObjectId
+		try {
+			entityOid = new Types.ObjectId(String(entityId))
+		} catch {
+			return null
+		}
 		return this.model
 			.findOne({
 				entityType,
-				entityId,
+				entityId: entityOid,
 				status: 'PENDING',
 			})
 			.exec()
@@ -71,13 +77,55 @@ export class ApprovalRequestRepository extends MongoBaseRepository<any> {
 			.exec()
 	}
 
-	async listPendingForAssignee(assigneeUserId: string): Promise<any[]> {
-		return this.model
-			.find({
-				assigneeApproverUserId: assigneeUserId,
-				status: 'PENDING',
-			})
-			.sort({ createdAt: -1 })
+	async listPendingForAssignee(assigneeUserId: string, organizationId?: string): Promise<any[]> {
+		let assigneeOid: Types.ObjectId
+		try {
+			assigneeOid = new Types.ObjectId(String(assigneeUserId))
+		} catch {
+			return []
+		}
+		const filter: Record<string, unknown> = {
+			assigneeApproverUserId: assigneeOid,
+			status: 'PENDING',
+		}
+		if (organizationId) {
+			try {
+				filter.organizationId = new Types.ObjectId(String(organizationId))
+			} catch {
+				filter.organizationId = organizationId
+			}
+		}
+		return this.model.find(filter).sort({ createdAt: -1 }).exec()
+	}
+
+	async reassignPendingModuleRows(
+		organizationId: string,
+		moduleKey: string,
+		newAssigneeUserId: string,
+	): Promise<void> {
+		let orgOid: Types.ObjectId
+		let assigneeOid: Types.ObjectId
+		try {
+			orgOid = new Types.ObjectId(String(organizationId))
+			assigneeOid = new Types.ObjectId(String(newAssigneeUserId))
+		} catch {
+			return
+		}
+		await this.model
+			.updateMany(
+				{
+					organizationId: orgOid,
+					moduleKey,
+					status: 'PENDING',
+					assigneeApproverUserId: { $ne: assigneeOid },
+				},
+				{
+					$set: {
+						assigneeApproverUserId: assigneeOid,
+						updatedAt: new Date(),
+					},
+				},
+			)
 			.exec()
 	}
 

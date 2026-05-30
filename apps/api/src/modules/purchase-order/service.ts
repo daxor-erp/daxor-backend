@@ -66,6 +66,10 @@ export class PurchaseOrderService {
     return this.repository.findPaginatedWithPopulate(filter, page, limit, sort)
   }
 
+  async findPendingApprovalByOrganization(organizationId: string): Promise<any[]> {
+    return this.repository.findPendingApprovalByOrganization(organizationId)
+  }
+
   async submit(id: string, userId: string): Promise<any> {
     const po = await this.repository.findById(id)
     if (!po) throw new Error('Purchase order not found')

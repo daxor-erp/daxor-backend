@@ -16,3 +16,10 @@ export { createVendorApprovalRequestsWithAssignees } from './vendor-approval-bat
 export { createPendingApprovalRequest } from './pending-request'
 export { buildPendingPayloadForSubmit } from './submit-context'
 export { applyApprovalDecisionToEntity } from './resolve-entity'
+export { reconcileSalesEnquiryApprovalsForOrg } from './reconcile-sales-enquiry-approvals'
+export { reconcilePurchaseOrderApprovalsForOrg } from './reconcile-purchase-order-approvals'
+export {
+	reconcileModuleApprovalsForOrg,
+	reconcileApprovalsForAssignee,
+	reconcileAllConfiguredModuleApprovals,
+} from './reconcile-org-module-approvals'

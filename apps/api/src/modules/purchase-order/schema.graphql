@@ -66,6 +66,7 @@ extend type Query {
 
 extend type Mutation {
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
+  createPurchaseRequisition(input: CreatePurchaseOrderInput!): PurchaseOrder!
   updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(id: ID!): Boolean!
   submitPurchaseOrder(id: ID!): PurchaseOrder!
