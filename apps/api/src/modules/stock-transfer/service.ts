@@ -1,4 +1,8 @@
 import { StockTransferRepository } from './repository'
+import { InventoryControlService } from '../inventory-control/service'
+import { accountingPosting } from '../../lib/accounting-posting'
+
+const inventoryService = new InventoryControlService()
 
 function isObjectIdHex(id: string): boolean {
   return /^[a-fA-F0-9]{24}$/.test(id)
@@ -95,6 +99,15 @@ export class StockTransferService {
     if (isObjectIdHex(userId)) patch.updatedBy = userId
     const updated = await this.repository.update(id, patch as any)
     if (!updated) throw new Error('Stock transfer not found')
+    const fresh = await this.repository.findById(id)
+    if (fresh) {
+      const { transferValue } = await inventoryService.applyStockTransfer(fresh, userId)
+      const fromBin = String(fresh.fromWarehouseName || fresh.fromWarehouseId || 'MAIN')
+      const toBin = String(fresh.toWarehouseName || fresh.toWarehouseId || 'MAIN')
+      if (fromBin !== toBin && transferValue > 0) {
+        await accountingPosting.postStockTransfer(fresh, userId, transferValue)
+      }
+    }
     return updated
   }
 

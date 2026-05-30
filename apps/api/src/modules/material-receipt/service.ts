@@ -1,4 +1,8 @@
 import { GraphQLValidationError } from '@repo/errors'
+import { accountingPosting } from '../../lib/accounting-posting'
+import { InventoryControlService } from '../inventory-control/service'
+
+const inventoryService = new InventoryControlService()
 import { MaterialReceiptRepository } from './repository'
 
 export class MaterialReceiptService {
@@ -75,7 +79,29 @@ export class MaterialReceiptService {
     if (String((mrn as any).status) !== 'submitted') {
       throw new GraphQLValidationError('Only receipts pending approval can be approved')
     }
-    return this.repository.update(id, { status: 'confirmed', updatedBy: userId })
+    const updated = await this.repository.update(id, { status: 'confirmed', updatedBy: userId })
+    const fresh = await this.repository.findById(id)
+    if (fresh) {
+      const plain = (fresh as any).toObject?.() ?? fresh
+      const orgId = String(plain.organizationId ?? '')
+      await inventoryService.applyReceiptLines({
+        organizationId: orgId,
+        userId,
+        referenceModule: 'material_receipt',
+        referenceId: String(plain._id ?? plain.id ?? id),
+        warehouseId: plain.warehouseId ? String(plain.warehouseId) : undefined,
+        warehouseName: plain.warehouseName,
+        lines: (plain.lineItems ?? []).map((l: any) => ({
+          itemId: l.itemId ? String(l.itemId) : undefined,
+          itemDescription: l.itemDescription,
+          quantity: Number(l.receivedQty) || 0,
+          unit: l.unit,
+        })),
+        direction: 'in',
+      })
+      await accountingPosting.postMaterialReceipt(fresh, userId)
+    }
+    return updated
   }
 
   async declineFromApprovalQueue(id: string, userId: string) {

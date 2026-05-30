@@ -15,8 +15,8 @@ export const resolvers = {
     createProductionPlanning: async (_: any, { input }: any, context: any) => {
       return service.create(input, context.user?.id || 'system');
     },
-    updateProductionPlanning: async (_: any, { id, input }: any) => {
-      return service.update(id, input);
+    updateProductionPlanning: async (_: any, { id, input }: any, ctx: any) => {
+      return service.update(id, input, ctx.user?.id || 'system');
     },
     deleteProductionPlanning: async (_: any, { id }: { id: string }) => {
       await service.delete(id);

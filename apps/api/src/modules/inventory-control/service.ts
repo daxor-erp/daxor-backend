@@ -1,5 +1,6 @@
 import { InventoryControlRepository, StockMovementRepository } from './repository';
 import { IInventoryControl, IStockMovement } from './model';
+import { Item } from '../item/model';
 
 export class InventoryControlService {
   private icRepository: InventoryControlRepository;
@@ -149,5 +150,231 @@ export class InventoryControlService {
     const row = await this.smRepository.findById(id);
     if (!row || (row as any).isDeleted) return null;
     return row;
+  }
+
+  /** Find or create bin stock for an item at a location. */
+  async ensureInventoryRecord(params: {
+    organizationId: string;
+    itemId: string;
+    itemName: string;
+    binLocation: string;
+    warehouseId: string;
+    unit?: string;
+  }): Promise<IInventoryControl> {
+    const filter = {
+      organizationId: params.organizationId,
+      itemId: params.itemId,
+      binLocation: params.binLocation,
+      isDeleted: false,
+    };
+    const existing = await this.icRepository.findOne(filter as any);
+    if (existing) return existing;
+
+    return this.createInventoryControl({
+      organizationId: params.organizationId,
+      itemId: params.itemId,
+      itemName: params.itemName,
+      binLocation: params.binLocation,
+      warehouseId: params.warehouseId,
+      quantity: 0,
+      unit: params.unit || 'EA',
+      minStockLevel: 0,
+      maxStockLevel: 0,
+      reorderPoint: 0,
+    } as Partial<IInventoryControl>);
+  }
+
+  private async resolveItemId(
+    organizationId: string,
+    itemId: string | undefined,
+    itemDescription: string,
+    unit?: string,
+  ): Promise<{ itemId: string; itemName: string; unit: string }> {
+    if (itemId && String(itemId).trim()) {
+      const row = await Item.findById(itemId).exec();
+      if (row) {
+        return {
+          itemId: String(row._id),
+          itemName: String(row.name),
+          unit: String(row.unit || unit || 'EA'),
+        };
+      }
+    }
+    const name = String(itemDescription || 'Item').trim() || 'Item';
+    let row = await Item.findOne({ organizationId, name, deletedAt: null }).exec();
+    if (!row) {
+      row = await Item.create({
+        name,
+        organizationId,
+        unit: unit || 'EA',
+        status: 'active',
+      });
+    }
+    return {
+      itemId: String(row._id),
+      itemName: String(row.name),
+      unit: String(row.unit || unit || 'EA'),
+    };
+  }
+
+  /**
+   * Apply receipt/issue lines to inventory (GRN, MRN, stock adjustment).
+   */
+  async applyReceiptLines(params: {
+    organizationId: string;
+    userId: string;
+    referenceModule: string;
+    referenceId: string;
+    warehouseId?: string;
+    warehouseName?: string;
+    lines: Array<{
+      itemId?: string;
+      itemDescription: string;
+      quantity: number;
+      unit?: string;
+    }>;
+    direction: 'in' | 'out';
+  }): Promise<void> {
+    const binLocation = String(params.warehouseName || params.warehouseId || 'MAIN').trim() || 'MAIN';
+    const warehouseId = String(params.warehouseId || 'default');
+
+    for (const line of params.lines) {
+      const qty = Math.abs(Number(line.quantity) || 0);
+      if (qty < 0.0001) continue;
+
+      const resolved = await this.resolveItemId(
+        params.organizationId,
+        line.itemId,
+        line.itemDescription,
+        line.unit,
+      );
+      await this.ensureInventoryRecord({
+        organizationId: params.organizationId,
+        itemId: resolved.itemId,
+        itemName: resolved.itemName,
+        binLocation,
+        warehouseId,
+        unit: resolved.unit,
+      });
+
+      const signed = params.direction === 'in' ? qty : -qty;
+      await this.adjustStock(
+        resolved.itemId,
+        binLocation,
+        signed,
+        `${params.referenceModule} ${params.referenceId}`,
+        params.userId,
+        params.organizationId,
+      );
+    }
+  }
+
+  /** Apply confirmed stock adjustment line qty changes. */
+  async applyStockAdjustmentLines(adjustment: any, userId: string): Promise<void> {
+    const orgId = String(adjustment.organizationId ?? '');
+    if (!orgId) return;
+
+    const whId = adjustment.warehouseId ? String(adjustment.warehouseId) : 'default';
+    const whName = adjustment.warehouseName ? String(adjustment.warehouseName) : 'MAIN';
+    const refId = String(adjustment._id ?? adjustment.id ?? '');
+    const adjType = String(adjustment.adjustmentType ?? 'recount');
+
+    for (const line of adjustment.lineItems ?? []) {
+      let diff = Number(line.difference ?? 0);
+      if (Math.abs(diff) < 0.0001) {
+        diff = Number(line.adjustedQty ?? 0) - Number(line.currentQty ?? 0);
+      }
+      if (Math.abs(diff) < 0.0001) continue;
+
+      let direction: 'in' | 'out' = diff > 0 ? 'in' : 'out';
+      if (adjType === 'decrease' || adjType === 'write-off') direction = 'out';
+      if (adjType === 'increase') direction = 'in';
+
+      await this.applyReceiptLines({
+        organizationId: orgId,
+        userId,
+        referenceModule: 'stock_adjustment',
+        referenceId: refId,
+        warehouseId: whId,
+        warehouseName: whName,
+        lines: [
+          {
+            itemId: line.itemId ? String(line.itemId) : undefined,
+            itemDescription: String(line.itemDescription ?? 'Item'),
+            quantity: Math.abs(diff),
+            unit: line.unit,
+          },
+        ],
+        direction,
+      });
+    }
+  }
+
+  /** Move qty between warehouse bins on stock transfer confirm. */
+  async applyStockTransfer(transfer: any, userId: string): Promise<{ transferValue: number }> {
+    const orgId = String(transfer.organizationId ?? '');
+    const refId = String(transfer._id ?? transfer.id ?? '');
+    const fromBin = String(transfer.fromWarehouseName || transfer.fromWarehouseId || 'MAIN').trim() || 'MAIN';
+    const toBin = String(transfer.toWarehouseName || transfer.toWarehouseId || 'MAIN').trim() || 'MAIN';
+    const fromWhId = String(transfer.fromWarehouseId || 'default');
+    const toWhId = String(transfer.toWarehouseId || 'default');
+
+    let transferValue = 0;
+
+    for (const line of transfer.lineItems ?? []) {
+      const qty = Math.abs(Number(line.qty) || 0);
+      if (qty < 0.0001) continue;
+
+      const resolved = await this.resolveItemId(
+        orgId,
+        line.itemId ? String(line.itemId) : undefined,
+        String(line.itemDescription ?? 'Item'),
+        line.unit,
+      );
+
+      let unitCost = 1;
+      if (line.itemId) {
+        const item = await Item.findById(line.itemId).exec();
+        if (item && Number((item as any).rate) > 0) unitCost = Number((item as any).rate);
+      }
+
+      transferValue += qty * unitCost;
+
+      await this.ensureInventoryRecord({
+        organizationId: orgId,
+        itemId: resolved.itemId,
+        itemName: resolved.itemName,
+        binLocation: fromBin,
+        warehouseId: fromWhId,
+        unit: resolved.unit,
+      });
+      await this.ensureInventoryRecord({
+        organizationId: orgId,
+        itemId: resolved.itemId,
+        itemName: resolved.itemName,
+        binLocation: toBin,
+        warehouseId: toWhId,
+        unit: resolved.unit,
+      });
+
+      await this.adjustStock(
+        resolved.itemId,
+        fromBin,
+        -qty,
+        `Transfer out ${transfer.transferNumber || refId}`,
+        userId,
+        orgId,
+      );
+      await this.adjustStock(
+        resolved.itemId,
+        toBin,
+        qty,
+        `Transfer in ${transfer.transferNumber || refId}`,
+        userId,
+        orgId,
+      );
+    }
+
+    return { transferValue: Math.round(transferValue * 100) / 100 };
   }
 }

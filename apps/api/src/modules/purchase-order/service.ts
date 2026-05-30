@@ -5,6 +5,7 @@ import { VendorRepository } from '../vendor/repository'
 import { ProjectRepository } from '../project/repository'
 import { GRNService } from '../grn/service'
 import { VendorBillService } from '../vendor-bill/service'
+import { VendorBillRepository } from '../vendor-bill/repository'
 
 export class PurchaseOrderService {
   private repository: PurchaseOrderRepository
@@ -12,6 +13,7 @@ export class PurchaseOrderService {
   private projectRepo: ProjectRepository
   private grnService: GRNService
   private billService: VendorBillService
+  private vendorBillRepo: VendorBillRepository
 
   constructor() {
     this.repository = new PurchaseOrderRepository()
@@ -19,6 +21,7 @@ export class PurchaseOrderService {
     this.projectRepo = new ProjectRepository()
     this.grnService = new GRNService()
     this.billService = new VendorBillService()
+    this.vendorBillRepo = new VendorBillRepository()
   }
 
   async create(data: any, userId: string): Promise<any> {
@@ -112,6 +115,12 @@ export class PurchaseOrderService {
     if (!po.vendorId) throw new Error('PO must have a vendor before billing')
     if (['draft', 'submitted'].includes(po.status)) throw new Error('PO must be approved or received before billing')
 
+    const poId = String(po._id ?? po.id ?? id)
+    const existingBills = await this.vendorBillRepo.findByPurchaseOrderId(poId)
+    if (existingBills?.length) {
+      throw new Error(`Purchase order ${po.seqNo ?? poId} is already billed (${existingBills[0].billNumber})`)
+    }
+
     const lineItems = (po.items || []).map((item: any) => ({
       description: item.itemDescription,
       quantity: item.quantity || 1,
@@ -123,7 +132,7 @@ export class PurchaseOrderService {
 
     const subtotal = lineItems.reduce((s: number, l: any) => s + l.total, 0)
 
-    return this.billService.createBill({
+    const bill = await this.billService.createBill({
       vendorId: po.vendorId,
       purchaseOrderId: po._id || po.id,
       billDate,
@@ -131,10 +140,13 @@ export class PurchaseOrderService {
       lineItems,
       subtotal,
       discountAmount: 0,
-      taxAmount: 0,
+      taxAmount: Number(po.taxAmount) || 0,
       totalAmount: subtotal || po.totalAmount || 0,
       notes: `Billed from PO ${po.seqNo}`,
       organizationId: po.organizationId,
     }, userId)
+
+    await this.repository.update(id, { status: 'billed', updatedBy: userId })
+    return bill
   }
 }

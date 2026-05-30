@@ -12,6 +12,10 @@ type Customer {
   zipCode: String
   taxNumber: String
   paymentTerms: String
+  bankName: String
+  bankAccountNumber: String
+  bankIfsc: String
+  bankBranch: String
   notes: String
   organizationId: String!
   status: String!
@@ -32,6 +36,10 @@ input CreateCustomerInput {
   zipCode: String
   taxNumber: String
   paymentTerms: String
+  bankName: String
+  bankAccountNumber: String
+  bankIfsc: String
+  bankBranch: String
   notes: String
   organizationId: String!
   invoiceBillable: Boolean

@@ -46,7 +46,37 @@ export class CustomerInvoiceService {
 			const fresh = await this.repository.findById(id)
 			await accountingPosting.postCustomerInvoiceRevenue(fresh, String(userId))
 		}
+		if (nextStatus === 'cancelled' && prevStatus && !['draft', 'cancelled'].includes(prevStatus)) {
+			const fresh = await this.repository.findById(id)
+			await accountingPosting.postCustomerInvoiceReversal(fresh, String(userId))
+		}
 		return updated
+	}
+
+	async applyCreditMemo(id: string, creditAmount: number, reason: string | undefined, userId: string) {
+		const inv = await this.repository.findById(id)
+		if (!inv || (inv as any).deletedAt) throw new Error('Invoice not found')
+		const st = String((inv as any).status ?? '')
+		if (['draft', 'cancelled', 'submitted', 'approval_declined'].includes(st)) {
+			throw new Error(`Cannot credit invoice in status "${st}"`)
+		}
+		const total = Number((inv as any).totalAmount ?? 0)
+		const amt = Math.round(Number(creditAmount) * 100) / 100
+		if (amt <= 0 || amt > total + 0.01) throw new Error('Invalid credit amount')
+		await accountingPosting.postCustomerInvoiceReversal(inv, userId, amt)
+		const paid = Number((inv as any).paidAmount ?? 0)
+		const newTotal = Math.round((total - amt) * 100) / 100
+		const newStatus = newTotal <= 0.01 ? 'cancelled' : st
+		await this.repository.update(id, {
+			totalAmount: newTotal,
+			subtotal: newTotal,
+			status: newStatus,
+			notes: reason ? `${(inv as any).notes ?? ''}\nCredit: ${reason}`.trim() : (inv as any).notes,
+			paidAmount: Math.min(paid, newTotal),
+			updatedBy: userId,
+			updatedAt: new Date(),
+		})
+		return this.repository.findById(id)
 	}
 
 	async findWithPagination(filter: any, options: any): Promise<any> {

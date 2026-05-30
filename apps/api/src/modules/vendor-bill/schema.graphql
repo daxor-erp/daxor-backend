@@ -30,6 +30,7 @@ type VendorBill {
   taxAmount: Float
   totalAmount: Float!
   paidAmount: Float!
+  debitNotesApplied: Float!
   outstandingAmount: Float!
   notes: String
   status: String!
@@ -78,5 +79,7 @@ extend type Mutation {
   updateVendorBill(id: ID!, input: UpdateVendorBillInput!): VendorBill!
   approveVendorBill(id: ID!): VendorBill!
   submitVendorBillForApproval(id: ID!): VendorBill!
+  """Post expense/AP journal and GL for an approved bill (safe to retry)."""
+  syncVendorBillAccounting(id: ID!): VendorBill!
   deleteVendorBill(id: ID!): Boolean!
 }

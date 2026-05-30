@@ -72,6 +72,14 @@ export const resolvers = {
 			await service.syncAccounting(id, ctx.user!.id)
 			return service.findById(id)
 		},
+		applyCustomerCreditMemo: async (
+			_: unknown,
+			{ id, creditAmount, reason }: { id: string; creditAmount: number; reason?: string },
+			ctx: GraphQLContext,
+		) => {
+			assertAuthenticated(ctx)
+			return service.applyCreditMemo(id, creditAmount, reason, ctx.user!.id)
+		},
 	},
 	CustomerInvoice: {
 		seqNo: (parent: any) => String(parent.seqNo ?? parent.invoiceNumber ?? parent._id ?? ''),
