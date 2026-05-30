@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { CustomerInvoiceService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
 import { GraphQLAuthError } from '@repo/errors'
@@ -7,6 +8,13 @@ import { ApprovalRequestService } from '../approval-request/service'
 const service = new CustomerInvoiceService()
 const approvalService = new ApprovalRequestService()
 
+/** Bill-to filters must be Mongo ObjectIds, not display names typed in SelectFloating search. */
+function partyIdFilter(customerId: unknown): Types.ObjectId | null {
+	const s = String(customerId ?? '').trim()
+	if (!s || !Types.ObjectId.isValid(s)) return null
+	return new Types.ObjectId(s)
+}
+
 export const resolvers = {
 	Query: {
 		customerinvoice: async (_: unknown, { id }: { id: string }) => service.findById(id),
@@ -14,9 +22,10 @@ export const resolvers = {
 			const { organizationId, page = 1, limit = 10, status, search, customerId } = args
 			const filter: any = { organizationId, deletedAt: null }
 			if (status) filter.status = status
-			if (customerId && search) {
+			const partyOid = partyIdFilter(customerId)
+			if (partyOid && search) {
 				filter.$and = [
-					{ $or: [{ customerId }, { clientId: customerId }] },
+					{ $or: [{ customerId: partyOid }, { clientId: partyOid }] },
 					{
 						$or: [
 							{ invoiceNumber: { $regex: search, $options: 'i' } },
@@ -24,8 +33,8 @@ export const resolvers = {
 						],
 					},
 				]
-			} else if (customerId) {
-				filter.$or = [{ customerId }, { clientId: customerId }]
+			} else if (partyOid) {
+				filter.$or = [{ customerId: partyOid }, { clientId: partyOid }]
 			} else if (search) {
 				filter.$or = [
 					{ invoiceNumber: { $regex: search, $options: 'i' } },
@@ -39,12 +48,14 @@ export const resolvers = {
 	Mutation: {
 		createCustomerInvoice: async (_: unknown, { input }: any, ctx: GraphQLContext) => 
 			service.create({ ...input, createdBy: ctx.user?.id }),
-		updateCustomerInvoice: async (_: unknown, { id, input }: any, ctx: GraphQLContext) => 
-			service.update(id, {
+		updateCustomerInvoice: async (_: unknown, { id, input }: any, ctx: GraphQLContext) => {
+			const partyOid = input.customerId ? partyIdFilter(input.customerId) : null
+			return service.update(id, {
 				...input,
-				...(input.customerId ? { clientId: input.customerId } : {}),
+				...(partyOid ? { customerId: partyOid, clientId: partyOid } : {}),
 				updatedBy: ctx.user?.id,
-			}),
+			})
+		},
 		submitCustomerInvoiceForApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
 			assertAuthenticated(ctx)
 			const before = await service.findById(id)
@@ -56,6 +67,11 @@ export const resolvers = {
 		},
 		deleteCustomerInvoice: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => 
 			service.update(id, { deletedAt: new Date(), deletedBy: ctx.user?.id }),
+		syncCustomerInvoiceAccounting: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			await service.syncAccounting(id, ctx.user!.id)
+			return service.findById(id)
+		},
 	},
 	CustomerInvoice: {
 		seqNo: (parent: any) => String(parent.seqNo ?? parent.invoiceNumber ?? parent._id ?? ''),

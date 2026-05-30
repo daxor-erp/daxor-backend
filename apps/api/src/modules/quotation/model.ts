@@ -13,7 +13,9 @@ const lineItemSchema = new Schema({
 const quotationSchema = new Schema({
   seqNo: { type: String },
   quotationNumber: { type: String, required: true },
-  clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: true },
+  customerId: { type: Schema.Types.ObjectId, ref: 'Customer' },
+  /** @deprecated Legacy CRM client; new quotations use customerId only. */
+  clientId: { type: Schema.Types.ObjectId, ref: 'Client' },
   subject: { type: String, required: true },
   quotationDate: { type: Date, required: true },
   validUntil: { type: Date, required: true },
@@ -40,6 +42,7 @@ const quotationSchema = new Schema({
 
 quotationSchema.index({ seqNo: 1 }, { unique: true, sparse: true })
 quotationSchema.index({ quotationNumber: 1 }, { unique: true })
+quotationSchema.index({ customerId: 1 })
 quotationSchema.index({ clientId: 1 })
 quotationSchema.index({ organizationId: 1 })
 quotationSchema.index({ status: 1 })

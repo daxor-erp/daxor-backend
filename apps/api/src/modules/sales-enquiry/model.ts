@@ -3,7 +3,9 @@ import { model, Schema } from 'mongoose'
 const salesEnquirySchema = new Schema({
 	seqNo: { type: String },
 	enquiryNumber: { type: String, required: true, maxlength: 50 },
-	clientId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+	customerId: { type: Schema.Types.ObjectId, ref: 'Customer' },
+	/** Bill-to / party id (customer id for new rows). */
+	clientId: { type: Schema.Types.ObjectId, ref: 'Customer' },
 	enquirySource: { type: String, maxlength: 50 },
 	subject: { type: String, maxlength: 255 },
 	projectType: { type: String, maxlength: 100 },

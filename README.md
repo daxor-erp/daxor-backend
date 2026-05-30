@@ -49,6 +49,8 @@ packages/
 ```bash
 # Install dependencies
 bun install
+# If PDF generation fails ("Could not find Chrome"), run:
+bun run install:chrome
 
 # Configure environment
 cd apps/api
@@ -65,7 +67,7 @@ bun run api:dev
 
 ## GraphQL Modules (All Complete)
 
-✅ **Auth** - login, register, me, permissions
+✅ **Auth** - login, me, permissions (users provisioned by platform admin)
 ✅ **User** - Full CRUD with audit logs
 ✅ **Organization** - CRUD operations
 ✅ **Item** - Inventory management

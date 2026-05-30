@@ -1,5 +1,6 @@
 import { VendorPaymentRepository } from './repository'
 import { VendorBillService } from '../vendor-bill/service'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export class VendorPaymentService {
   private repository: VendorPaymentRepository
@@ -39,6 +40,8 @@ export class VendorPaymentService {
     for (const alloc of allocations) {
       await this.billService.applyPayment(alloc.billId, alloc.amount)
     }
+
+    await accountingPosting.postVendorPayment(payment, userId)
 
     return payment
   }

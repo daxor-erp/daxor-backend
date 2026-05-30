@@ -11,6 +11,7 @@ function escapeHtml(s: string): string {
 export function buildQuotationEmailContent(quotation: {
 	quotationNumber: string
 	subject: string
+	customerId?: { name?: string; email?: string }
 	clientId?: { name?: string; email?: string }
 	lineItems?: Array<{ description?: string; quantity?: number; unitPrice?: number; discount?: number; tax?: number; total?: number }>
 	subtotal?: number
@@ -24,7 +25,8 @@ export function buildQuotationEmailContent(quotation: {
 }): { subject: string; html: string; text: string } {
 	const num = quotation.quotationNumber
 	const subject = `Quotation ${num}: ${quotation.subject || 'Your quotation'}`
-	const name = quotation.clientId?.name || 'there'
+	const party = quotation.customerId ?? quotation.clientId
+	const name = party?.name || 'there'
 	const rows =
 		quotation.lineItems?.map((li) => {
 			const desc = escapeHtml(li.description || '')
@@ -89,8 +91,8 @@ export async function sendQuotationEmailToClient(
 			'SMTP is not configured. Set EMAIL_USER, EMAIL_PASSWORD, EMAIL_HOST (e.g. smtp.gmail.com), EMAIL_PORT (587 or 465), and EMAIL_FROM on the API server.',
 		)
 	}
-	const to = quotation.clientId?.email?.trim()
-	if (!to) throw new Error('Client has no email address')
+	const to = (quotation.customerId ?? quotation.clientId)?.email?.trim()
+	if (!to) throw new Error('Customer has no email address')
 	const { subject, html, text } = buildQuotationEmailContent(quotation)
 	await sendHtmlEmail({ to, subject, html, text })
 }

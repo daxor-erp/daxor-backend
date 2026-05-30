@@ -13,6 +13,5 @@ export const resolvers = {
 	},
 	Mutation: {
 		login: async (_: unknown, { input }: any) => service.login(input.email, input.password),
-		register: async (_: unknown, { input }: any) => service.register(input),
 	},
 }
