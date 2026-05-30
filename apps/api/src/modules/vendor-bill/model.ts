@@ -21,7 +21,8 @@ const vendorBillSchema = new Schema({
   taxAmount: { type: Number, default: 0 },
   totalAmount: { type: Number, required: true, default: 0 },
   paidAmount: { type: Number, default: 0 },       // updated as payments are applied
-  outstandingAmount: { type: Number, default: 0 }, // totalAmount - paidAmount
+  debitNotesApplied: { type: Number, default: 0 }, // vendor debit notes applied to this bill
+  outstandingAmount: { type: Number, default: 0 }, // totalAmount - paidAmount - debitNotesApplied
   notes: { type: String },
   // draft → submitted → approved → partially_paid → paid → cancelled
   status: {

@@ -51,6 +51,12 @@ export const resolvers = {
       return service.getBillById(id)
     },
 
+    syncVendorBillAccounting: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      await service.syncAccounting(id, ctx.user!.id)
+      return service.getBillById(id)
+    },
+
     deleteVendorBill: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       await service.deleteBill(id, ctx.user?.id ?? '')
       return true
@@ -58,6 +64,7 @@ export const resolvers = {
   },
 
   VendorBill: {
+    debitNotesApplied: (parent: any) => Number(parent.debitNotesApplied ?? 0),
     id: (parent: any) => parent._id || parent.id,
     billDate: (parent: any) => parent.billDate ? new Date(parent.billDate).toISOString() : null,
     dueDate: (parent: any) => parent.dueDate ? new Date(parent.dueDate).toISOString() : null,

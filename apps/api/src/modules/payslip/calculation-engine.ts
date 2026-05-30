@@ -7,6 +7,7 @@ import { LeaveApplication, LeaveType } from '../leave/model';
 import { Payslip, IPayslip, IPayslipLine } from './model';
 import { calculateStatutory } from './statutory';
 import { logger } from '../../lib/logger';
+import { accountingPosting } from '../../lib/accounting-posting';
 
 type PayComponentDef = {
   shortCode: string;
@@ -231,5 +232,8 @@ export async function computePayrollRun(payrollRunId: string, userId: string): P
   }
 
   await PayrollManagement.findByIdAndUpdate(payrollRunId, { status: 'COMPUTED' }).exec();
+
+  await accountingPosting.postPayrollRun(payrollRunId, userId);
+
   return created;
 }

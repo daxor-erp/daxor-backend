@@ -1,4 +1,8 @@
 import { StockAdjustmentRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
+import { InventoryControlService } from '../inventory-control/service'
+
+const inventoryService = new InventoryControlService()
 
 export class StockAdjustmentService {
   private repository: StockAdjustmentRepository
@@ -59,6 +63,11 @@ export class StockAdjustmentService {
       updatedBy: userId,
     })
     if (!updated) throw new Error('Stock adjustment not found')
+    const fresh = await this.repository.findById(id)
+    if (fresh) {
+      await inventoryService.applyStockAdjustmentLines(fresh, userId)
+      await accountingPosting.postStockAdjustment(fresh, userId)
+    }
     return updated
   }
 

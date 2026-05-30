@@ -63,11 +63,51 @@ input ChartOfAccountsInput {
   description: String
 }
 
+type TrialBalanceLine {
+  accountCode: String!
+  accountName: String!
+  accountType: String!
+  debit: Float!
+  credit: Float!
+  net: Float!
+}
+
+type FinancialStatementLine {
+  accountCode: String!
+  accountName: String!
+  amount: Float!
+}
+
+type IncomeStatementReport {
+  revenueLines: [FinancialStatementLine!]!
+  totalRevenue: Float!
+  cogsLines: [FinancialStatementLine!]!
+  totalCogs: Float!
+  grossProfit: Float!
+  expenseLines: [FinancialStatementLine!]!
+  totalOperatingExpense: Float!
+  netIncome: Float!
+}
+
+type BalanceSheetReport {
+  assetLines: [FinancialStatementLine!]!
+  totalAssets: Float!
+  liabilityLines: [FinancialStatementLine!]!
+  totalLiabilities: Float!
+  equityLines: [FinancialStatementLine!]!
+  totalEquity: Float!
+  totalLiabilitiesAndEquity: Float!
+  balanced: Boolean!
+}
+
 extend type Query {
   generalLedger(id: ID!): GeneralLedger
   generalLedgers(organizationId: String!, page: Int, limit: Int, fiscalYear: String, status: String): [GeneralLedger!]!
   chartOfAccount(id: ID!): ChartOfAccounts
   chartOfAccounts(organizationId: String!, page: Int, limit: Int, accountType: String): [ChartOfAccounts!]!
+  trialBalance(organizationId: String!): [TrialBalanceLine!]!
+  incomeStatement(organizationId: String!): IncomeStatementReport!
+  balanceSheet(organizationId: String!): BalanceSheetReport!
 }
 
 extend type Mutation {

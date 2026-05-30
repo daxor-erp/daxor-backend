@@ -4,6 +4,11 @@ type SalesReturn {
   docDate: String!
   status: String!
   organizationId: String!
+  customerInvoiceId: ID
+  customerId: ID
+  totalAmount: Float
+  cogsAmount: Float
+  reason: String
   createdAt: String!
 }
 
@@ -11,6 +16,11 @@ input SalesReturnInput {
   docDate: String!
   status: String
   organizationId: String!
+  customerInvoiceId: ID
+  customerId: ID
+  totalAmount: Float
+  cogsAmount: Float
+  reason: String
 }
 
 extend type Query {

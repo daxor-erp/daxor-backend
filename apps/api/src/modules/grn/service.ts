@@ -1,5 +1,9 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { GRNRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
+import { InventoryControlService } from '../inventory-control/service'
+
+const inventoryService = new InventoryControlService()
 
 const GRN_STATUSES = new Set(['draft', 'submitted', 'approval_declined', 'confirmed'])
 
@@ -100,6 +104,10 @@ export class GRNService {
     if (!created) {
       throw new Error('Failed to create GRN')
     }
+    if (String((created as any).status) === 'confirmed') {
+      await this.syncGrnInventory(created, userId)
+      await accountingPosting.postGrnReceipt(created, userId)
+    }
     return created
   }
 
@@ -176,7 +184,28 @@ export class GRNService {
     }
     const updated = await this.repository.update(id, payload as any)
     if (!updated) throw new GraphQLValidationError('GRN not found')
+    const fresh = await this.repository.findById(id)
+    await this.syncGrnInventory(fresh, userId)
+    await accountingPosting.postGrnReceipt(fresh, userId)
     return updated
+  }
+
+  private async syncGrnInventory(grn: any, userId: string) {
+    if (!grn) return
+    const orgId = String(grn.organizationId ?? '')
+    const lines = (grn.lineItems ?? []).map((l: any) => ({
+      itemDescription: l.itemDescription,
+      quantity: Number(l.receivedQty) || 0,
+    }))
+    if (!lines.some((l: { quantity: number }) => l.quantity > 0)) return
+    await inventoryService.applyReceiptLines({
+      organizationId: orgId,
+      userId,
+      referenceModule: 'grn',
+      referenceId: String(grn._id ?? grn.id ?? ''),
+      lines,
+      direction: 'in',
+    })
   }
 
   async declineFromApprovalQueue(id: string, userId: string) {

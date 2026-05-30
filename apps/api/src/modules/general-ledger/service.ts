@@ -1,13 +1,20 @@
 import { GeneralLedgerRepository, ChartOfAccountsRepository } from './repository';
 import { IGeneralLedger, IChartOfAccounts } from './model';
+import { JournalEntryRepository } from '../journal-entry/repository';
+import {
+  buildBalanceSheetFromTrialBalance,
+  buildIncomeStatementFromTrialBalance,
+} from '../../lib/financial-reports';
 
 export class GeneralLedgerService {
   private glRepository: GeneralLedgerRepository;
   private coaRepository: ChartOfAccountsRepository;
+  private jeRepository: JournalEntryRepository;
 
   constructor() {
     this.glRepository = new GeneralLedgerRepository();
     this.coaRepository = new ChartOfAccountsRepository();
+    this.jeRepository = new JournalEntryRepository();
   }
 
   async createTransaction(data: Partial<IGeneralLedger>, userId: string) {
@@ -76,5 +83,59 @@ export class GeneralLedgerService {
   private async generateTransactionNumber(organizationId: string): Promise<string> {
     const count = await this.glRepository.count({ organizationId } as any);
     return `GL-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
+  }
+
+  async getTrialBalance(organizationId: string) {
+    const accounts = await this.coaRepository.findByOrganization(organizationId);
+    const entries = await this.jeRepository.findByOrganization(organizationId, 'posted');
+    const byCode = new Map<
+      string,
+      { accountCode: string; accountName: string; accountType: string; debit: number; credit: number }
+    >();
+
+    for (const a of accounts) {
+      const code = String((a as any).accountCode ?? '').trim();
+      if (!code) continue;
+      byCode.set(code, {
+        accountCode: code,
+        accountName: String((a as any).accountName ?? code),
+        accountType: String((a as any).accountType ?? 'other'),
+        debit: 0,
+        credit: 0,
+      });
+    }
+
+    for (const je of entries) {
+      for (const line of (je as any).lines ?? []) {
+        const code = String(line.accountCode ?? '').trim();
+        if (!code) continue;
+        if (!byCode.has(code)) {
+          byCode.set(code, {
+            accountCode: code,
+            accountName: String(line.accountName ?? code),
+            accountType: 'other',
+            debit: 0,
+            credit: 0,
+          });
+        }
+        const row = byCode.get(code)!;
+        row.debit += Number(line.debit) || 0;
+        row.credit += Number(line.credit) || 0;
+      }
+    }
+
+    return Array.from(byCode.values())
+      .filter((r) => r.debit > 0.009 || r.credit > 0.009)
+      .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
+  }
+
+  async getIncomeStatement(organizationId: string) {
+    const tb = await this.getTrialBalance(organizationId);
+    return buildIncomeStatementFromTrialBalance(tb);
+  }
+
+  async getBalanceSheet(organizationId: string) {
+    const tb = await this.getTrialBalance(organizationId);
+    return buildBalanceSheetFromTrialBalance(tb);
   }
 }

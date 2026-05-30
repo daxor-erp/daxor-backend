@@ -1,5 +1,6 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { FixedAssetRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export interface FixedAssetInput {
 	organizationId: string
@@ -122,6 +123,13 @@ export class FixedAssetService {
 			bookValue: entry.bookValue,
 			$push: { depreciationHistory: entry },
 		} as any)
+		const periodLabel = new Date(periodEnd).toISOString().slice(0, 7)
+		await accountingPosting.postFixedAssetDepreciation(
+			updated ?? asset,
+			entry.amount,
+			'system',
+			periodLabel,
+		)
 		return updated
 	}
 

@@ -1,0 +1,55 @@
+type VendorDebitNoteBillAllocation {
+  billId: ID!
+  amount: Float!
+  appliedAt: String
+}
+
+type VendorDebitNote {
+  id: ID!
+  debitNumber: String!
+  vendorId: ID!
+  vendor: Vendor
+  purchaseOrderId: ID
+  vendorBillId: ID
+  debitDate: String!
+  totalAmount: Float!
+  appliedAmount: Float!
+  remainingAmount: Float!
+  billAllocations: [VendorDebitNoteBillAllocation!]!
+  reason: String
+  notes: String
+  status: String!
+  organizationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateVendorDebitNoteInput {
+  vendorId: ID!
+  purchaseOrderId: ID
+  """If set, auto-allocates debit note to this bill after posting."""
+  vendorBillId: ID
+  debitDate: String!
+  totalAmount: Float!
+  reason: String
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateVendorDebitNoteInput {
+  reason: String
+  notes: String
+  status: String
+}
+
+extend type Query {
+  vendorDebitNote(id: ID!): VendorDebitNote
+  vendorDebitNotes(organizationId: ID!, vendorId: ID, page: Int, limit: Int): [VendorDebitNote!]!
+}
+
+extend type Mutation {
+  createVendorDebitNote(input: CreateVendorDebitNoteInput!): VendorDebitNote!
+  applyVendorDebitNoteToBill(debitNoteId: ID!, billId: ID!, amount: Float!): VendorDebitNote!
+  updateVendorDebitNote(id: ID!, input: UpdateVendorDebitNoteInput!): VendorDebitNote!
+  deleteVendorDebitNote(id: ID!): Boolean!
+}
