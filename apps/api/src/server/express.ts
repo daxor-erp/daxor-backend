@@ -13,11 +13,27 @@ import { DocumentService } from '~/modules/document/service'
 import { Payslip } from '~/modules/payslip/model'
 import { renderPayslipHtml } from '~/modules/payslip/pdf'
 import { exportPayrollRunAsNeftCsv } from '~/modules/payslip/neft-export'
+import fs from 'node:fs'
 
 const userRepo = new UserRepository()
 
-async function resolveAuthedUser(req: express.Request): Promise<{ id: string; organizationId: string | null; isPlatformAdmin: boolean; currency: string } | null> {
-	const token = req.headers.authorization?.replace('Bearer ', '')
+type AuthedUser = {
+	id: string
+	organizationId: string | null
+	isPlatformAdmin: boolean
+	currency: string
+}
+
+function getBearerToken(req: express.Request, allowQueryToken = false): string | null {
+	const header = req.headers.authorization?.replace(/^Bearer\s+/i, '')
+	if (header) return header
+	if (!allowQueryToken || req.method !== 'GET') return null
+	const q = req.query.access_token
+	return typeof q === 'string' && q.length > 0 ? q : null
+}
+
+async function resolveAuthedUser(req: express.Request, allowQueryToken = false): Promise<AuthedUser | null> {
+	const token = getBearerToken(req, allowQueryToken)
 	if (!token) return null
 	try {
 		const decoded = jwt.verify(token, config.jwtSecret) as { id?: string; roles?: string[] }
@@ -36,7 +52,25 @@ async function resolveAuthedUser(req: express.Request): Promise<{ id: string; or
 		return null
 	}
 }
-import fs from 'node:fs'
+
+function assertOrganizationAccess(user: AuthedUser, organizationId: string): void {
+	if (user.isPlatformAdmin) return
+	if (!user.organizationId || user.organizationId !== String(organizationId)) {
+		throw new Error('Forbidden: organization access denied')
+	}
+}
+
+function resolveUploadOrganizationId(user: AuthedUser, requestedOrgId?: string): string {
+	if (user.isPlatformAdmin) {
+		if (!requestedOrgId) throw new Error('organizationId is required')
+		return String(requestedOrgId)
+	}
+	if (!user.organizationId) throw new Error('Forbidden: user has no organization')
+	if (requestedOrgId && String(requestedOrgId) !== user.organizationId) {
+		throw new Error('Forbidden: organization access denied')
+	}
+	return user.organizationId
+}
 
 export class Server {
 	private httpServer: http.Server
@@ -77,6 +111,9 @@ export class Server {
 			express.json({ limit: '10mb' }),
 			async (req, res) => {
 				try {
+					const user = await resolveAuthedUser(req)
+					if (!user) return res.status(401).json({ error: 'Authentication required' })
+
 					const { html, filename, options } = (req.body ?? {}) as {
 						html?: string
 						filename?: string
@@ -143,6 +180,9 @@ export class Server {
 			express.json({ limit: '30mb' }),
 			async (req, res) => {
 				try {
+					const user = await resolveAuthedUser(req)
+					if (!user) return res.status(401).json({ error: 'Authentication required' })
+
 					const body = (req.body ?? {}) as {
 						organizationId?: string
 						parentModule?: string
@@ -154,13 +194,17 @@ export class Server {
 						description?: string
 						uploadedByUserId?: string
 					}
-					if (!body.organizationId || !body.parentModule || !body.parentId || !body.filename || !body.base64) {
+					if (!body.parentModule || !body.parentId || !body.filename || !body.base64) {
 						return res.status(400).json({
-							error: 'organizationId, parentModule, parentId, filename and base64 are required',
+							error: 'parentModule, parentId, filename and base64 are required',
 						})
 					}
+
+					const organizationId = resolveUploadOrganizationId(user, body.organizationId)
+					assertOrganizationAccess(user, organizationId)
+
 					const doc = await documentService.uploadBase64({
-						organizationId: body.organizationId,
+						organizationId,
 						parentModule: body.parentModule,
 						parentId: body.parentId,
 						filename: body.filename,
@@ -168,7 +212,7 @@ export class Server {
 						base64: body.base64,
 						category: body.category,
 						description: body.description,
-						uploadedByUserId: body.uploadedByUserId,
+						uploadedByUserId: user.id,
 					})
 					res.json({
 						id: String((doc as any)?._id ?? (doc as any)?.id ?? ''),
@@ -179,8 +223,10 @@ export class Server {
 						createdAt: doc.createdAt,
 					})
 				} catch (err: any) {
+					const msg = String(err?.message || 'Upload failed')
+					const status = msg.startsWith('Forbidden') ? 403 : 400
 					console.error('Document upload failed', err)
-					res.status(400).json({ error: err?.message || 'Upload failed' })
+					res.status(status).json({ error: msg })
 				}
 			},
 		)
@@ -218,21 +264,27 @@ export class Server {
 			}
 		})
 
-		// Document download — streams the file from disk
+		// Document download — streams the file from disk (Bearer header or ?access_token= for <a> links)
 		this.app.get('/api/documents/:id/download', async (req, res) => {
 			try {
+				const user = await resolveAuthedUser(req, true)
+				if (!user) return res.status(401).json({ error: 'Authentication required' })
+
 				const found = await documentService.getReadable(String(req.params.id))
 				if (!found) return res.status(404).json({ error: 'Not found' })
 				const { doc, absolutePath } = found
+				assertOrganizationAccess(user, String(doc.organizationId))
 				if (doc.mimeType) res.setHeader('Content-Type', String(doc.mimeType))
 				res.setHeader(
 					'Content-Disposition',
 					`inline; filename="${String(doc.filename ?? 'file').replace(/[^a-z0-9_.-]+/gi, '-')}"`,
 				)
 				fs.createReadStream(absolutePath).pipe(res)
-			} catch (err) {
+			} catch (err: any) {
+				const msg = String(err?.message || 'Download failed')
+				const status = msg.startsWith('Forbidden') ? 403 : 500
 				console.error('Document download failed', err)
-				res.status(500).json({ error: 'Download failed' })
+				res.status(status).json({ error: msg })
 			}
 		})
 	}

@@ -18,17 +18,20 @@ input QuotationLineItemInput {
 	total: Float!
 }
 
-type ClientRef {
+type CustomerRef {
 	id: ID!
 	name: String!
 	email: String
+	docNumber: String
 }
 
 type Quotation {
 	id: ID!
 	seqNo: String
 	quotationNumber: String!
-	clientId: ClientRef!
+	customerId: CustomerRef!
+	"""Deprecated alias for customerId (legacy quotations)."""
+	clientId: CustomerRef!
 	subject: String!
 	quotationDate: String!
 	validUntil: String!
@@ -55,7 +58,9 @@ type SendQuotationResult {
 
 input CreateQuotationInput {
 	quotationNumber: String
-	clientId: ID!
+	customerId: ID!
+	"""Deprecated: use customerId."""
+	clientId: ID
 	subject: String!
 	quotationDate: String!
 	validUntil: String!
@@ -71,6 +76,7 @@ input CreateQuotationInput {
 }
 
 input UpdateQuotationInput {
+	customerId: ID
 	clientId: ID
 	subject: String
 	quotationDate: String
@@ -90,6 +96,7 @@ extend type Query {
 	quotations(organizationId: ID, page: Int, limit: Int, status: String): [Quotation!]!
 	quotationsByOrganization(organizationId: ID!): [Quotation!]!
 	quotationsByClient(clientId: ID!): [Quotation!]!
+	quotationsByCustomer(customerId: ID!): [Quotation!]!
 	quotationsByStatus(status: String!, organizationId: ID!): [Quotation!]!
 }
 

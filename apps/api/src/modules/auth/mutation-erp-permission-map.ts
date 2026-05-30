@@ -77,6 +77,9 @@ export const ERP_GRAPHQL_MUTATION_PERMISSIONS: Record<string, MutationPermission
 	]),
 	...sub('sales', 'sales_create_invoices', [
 		['createCustomerInvoice', 'create'],
+		['syncCustomerInvoiceAccounting', 'update'],
+		['applyCustomerCreditMemo', 'update'],
+		['syncVendorBillAccounting', 'update'],
 		['updateCustomerInvoice', 'update'],
 		['deleteCustomerInvoice', 'delete'],
 		['submitCustomerInvoiceForApproval', 'update'],
@@ -138,6 +141,12 @@ export const ERP_GRAPHQL_MUTATION_PERMISSIONS: Record<string, MutationPermission
 		['createVendorCredit', 'create'],
 		['updateVendorCredit', 'update'],
 		['deleteVendorCredit', 'delete'],
+	]),
+	...sub('purchases', 'purchases_debit_note', [
+		['createVendorDebitNote', 'create'],
+		['applyVendorDebitNoteToBill', 'update'],
+		['updateVendorDebitNote', 'update'],
+		['deleteVendorDebitNote', 'delete'],
 	]),
 	...sub('payables', 'payables_enter_vendor_prepayment', [
 		['createVendorPrepayment', 'create'],

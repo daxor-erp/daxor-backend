@@ -1,4 +1,5 @@
 import { VendorCreditRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export class VendorCreditService {
   private repository: VendorCreditRepository
@@ -11,7 +12,7 @@ export class VendorCreditService {
 
   async createCredit(data: any, userId: string) {
     const creditNumber = await this.generateCreditNumber(data.organizationId)
-    return this.repository.create({
+    const created = await this.repository.create({
       ...data,
       creditNumber,
       appliedAmount: 0,
@@ -19,6 +20,8 @@ export class VendorCreditService {
       createdBy: userId,
       updatedBy: userId,
     })
+    await accountingPosting.postVendorCredit(created, userId)
+    return created
   }
   async getCredits(organizationId: string, filter: any = {}) {
     return this.repository.findByOrganization(organizationId, filter)

@@ -8,19 +8,10 @@ input LoginInput {
 	password: String!
 }
 
-input RegisterInput {
-	email: String!
-	password: String!
-	firstName: String
-	lastName: String
-	organizationId: ID
-}
-
 extend type Query {
 	me: User
 }
 
 extend type Mutation {
 	login(input: LoginInput!): AuthPayload!
-	register(input: RegisterInput!): AuthPayload!
 }

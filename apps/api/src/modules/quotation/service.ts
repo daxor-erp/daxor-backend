@@ -3,6 +3,7 @@ import { logger } from '~/lib/logger'
 import { Quotation } from './model'
 import { QuotationRepository } from './repository'
 import { sendQuotationEmailToClient } from './quotation-email'
+import { normalizeQuotationCustomerId } from './party'
 
 export class QuotationService {
   private repository: QuotationRepository
@@ -19,7 +20,15 @@ export class QuotationService {
 
   async createQuotation(data: any, userId: string): Promise<any> {
     const quotationNumber = data.quotationNumber || await this.generateQuotationNumber(data.organizationId)
-    return this.repository.create({ ...data, quotationNumber, createdBy: userId, updatedBy: userId })
+    const customerId = normalizeQuotationCustomerId(data)
+    const { clientId: _legacy, customerId: _in, ...rest } = data
+    return this.repository.create({
+      ...rest,
+      customerId,
+      quotationNumber,
+      createdBy: userId,
+      updatedBy: userId,
+    })
   }
 
   async getQuotationById(id: string): Promise<any> {
@@ -44,7 +53,12 @@ export class QuotationService {
   }
 
   async updateQuotation(id: string, data: any, userId: string): Promise<any> {
-    return this.repository.update(id, { ...data, updatedBy: userId, updatedAt: new Date() })
+    const patch: any = { ...data, updatedBy: userId, updatedAt: new Date() }
+    if (data.customerId != null || data.clientId != null) {
+      patch.customerId = normalizeQuotationCustomerId(data)
+      delete patch.clientId
+    }
+    return this.repository.update(id, patch)
   }
 
   async deleteQuotation(id: string): Promise<any> {
@@ -96,10 +110,16 @@ export class QuotationService {
       )
     }
 
-    const populated = await Quotation.populate(doc, { path: 'clientId', select: 'name email' })
-    const clientRef = populated.clientId as { email?: string } | null | undefined
-    const email = typeof clientRef === 'object' && clientRef?.email ? String(clientRef.email).trim() : ''
-    if (!email) throw new GraphQLValidationError('Add an email address to the client before sending')
+    const populated = await Quotation.populate(doc, [
+      { path: 'customerId', select: 'name email docNumber' },
+      { path: 'clientId', select: 'name email' },
+    ])
+    const party =
+      (populated as any).customerId && typeof (populated as any).customerId === 'object'
+        ? (populated as any).customerId
+        : (populated as any).clientId
+    const email = typeof party === 'object' && party?.email ? String(party.email).trim() : ''
+    if (!email) throw new GraphQLValidationError('Add an email address to the customer before sending')
 
     let emailSent = false
     try {

@@ -9,7 +9,7 @@
 		"lint:fix": "biome lint . --write && biome format . --write",
 		"codegen": "graphql-codegen",
 		"build": "rm -rf dist && node esbuild.config.js",
-		"dev": "NODE_ENV=development dotenv -e .env.development -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
+		"dev": "NODE_ENV=development dotenv -e .env.development -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e ts,graphql",
 		"prod": "NODE_ENV=production dotenv -e .env.production -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
 		"seed:roles": "node -r esbuild-register ./src/scripts/seed-roles.ts",
 		"seed:users": "node -r esbuild-register ./src/scripts/seed-users.ts"

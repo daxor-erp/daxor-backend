@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer';
 import { Payslip, IPayslip } from './model';
+import { launchBrowser } from '~/lib/puppeteer-launch';
 import { formatMoney } from '../../lib/format-money';
 
 function escapeHtml(s: string) {
@@ -59,7 +59,7 @@ export async function generatePayslipPdf(payslipId: string): Promise<Buffer> {
   const p = await Payslip.findById(payslipId).exec();
   if (!p) throw new Error('Payslip not found');
   const html = renderPayslipHtml(p);
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });

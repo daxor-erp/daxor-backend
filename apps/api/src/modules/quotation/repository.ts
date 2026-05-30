@@ -1,10 +1,12 @@
 import { MongoBaseRepository, IBaseEntity } from '../base/mongo-repository'
 import { Quotation } from './model'
+import { QUOTATION_PARTY_POPULATE } from './party'
 
 interface IQuotationDocument extends IBaseEntity {
   seqNo?: string
   quotationNumber: string
-  clientId: any
+  customerId?: any
+  clientId?: any
   subject: string
   quotationDate: Date
   validUntil: Date

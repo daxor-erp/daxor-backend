@@ -17,6 +17,20 @@ export const resolvers = {
     chartOfAccounts: async (_: unknown, { organizationId, accountType }: any) => {
       return service.getChartOfAccounts(organizationId, { accountType })
     },
+    trialBalance: async (_: unknown, { organizationId }: { organizationId: string }) => {
+      const rows = await service.getTrialBalance(organizationId)
+      return rows.map((r) => ({
+        ...r,
+        net: Math.round((r.debit - r.credit) * 100) / 100,
+      }))
+    },
+    incomeStatement: async (_: unknown, { organizationId }: { organizationId: string }) =>
+      service.getIncomeStatement(organizationId),
+    balanceSheet: async (_: unknown, { organizationId }: { organizationId: string }) =>
+      service.getBalanceSheet(organizationId),
+  },
+  TrialBalanceLine: {
+    net: (p: any) => p.net ?? Math.round((Number(p.debit) - Number(p.credit)) * 100) / 100,
   },
   Mutation: {
     createGeneralLedger: async (_: unknown, { input }: any, ctx: GraphQLContext) => {

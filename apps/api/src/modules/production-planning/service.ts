@@ -1,5 +1,6 @@
 import { ProductionPlanningRepository } from './repository';
 import { IProductionPlanning } from './model';
+import { accountingPosting } from '../../lib/accounting-posting';
 
 export class ProductionPlanningService {
   private repository: ProductionPlanningRepository;
@@ -21,8 +22,16 @@ export class ProductionPlanningService {
     return this.repository.findById(id);
   }
 
-  async update(id: string, data: Partial<IProductionPlanning>) {
-    return this.repository.update(id, data);
+  async update(id: string, data: Partial<IProductionPlanning>, userId = 'system') {
+    const before = await this.repository.findById(id);
+    const updated = await this.repository.update(id, data);
+    const nextStatus = String(data.status ?? (updated as any)?.status ?? '');
+    const prevStatus = before ? String((before as any).status ?? '') : '';
+    if (nextStatus === 'completed' && prevStatus !== 'completed') {
+      const fresh = await this.repository.findById(id);
+      await accountingPosting.postProductionCompletion(fresh, userId);
+    }
+    return updated;
   }
 
   async delete(id: string) {

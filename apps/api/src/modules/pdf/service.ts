@@ -1,13 +1,10 @@
-import puppeteer from 'puppeteer'
 import { injectable } from 'tsyringe'
+import { launchBrowser } from '~/lib/puppeteer-launch'
 
 @injectable()
 export class PDFService {
 	async generatePDF(html: string, options?: any): Promise<Buffer> {
-		const browser = await puppeteer.launch({
-			headless: true,
-			args: ['--no-sandbox', '--disable-setuid-sandbox'],
-		})
+		const browser = await launchBrowser()
 
 		try {
 			const page = await browser.newPage()

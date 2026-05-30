@@ -11,6 +11,7 @@ import type {
   ICashBank,
   IReconciliationRule,
 } from './model';
+import { accountingPosting } from '../../lib/accounting-posting';
 
 const TOLERANCE = 0.01;
 
@@ -234,6 +235,19 @@ export class CashBankService {
         paymentMethod: method,
         description: `Transfer from ${fromName} (${fromNo}): ${desc}`,
       } as Partial<ICashBank>,
+      userId,
+    );
+
+    await accountingPosting.postBankTransfer(
+      {
+        organizationId: input.organizationId,
+        transferDate: when,
+        fromAccountNumber: fromNo,
+        toAccountNumber: toNo,
+        amount: input.amount,
+        transferId,
+        description: desc,
+      },
       userId,
     );
 

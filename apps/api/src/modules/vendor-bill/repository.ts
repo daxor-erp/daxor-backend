@@ -41,4 +41,8 @@ export class VendorBillRepository extends MongoBaseRepository<IVendorBillDocumen
       .populate('vendorId', 'id name email')
       .sort({ dueDate: 1 })
   }
+
+  async findByPurchaseOrderId(purchaseOrderId: string) {
+    return this.model.find({ purchaseOrderId, deletedAt: null })
+  }
 }

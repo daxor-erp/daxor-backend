@@ -1,6 +1,8 @@
 import { GraphQLValidationError } from '@repo/errors';
 import { SalesReturnRepository } from './repository';
 import { ISalesReturn } from './model';
+import { accountingPosting } from '../../lib/accounting-posting';
+import { CustomerInvoiceRepository } from '../customer-invoice/repository';
 
 export class SalesReturnService {
   private repository: SalesReturnRepository;
@@ -49,13 +51,25 @@ export class SalesReturnService {
     return this.repository.update(id, { status: 'SUBMITTED' });
   }
 
-  async approveApproval(id: string, _decidedByUserId?: string) {
+  async approveApproval(id: string, decidedByUserId?: string) {
     const row = await this.repository.findById(id);
     if (!row || row.isDeleted) throw new GraphQLValidationError('Sales return not found');
     if (String(row.status) !== 'SUBMITTED') {
       throw new GraphQLValidationError('Only submitted sales returns can be approved');
     }
-    return this.repository.update(id, { status: 'APPROVED' });
+    let totalAmount = Number(row.totalAmount) || 0;
+    if (totalAmount <= 0 && row.customerInvoiceId) {
+      const invRepo = new CustomerInvoiceRepository();
+      const inv = await invRepo.findById(String(row.customerInvoiceId));
+      if (inv) totalAmount = Number((inv as any).totalAmount) || 0;
+      if (totalAmount > 0) {
+        await this.repository.update(id, { totalAmount } as Partial<ISalesReturn>);
+      }
+    }
+    const updated = await this.repository.update(id, { status: 'APPROVED' });
+    const fresh = await this.repository.findById(id);
+    await accountingPosting.postSalesReturn(fresh, decidedByUserId ?? 'system');
+    return updated;
   }
 
   async declineApproval(id: string, _decidedByUserId?: string) {

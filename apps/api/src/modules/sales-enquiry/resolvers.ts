@@ -84,7 +84,10 @@ export const resolvers = {
 	SalesEnquiry: {
 		id: (p: { _id?: unknown; id?: string }) => String(p?._id ?? p?.id ?? ''),
 		organizationId: (p: { organizationId?: unknown }) => String(p.organizationId ?? ''),
-		clientId: (p: { clientId?: unknown }) => String(p.clientId ?? ''),
+		customerId: (p: { customerId?: unknown; clientId?: unknown }) =>
+			String(p.customerId ?? p.clientId ?? ''),
+		clientId: (p: { customerId?: unknown; clientId?: unknown }) =>
+			String(p.customerId ?? p.clientId ?? ''),
 		assignedTo: (p: { assignedTo?: unknown }) =>
 			p.assignedTo != null ? String(p.assignedTo) : null,
 		createdBy: (p: { createdBy?: unknown }) => (p.createdBy != null ? String(p.createdBy) : null),

@@ -4,6 +4,7 @@ import type { GraphQLContext } from '~/types/graphql.context'
 import { GraphQLAuthError } from '@repo/errors'
 import { assertAuthenticated } from '../auth/authz'
 import { ApprovalRequestService, MODULE_KEY_QUOTATIONS } from '../approval-request/service'
+import { QUOTATION_PARTY_POPULATE, mapPartyRef } from './party'
 
 const service = new QuotationService()
 const approvalService = new ApprovalRequestService()
@@ -59,6 +60,9 @@ export const resolvers = {
 
     quotationsByClient: async (_: unknown, { clientId }: { clientId: string }) =>
       service.getQuotationsByClient(clientId),
+
+    quotationsByCustomer: async (_: unknown, { customerId }: { customerId: string }) =>
+      service.getQuotationsByClient(customerId),
 
     quotationsByStatus: async (_: unknown, { status, organizationId }: { status: string; organizationId: string }) =>
       service.getQuotationsByStatus(status, organizationId),
