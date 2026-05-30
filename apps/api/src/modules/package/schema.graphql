@@ -1,0 +1,32 @@
+type Package {
+	id: ID!
+	packageName: String!
+	externalName: String!
+	price: Float!
+	durationDays: Int!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreatePackageInput {
+	packageName: String!
+	externalName: String!
+	price: Float!
+	durationDays: Int!
+}
+
+input UpdatePackageInput {
+	packageName: String!
+	externalName: String!
+	price: Float!
+	durationDays: Int!
+}
+
+extend type Query {
+	packages: [Package!]!
+}
+
+extend type Mutation {
+	createPackage(input: CreatePackageInput!): Package!
+	updatePackage(id: ID!, input: UpdatePackageInput!): Package!
+}

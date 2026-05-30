@@ -1021,6 +1021,13 @@ export type CreateOrganizationWithOrgAdminInput = {
   organization: CreateOrganizationInput;
 };
 
+export type CreatePackageInput = {
+  durationDays: Scalars['Int']['input'];
+  externalName: Scalars['String']['input'];
+  packageName: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+};
+
 export type CreateProductInput = {
   barcode: InputMaybe<Scalars['String']['input']>;
   brand: InputMaybe<Scalars['String']['input']>;
@@ -2604,6 +2611,7 @@ export type Mutation = {
   createOpportunity: Opportunity;
   createOrganization: Organization;
   createOrganizationWithOrgAdmin: Organization;
+  createPackage: Package;
   createPayrollManagement: PayrollManagement;
   createPayrollUiRecord: PayrollUiRecord;
   createProduct: Product;
@@ -2689,6 +2697,7 @@ export type Mutation = {
   deleteOnboarding: Scalars['Boolean']['output'];
   deleteOpportunity: Scalars['Boolean']['output'];
   deleteOrganization: Organization;
+  deletePackageModuleAssignment: Scalars['Boolean']['output'];
   deletePayrollManagement: Scalars['Boolean']['output'];
   deletePayrollUiRecord: Scalars['Boolean']['output'];
   deletePayslip: Scalars['Boolean']['output'];
@@ -2756,6 +2765,7 @@ export type Mutation = {
   sendQuotation: SendQuotationResult;
   /** Replace module-level approver assignments for an organization (org admin: own org only). */
   setOrganizationModuleApprovers: Organization;
+  setPackageModuleAssignment: PackageModuleAssignment;
   setQCInspectionOutcome: QcInspection;
   setUserModulePermissions: User;
   startAssetMaintenance: AssetMaintenance;
@@ -2835,6 +2845,7 @@ export type Mutation = {
   updateOnboarding: Onboarding;
   updateOpportunity: Opportunity;
   updateOrganization: Organization;
+  updatePackage: Package;
   updatePayrollManagement: PayrollManagement;
   updatePayrollUiRecord: PayrollUiRecord;
   updateProduct: Product;
@@ -3272,6 +3283,11 @@ export type MutationCreateOrganizationWithOrgAdminArgs = {
 };
 
 
+export type MutationCreatePackageArgs = {
+  input: CreatePackageInput;
+};
+
+
 export type MutationCreatePayrollManagementArgs = {
   input: PayrollManagementInput;
 };
@@ -3692,6 +3708,12 @@ export type MutationDeleteOrganizationArgs = {
 };
 
 
+export type MutationDeletePackageModuleAssignmentArgs = {
+  organizationId: Scalars['ID']['input'];
+  packageId: Scalars['ID']['input'];
+};
+
+
 export type MutationDeletePayrollManagementArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3992,6 +4014,13 @@ export type MutationSendQuotationArgs = {
 export type MutationSetOrganizationModuleApproversArgs = {
   assignments: Array<OrganizationModuleApproverInput>;
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type MutationSetPackageModuleAssignmentArgs = {
+  enabledModules: Array<PackageEnabledModuleInput>;
+  organizationId: Scalars['ID']['input'];
+  packageId: Scalars['ID']['input'];
 };
 
 
@@ -4420,6 +4449,12 @@ export type MutationUpdateOrganizationArgs = {
 };
 
 
+export type MutationUpdatePackageArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdatePackageInput;
+};
+
+
 export type MutationUpdatePayrollManagementArgs = {
   id: Scalars['ID']['input'];
   input: PayrollManagementInput;
@@ -4738,6 +4773,7 @@ export type Organization = {
   id: Scalars['ID']['output'];
   moduleApprovers: Array<OrganizationModuleApprover>;
   name: Scalars['String']['output'];
+  packageId: Maybe<Scalars['ID']['output']>;
   parentOrganizationId: Maybe<Scalars['ID']['output']>;
   phone: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
@@ -4777,6 +4813,39 @@ export type PoLineItemInput = {
   lineTotal: Scalars['Float']['input'];
   quantity: Scalars['Float']['input'];
   unitPrice: Scalars['Float']['input'];
+};
+
+export type Package = {
+  __typename?: 'Package';
+  createdAt: Scalars['String']['output'];
+  durationDays: Scalars['Int']['output'];
+  externalName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  packageName: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type PackageEnabledModule = {
+  __typename?: 'PackageEnabledModule';
+  moduleKey: Scalars['String']['output'];
+  submoduleKey: Scalars['String']['output'];
+};
+
+export type PackageEnabledModuleInput = {
+  moduleKey: Scalars['String']['input'];
+  submoduleKey: Scalars['String']['input'];
+};
+
+export type PackageModuleAssignment = {
+  __typename?: 'PackageModuleAssignment';
+  createdAt: Scalars['String']['output'];
+  enabledModules: Array<PackageEnabledModule>;
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['ID']['output'];
+  organizationName: Scalars['String']['output'];
+  packageId: Scalars['ID']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type PayrollManagement = {
@@ -5188,6 +5257,10 @@ export type Query = {
   organizationDocuments: Array<Document>;
   organizations: Array<Organization>;
   outstandingVendorBills: Array<VendorBill>;
+  packageModuleAssignment: Maybe<PackageModuleAssignment>;
+  /** All tenant/sub-tenant assignments saved for a package. */
+  packageModuleAssignments: Array<PackageModuleAssignment>;
+  packages: Array<Package>;
   payrollmanagement: Maybe<PayrollManagement>;
   payrollmanagements: Array<PayrollManagement>;
   payrolluirecord: Maybe<PayrollUiRecord>;
@@ -6106,6 +6179,17 @@ export type QueryOrganizationsArgs = {
 
 export type QueryOutstandingVendorBillsArgs = {
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryPackageModuleAssignmentArgs = {
+  organizationId: Scalars['ID']['input'];
+  packageId: Scalars['ID']['input'];
+};
+
+
+export type QueryPackageModuleAssignmentsArgs = {
+  packageId: Scalars['ID']['input'];
 };
 
 
@@ -7602,6 +7686,13 @@ export type UpdateOrganizationInput = {
   status: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdatePackageInput = {
+  durationDays: Scalars['Int']['input'];
+  externalName: Scalars['String']['input'];
+  packageName: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+};
+
 export type UpdateProductInput = {
   barcode: InputMaybe<Scalars['String']['input']>;
   brand: InputMaybe<Scalars['String']['input']>;
@@ -7842,6 +7933,8 @@ export type User = {
   lastName: Scalars['String']['output'];
   modulePermissions: Maybe<Array<ModulePermission>>;
   organizationId: Maybe<Scalars['ID']['output']>;
+  /** Modules enabled for the user's organization via their assigned package. */
+  packageEnabledModules: Array<PackageEnabledModule>;
   roles: Maybe<Array<Scalars['String']['output']>>;
   seqNo: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
@@ -8210,6 +8303,7 @@ export type ResolversTypes = ResolversObject<{
   CreateOrgAdminUserInput: ResolverTypeWrapper<Partial<CreateOrgAdminUserInput>>;
   CreateOrganizationInput: ResolverTypeWrapper<Partial<CreateOrganizationInput>>;
   CreateOrganizationWithOrgAdminInput: ResolverTypeWrapper<Partial<CreateOrganizationWithOrgAdminInput>>;
+  CreatePackageInput: ResolverTypeWrapper<Partial<CreatePackageInput>>;
   CreateProductInput: ResolverTypeWrapper<Partial<CreateProductInput>>;
   CreateProjectInput: ResolverTypeWrapper<Partial<CreateProjectInput>>;
   CreatePurchaseOrderInput: ResolverTypeWrapper<Partial<CreatePurchaseOrderInput>>;
@@ -8348,6 +8442,10 @@ export type ResolversTypes = ResolversObject<{
   OrganizationModuleApproverInput: ResolverTypeWrapper<Partial<OrganizationModuleApproverInput>>;
   POLineItem: ResolverTypeWrapper<Partial<PoLineItem>>;
   POLineItemInput: ResolverTypeWrapper<Partial<PoLineItemInput>>;
+  Package: ResolverTypeWrapper<Partial<Package>>;
+  PackageEnabledModule: ResolverTypeWrapper<Partial<PackageEnabledModule>>;
+  PackageEnabledModuleInput: ResolverTypeWrapper<Partial<PackageEnabledModuleInput>>;
+  PackageModuleAssignment: ResolverTypeWrapper<Partial<PackageModuleAssignment>>;
   PayrollManagement: ResolverTypeWrapper<Partial<PayrollManagement>>;
   PayrollManagementInput: ResolverTypeWrapper<Partial<PayrollManagementInput>>;
   PayrollUiRecord: ResolverTypeWrapper<Partial<PayrollUiRecord>>;
@@ -8445,6 +8543,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateLeaveTypeInput: ResolverTypeWrapper<Partial<UpdateLeaveTypeInput>>;
   UpdateMaterialReceiptInput: ResolverTypeWrapper<Partial<UpdateMaterialReceiptInput>>;
   UpdateOrganizationInput: ResolverTypeWrapper<Partial<UpdateOrganizationInput>>;
+  UpdatePackageInput: ResolverTypeWrapper<Partial<UpdatePackageInput>>;
   UpdateProductInput: ResolverTypeWrapper<Partial<UpdateProductInput>>;
   UpdateProjectInput: ResolverTypeWrapper<Partial<UpdateProjectInput>>;
   UpdatePurchaseOrderInput: ResolverTypeWrapper<Partial<UpdatePurchaseOrderInput>>;
@@ -8560,6 +8659,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateOrgAdminUserInput: Partial<CreateOrgAdminUserInput>;
   CreateOrganizationInput: Partial<CreateOrganizationInput>;
   CreateOrganizationWithOrgAdminInput: Partial<CreateOrganizationWithOrgAdminInput>;
+  CreatePackageInput: Partial<CreatePackageInput>;
   CreateProductInput: Partial<CreateProductInput>;
   CreateProjectInput: Partial<CreateProjectInput>;
   CreatePurchaseOrderInput: Partial<CreatePurchaseOrderInput>;
@@ -8695,6 +8795,10 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationModuleApproverInput: Partial<OrganizationModuleApproverInput>;
   POLineItem: Partial<PoLineItem>;
   POLineItemInput: Partial<PoLineItemInput>;
+  Package: Partial<Package>;
+  PackageEnabledModule: Partial<PackageEnabledModule>;
+  PackageEnabledModuleInput: Partial<PackageEnabledModuleInput>;
+  PackageModuleAssignment: Partial<PackageModuleAssignment>;
   PayrollManagement: Partial<PayrollManagement>;
   PayrollManagementInput: Partial<PayrollManagementInput>;
   PayrollUiRecord: Partial<PayrollUiRecord>;
@@ -8791,6 +8895,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateLeaveTypeInput: Partial<UpdateLeaveTypeInput>;
   UpdateMaterialReceiptInput: Partial<UpdateMaterialReceiptInput>;
   UpdateOrganizationInput: Partial<UpdateOrganizationInput>;
+  UpdatePackageInput: Partial<UpdatePackageInput>;
   UpdateProductInput: Partial<UpdateProductInput>;
   UpdateProjectInput: Partial<UpdateProjectInput>;
   UpdatePurchaseOrderInput: Partial<UpdatePurchaseOrderInput>;
@@ -10237,6 +10342,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createOpportunity: Resolver<ResolversTypes['Opportunity'], ParentType, ContextType, RequireFields<MutationCreateOpportunityArgs, 'input'>>;
   createOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationArgs, 'input'>>;
   createOrganizationWithOrgAdmin: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationCreateOrganizationWithOrgAdminArgs, 'input'>>;
+  createPackage: Resolver<ResolversTypes['Package'], ParentType, ContextType, RequireFields<MutationCreatePackageArgs, 'input'>>;
   createPayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationCreatePayrollManagementArgs, 'input'>>;
   createPayrollUiRecord: Resolver<ResolversTypes['PayrollUiRecord'], ParentType, ContextType, RequireFields<MutationCreatePayrollUiRecordArgs, 'input'>>;
   createProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
@@ -10321,6 +10427,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   deleteOnboarding: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteOnboardingArgs, 'id'>>;
   deleteOpportunity: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteOpportunityArgs, 'id'>>;
   deleteOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  deletePackageModuleAssignment: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePackageModuleAssignmentArgs, 'organizationId' | 'packageId'>>;
   deletePayrollManagement: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollManagementArgs, 'id'>>;
   deletePayrollUiRecord: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayrollUiRecordArgs, 'id'>>;
   deletePayslip: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeletePayslipArgs, 'id'>>;
@@ -10381,6 +10488,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   sendNotification: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSendNotificationArgs, 'input'>>;
   sendQuotation: Resolver<ResolversTypes['SendQuotationResult'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
   setOrganizationModuleApprovers: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationSetOrganizationModuleApproversArgs, 'assignments' | 'organizationId'>>;
+  setPackageModuleAssignment: Resolver<ResolversTypes['PackageModuleAssignment'], ParentType, ContextType, RequireFields<MutationSetPackageModuleAssignmentArgs, 'enabledModules' | 'organizationId' | 'packageId'>>;
   setQCInspectionOutcome: Resolver<ResolversTypes['QCInspection'], ParentType, ContextType, RequireFields<MutationSetQcInspectionOutcomeArgs, 'id' | 'outcome'>>;
   setUserModulePermissions: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserModulePermissionsArgs, 'permissions' | 'userId'>>;
   startAssetMaintenance: Resolver<ResolversTypes['AssetMaintenance'], ParentType, ContextType, RequireFields<MutationStartAssetMaintenanceArgs, 'id'>>;
@@ -10454,6 +10562,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   updateOnboarding: Resolver<ResolversTypes['Onboarding'], ParentType, ContextType, RequireFields<MutationUpdateOnboardingArgs, 'id' | 'input'>>;
   updateOpportunity: Resolver<ResolversTypes['Opportunity'], ParentType, ContextType, RequireFields<MutationUpdateOpportunityArgs, 'id' | 'input'>>;
   updateOrganization: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationUpdateOrganizationArgs, 'id' | 'input'>>;
+  updatePackage: Resolver<ResolversTypes['Package'], ParentType, ContextType, RequireFields<MutationUpdatePackageArgs, 'id' | 'input'>>;
   updatePayrollManagement: Resolver<ResolversTypes['PayrollManagement'], ParentType, ContextType, RequireFields<MutationUpdatePayrollManagementArgs, 'id' | 'input'>>;
   updatePayrollUiRecord: Resolver<ResolversTypes['PayrollUiRecord'], ParentType, ContextType, RequireFields<MutationUpdatePayrollUiRecordArgs, 'id' | 'input'>>;
   updateProduct: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'id' | 'input'>>;
@@ -10560,6 +10669,7 @@ export type OrganizationResolvers<ContextType = GraphQLContext, ParentType exten
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   moduleApprovers: Resolver<Array<ResolversTypes['OrganizationModuleApprover']>, ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  packageId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   parentOrganizationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   phone: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -10580,6 +10690,34 @@ export type PoLineItemResolvers<ContextType = GraphQLContext, ParentType extends
   lineTotal: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   quantity: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   unitPrice: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PackageResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['Package'] = ResolversParentTypes['Package']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  durationDays: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  externalName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  packageName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PackageEnabledModuleResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PackageEnabledModule'] = ResolversParentTypes['PackageEnabledModule']> = ResolversObject<{
+  moduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  submoduleKey: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PackageModuleAssignmentResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['PackageModuleAssignment'] = ResolversParentTypes['PackageModuleAssignment']> = ResolversObject<{
+  createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enabledModules: Resolver<Array<ResolversTypes['PackageEnabledModule']>, ParentType, ContextType>;
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizationName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  packageId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -10932,6 +11070,9 @@ export type QueryResolvers<ContextType = GraphQLContext, ParentType extends Reso
   organizationDocuments: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryOrganizationDocumentsArgs, 'organizationId'>>;
   organizations: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType, QueryOrganizationsArgs>;
   outstandingVendorBills: Resolver<Array<ResolversTypes['VendorBill']>, ParentType, ContextType, RequireFields<QueryOutstandingVendorBillsArgs, 'organizationId'>>;
+  packageModuleAssignment: Resolver<Maybe<ResolversTypes['PackageModuleAssignment']>, ParentType, ContextType, RequireFields<QueryPackageModuleAssignmentArgs, 'organizationId' | 'packageId'>>;
+  packageModuleAssignments: Resolver<Array<ResolversTypes['PackageModuleAssignment']>, ParentType, ContextType, RequireFields<QueryPackageModuleAssignmentsArgs, 'packageId'>>;
+  packages: Resolver<Array<ResolversTypes['Package']>, ParentType, ContextType>;
   payrollmanagement: Resolver<Maybe<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementArgs, 'id'>>;
   payrollmanagements: Resolver<Array<ResolversTypes['PayrollManagement']>, ParentType, ContextType, RequireFields<QueryPayrollmanagementsArgs, 'organizationId'>>;
   payrolluirecord: Resolver<Maybe<ResolversTypes['PayrollUiRecord']>, ParentType, ContextType, RequireFields<QueryPayrolluirecordArgs, 'id'>>;
@@ -11477,6 +11618,7 @@ export type UserResolvers<ContextType = GraphQLContext, ParentType extends Resol
   lastName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   modulePermissions: Resolver<Maybe<Array<ResolversTypes['ModulePermission']>>, ParentType, ContextType>;
   organizationId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  packageEnabledModules: Resolver<Array<ResolversTypes['PackageEnabledModule']>, ParentType, ContextType>;
   roles: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -11751,6 +11893,9 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Organization: OrganizationResolvers<ContextType>;
   OrganizationModuleApprover: OrganizationModuleApproverResolvers<ContextType>;
   POLineItem: PoLineItemResolvers<ContextType>;
+  Package: PackageResolvers<ContextType>;
+  PackageEnabledModule: PackageEnabledModuleResolvers<ContextType>;
+  PackageModuleAssignment: PackageModuleAssignmentResolvers<ContextType>;
   PayrollManagement: PayrollManagementResolvers<ContextType>;
   PayrollUiRecord: PayrollUiRecordResolvers<ContextType>;
   Payslip: PayslipResolvers<ContextType>;

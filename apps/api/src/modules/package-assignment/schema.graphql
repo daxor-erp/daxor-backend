@@ -1,0 +1,39 @@
+type PackageEnabledModule {
+	moduleKey: String!
+	submoduleKey: String!
+}
+
+type PackageModuleAssignment {
+	id: ID!
+	packageId: ID!
+	organizationId: ID!
+	organizationName: String!
+	enabledModules: [PackageEnabledModule!]!
+	updatedAt: String!
+	createdAt: String!
+}
+
+input PackageEnabledModuleInput {
+	moduleKey: String!
+	submoduleKey: String!
+}
+
+extend type User {
+	"""Modules enabled for the user's organization via their assigned package."""
+	packageEnabledModules: [PackageEnabledModule!]!
+}
+
+extend type Query {
+	packageModuleAssignment(packageId: ID!, organizationId: ID!): PackageModuleAssignment
+	"""All tenant/sub-tenant assignments saved for a package."""
+	packageModuleAssignments(packageId: ID!): [PackageModuleAssignment!]!
+}
+
+extend type Mutation {
+	setPackageModuleAssignment(
+		packageId: ID!
+		organizationId: ID!
+		enabledModules: [PackageEnabledModuleInput!]!
+	): PackageModuleAssignment!
+	deletePackageModuleAssignment(packageId: ID!, organizationId: ID!): Boolean!
+}
