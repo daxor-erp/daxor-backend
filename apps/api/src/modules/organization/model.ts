@@ -13,6 +13,8 @@ const organizationSchema = new Schema({
 	parentOrganizationId: { type: Schema.Types.ObjectId, ref: 'Organization', default: null, index: true },
 	/** When true, this org's ORG_ADMIN users may provision sub-tenants beneath them. */
 	allowSubTenants: { type: Boolean, default: false },
+	/** Subscription package assigned to this tenant / sub-tenant. */
+	packageId: { type: Schema.Types.ObjectId, ref: 'Package', default: null, index: true },
 	status: { type: String, enum: ['active', 'inactive', 'suspended', 'deleted'], default: 'active' },
 	/** ERP module → user who may approve workflow requests for that module (within this org). */
 	moduleApprovers: {

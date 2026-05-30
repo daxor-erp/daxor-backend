@@ -26,6 +26,7 @@ type Organization {
 	status: String!
 	parentOrganizationId: ID
 	allowSubTenants: Boolean!
+	packageId: ID
 	moduleApprovers: [OrganizationModuleApprover!]!
 	createdAt: String!
 }

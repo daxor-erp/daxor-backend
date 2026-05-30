@@ -191,6 +191,8 @@ export const resolvers = {
 		parentOrganizationId: (p: { parentOrganizationId?: unknown }) =>
 			p?.parentOrganizationId != null ? String(p.parentOrganizationId) : null,
 		allowSubTenants: (p: { allowSubTenants?: boolean }) => Boolean(p?.allowSubTenants),
+		packageId: (p: { packageId?: unknown }) =>
+			p?.packageId != null ? String(p.packageId) : null,
 		moduleApprovers: (
 			parent: { moduleApprovers?: { moduleKey?: string; approverUserId?: unknown; approverUserIds?: unknown }[] },
 		) => {
