@@ -118,7 +118,7 @@ export class QuotationService {
     })
     if (!updated) throw new GraphQLValidationError('Quotation not found')
 
-    const out = await Quotation.populate(updated, { path: 'clientId', select: 'id name email' })
+    const out = await Quotation.populate(updated, { path: 'clientId', select: 'name email' })
     return { quotation: out, emailSent }
   }
 }
