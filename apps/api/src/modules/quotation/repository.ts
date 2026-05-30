@@ -29,33 +29,18 @@ export class QuotationRepository extends MongoBaseRepository<IQuotationDocument>
   }
 
   async findByOrganization(organizationId: string) {
-    return this.model
-      .find({ organizationId, deletedAt: null })
-      .populate([...QUOTATION_PARTY_POPULATE, { path: 'sentBy' }])
+    return this.model.find({ organizationId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
   }
 
   async findByClient(clientId: string) {
-    return this.model
-      .find({
-        deletedAt: null,
-        $or: [{ customerId: clientId }, { clientId }],
-      })
-      .populate([...QUOTATION_PARTY_POPULATE, { path: 'sentBy' }])
-  }
-
-  async findByCustomer(customerId: string) {
-    return this.findByClient(customerId)
+    return this.model.find({ clientId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
   }
 
   async findByStatus(status: string, organizationId: string) {
-    return this.model
-      .find({ status, organizationId, deletedAt: null })
-      .populate([...QUOTATION_PARTY_POPULATE, { path: 'sentBy' }])
+    return this.model.find({ status, organizationId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
   }
 
   async findByQuotationNumber(quotationNumber: string, organizationId: string) {
-    return this.model
-      .findOne({ quotationNumber, organizationId, deletedAt: null })
-      .populate(QUOTATION_PARTY_POPULATE)
+    return this.model.findOne({ quotationNumber, organizationId, deletedAt: null }).populate('clientId', 'name email')
   }
 }
