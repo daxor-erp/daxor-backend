@@ -1,5 +1,6 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { VendorBillRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export class VendorBillService {
   private repository: VendorBillRepository
@@ -65,7 +66,10 @@ export class VendorBillService {
     if (bill.status !== 'draft') {
       throw new GraphQLValidationError('Only draft bills can be approved directly (use approval queue when submitted)')
     }
-    return this.repository.update(id, { status: 'approved', updatedBy: userId })
+    const updated = await this.repository.update(id, { status: 'approved', updatedBy: userId })
+    const fresh = await this.repository.findById(id)
+    await accountingPosting.postVendorBill(fresh, userId)
+    return updated
   }
 
   async submitForApproval(id: string, userId: string) {
@@ -84,7 +88,10 @@ export class VendorBillService {
     if (String(bill.status) !== 'submitted') {
       throw new GraphQLValidationError('Only bills pending approval can be approved')
     }
-    return this.repository.update(id, { status: 'approved', updatedBy: userId })
+    const updated = await this.repository.update(id, { status: 'approved', updatedBy: userId })
+    const fresh = await this.repository.findById(id)
+    await accountingPosting.postVendorBill(fresh, userId)
+    return updated
   }
 
   async declineFromApprovalQueue(id: string, userId: string) {

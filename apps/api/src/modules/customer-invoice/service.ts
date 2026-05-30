@@ -1,4 +1,5 @@
 import { CustomerInvoiceRepository } from './repository'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export class CustomerInvoiceService {
 	private repository: CustomerInvoiceRepository
@@ -32,7 +33,20 @@ export class CustomerInvoiceService {
 	}
 
 	async update(id: string, data: any): Promise<any> {
-		return this.repository.update(id, data)
+		const before = await this.repository.findById(id)
+		const updated = await this.repository.update(id, data)
+		const userId = data.updatedBy ?? data.createdBy ?? 'system'
+		const nextStatus = data.status ?? (updated as any)?.status
+		const prevStatus = before ? String((before as any).status) : ''
+		if (
+			nextStatus &&
+			['approved', 'sent'].includes(String(nextStatus)) &&
+			!['approved', 'sent'].includes(prevStatus)
+		) {
+			const fresh = await this.repository.findById(id)
+			await accountingPosting.postCustomerInvoiceRevenue(fresh, String(userId))
+		}
+		return updated
 	}
 
 	async findWithPagination(filter: any, options: any): Promise<any> {
@@ -144,7 +158,22 @@ export class CustomerInvoiceService {
 		if (String((bill as any).status) !== 'submitted') {
 			throw new Error('Only invoices pending approval can be approved')
 		}
-		return this.repository.update(id, { status: 'approved', updatedBy: userId, updatedAt: new Date() })
+		const updated = await this.repository.update(id, {
+			status: 'approved',
+			updatedBy: userId,
+			updatedAt: new Date(),
+		})
+		const fresh = await this.repository.findById(id)
+		await accountingPosting.postCustomerInvoiceRevenue(fresh, userId)
+		return updated
+	}
+
+	/** Backfill ledger for an already-approved invoice (idempotent). */
+	async syncAccounting(id: string, userId: string): Promise<any> {
+		const inv = await this.repository.findById(id)
+		if (!inv || (inv as any).deletedAt) throw new Error('Invoice not found')
+		await accountingPosting.postCustomerInvoiceRevenue(inv, userId)
+		return inv
 	}
 
 	async declineApproval(id: string, userId: string): Promise<any> {

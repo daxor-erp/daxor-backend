@@ -1,5 +1,6 @@
 import { CustomerPaymentRepository } from './repository'
 import { CustomerInvoiceService } from '../customer-invoice/service'
+import { accountingPosting } from '../../lib/accounting-posting'
 
 export class CustomerPaymentService {
 	private repository: CustomerPaymentRepository
@@ -55,6 +56,8 @@ export class CustomerPaymentService {
 		for (const alloc of enriched) {
 			await this.invoiceService.applyPayment(alloc.invoiceId, alloc.amount)
 		}
+
+		await accountingPosting.postCustomerPayment(payment, userId)
 
 		return payment
 	}

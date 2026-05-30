@@ -4,16 +4,26 @@ import type { GraphQLContext } from '~/types/graphql.context'
 import { GraphQLAuthError } from '@repo/errors'
 import { assertAuthenticated } from '../auth/authz'
 import { ApprovalRequestService, MODULE_KEY_QUOTATIONS } from '../approval-request/service'
+import { QUOTATION_PARTY_POPULATE, mapPartyRef } from './party'
 
 const service = new QuotationService()
 const approvalService = new ApprovalRequestService()
+
+async function populateParty(doc: any) {
+  if (!doc) return null
+  return Quotation.populate(doc, [...QUOTATION_PARTY_POPULATE, { path: 'sentBy' }])
+}
+
+async function populatePartyList(docs: any[]) {
+  if (!docs?.length) return docs
+  return Quotation.populate(docs, QUOTATION_PARTY_POPULATE)
+}
 
 export const resolvers = {
   Query: {
     quotation: async (_: unknown, { id }: { id: string }) => {
       const doc = await service.getQuotationById(id)
-      if (!doc) return null
-      return Quotation.populate(doc, { path: 'clientId', select: 'id name email' })
+      return populateParty(doc)
     },
 
     quotations: async (_: unknown, args: any) => {
@@ -22,7 +32,7 @@ export const resolvers = {
       if (organizationId) filter.organizationId = organizationId
       if (status) filter.status = status
       const data = await service.getAllQuotations(filter, page, limit)
-      return Quotation.populate(data, { path: 'clientId', select: 'id name email' })
+      return populatePartyList(data)
     },
 
     quotationsByOrganization: async (_: unknown, { organizationId }: { organizationId: string }) =>
@@ -30,6 +40,9 @@ export const resolvers = {
 
     quotationsByClient: async (_: unknown, { clientId }: { clientId: string }) =>
       service.getQuotationsByClient(clientId),
+
+    quotationsByCustomer: async (_: unknown, { customerId }: { customerId: string }) =>
+      service.getQuotationsByClient(customerId),
 
     quotationsByStatus: async (_: unknown, { status, organizationId }: { status: string; organizationId: string }) =>
       service.getQuotationsByStatus(status, organizationId),
@@ -55,23 +68,15 @@ export const resolvers = {
       await service.submitForApproval(id, ctx.user!.id)
       await approvalService.enqueueQuotationSubmitted(id, ctx.user!.id)
       const updated = await service.getQuotationById(id)
-      return updated ? Quotation.populate(updated, { path: 'clientId', select: 'id name email' }) : updated
+      return populateParty(updated)
     },
     sendQuotation: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
       service.sendQuotation(id, ctx.user?.id ?? '', ctx.user?.organizationId),
   },
 
   Quotation: {
-    clientId: (parent: any) => {
-      if (parent.clientId && typeof parent.clientId === 'object') {
-        return {
-          id: parent.clientId._id?.toString() ?? parent.clientId.id,
-          name: parent.clientId.name,
-          email: parent.clientId.email,
-        }
-      }
-      return { id: parent.clientId?.toString(), name: '', email: '' }
-    },
+    customerId: (parent: any) => mapPartyRef(parent),
+    clientId: (parent: any) => mapPartyRef(parent),
     organizationId: (parent: any) => String(parent.organizationId?._id ?? parent.organizationId ?? ''),
     sentAt: (parent: any) => (parent.sentAt ? new Date(parent.sentAt).toISOString() : null),
     sentBy: (parent: any) => (parent.sentBy != null ? String(parent.sentBy) : null),

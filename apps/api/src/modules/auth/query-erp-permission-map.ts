@@ -57,7 +57,7 @@ export const ERP_GRAPHQL_QUERY_PERMISSIONS: Record<string, QueryPermissionRule> 
 		'inventoryreturns',
 	]),
 	...q('inventory', 'inventory_intercompany_transfer', ['intercompanyTransfer', 'intercompanyTransfers']),
-	...q('inventory', 'goods_receipt', ['goodsReceipt', 'goodsReceipts']),
+	...q('inventory', 'goods_receipt', ['goodsreceipt', 'goodsreceipts']),
 	...q('inventory', 'stock_transfers', ['stockTransfer', 'stockTransfers']),
 	...q('inventory', 'stock_adjustments', ['stockAdjustment', 'stockAdjustments']),
 	...q('inventory', 'inventory_items', ['item', 'items']),

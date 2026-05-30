@@ -2,6 +2,8 @@ type SalesEnquiry {
 	id: ID!
 	seqNo: String
 	enquiryNumber: String!
+	customerId: ID!
+	"""Deprecated alias for customerId."""
 	clientId: ID!
 	enquirySource: String
 	subject: String
@@ -28,6 +30,7 @@ type SalesEnquiry {
 }
 
 input CreateSalesEnquiryInput {
+	customerId: ID
 	clientId: ID
 	enquirySource: String
 	subject: String
@@ -44,6 +47,7 @@ input CreateSalesEnquiryInput {
 }
 
 input UpdateSalesEnquiryInput {
+	customerId: ID
 	clientId: ID
 	enquirySource: String
 	subject: String

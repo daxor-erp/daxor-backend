@@ -23,10 +23,13 @@ export class SalesEnquiryService {
 
 	async createSalesEnquiry(data: any, userId: string, organizationId: string): Promise<any> {
 		const enquiryNumber = await this.generateEnquiryNumber(organizationId)
+		const partyId = data.customerId || data.clientId
+		if (!partyId) throw new GraphQLValidationError('customerId is required')
 		return this.repository.create({
 			...data,
 			enquiryNumber,
-			clientId: data.clientId || userId,
+			customerId: partyId,
+			clientId: partyId,
 			organizationId,
 			createdBy: userId,
 			approvalStatus: RECORD_APPROVAL_DRAFT,

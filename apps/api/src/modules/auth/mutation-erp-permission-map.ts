@@ -77,6 +77,7 @@ export const ERP_GRAPHQL_MUTATION_PERMISSIONS: Record<string, MutationPermission
 	]),
 	...sub('sales', 'sales_create_invoices', [
 		['createCustomerInvoice', 'create'],
+		['syncCustomerInvoiceAccounting', 'update'],
 		['updateCustomerInvoice', 'update'],
 		['deleteCustomerInvoice', 'delete'],
 		['submitCustomerInvoiceForApproval', 'update'],

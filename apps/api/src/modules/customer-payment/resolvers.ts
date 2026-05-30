@@ -1,8 +1,16 @@
+import { Types } from 'mongoose'
+import { GraphQLValidationError } from '@repo/errors'
 import { CustomerPaymentService } from './service'
 import { loadPartyForCustomerPayment } from './party'
 import type { GraphQLContext } from '~/types/graphql.context'
 
 const service = new CustomerPaymentService()
+
+function partyObjectId(id: unknown): Types.ObjectId | null {
+	const s = String(id ?? '').trim()
+	if (!s || !Types.ObjectId.isValid(s)) return null
+	return new Types.ObjectId(s)
+}
 
 export const resolvers = {
 	Query: {
@@ -11,7 +19,8 @@ export const resolvers = {
 		customerPayments: async (_: unknown, args: any) => {
 			const { organizationId, customerId, page = 1, limit = 100 } = args
 			const filter: any = {}
-			if (customerId) filter.customerId = customerId
+			const partyOid = partyObjectId(customerId)
+			if (partyOid) filter.customerId = partyOid
 			return service.getPayments(organizationId, filter, page, limit)
 		},
 
@@ -20,8 +29,12 @@ export const resolvers = {
 	},
 
 	Mutation: {
-		createCustomerPayment: async (_: unknown, { input }: any, ctx: GraphQLContext) =>
-			service.createPayment(input, ctx.user?.id ?? ''),
+		createCustomerPayment: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
+			if (!partyObjectId(input.customerId)) {
+				throw new GraphQLValidationError('customerId must be a valid bill-to record id')
+			}
+			return service.createPayment(input, ctx.user?.id ?? '')
+		},
 
 		updateCustomerPayment: async (_: unknown, { id, input }: any, ctx: GraphQLContext) =>
 			service.updatePayment(id, input, ctx.user?.id ?? ''),

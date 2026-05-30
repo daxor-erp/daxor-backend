@@ -42,4 +42,6 @@ extend type Mutation {
 	updateCustomerInvoice(id: ID!, input: UpdateCustomerInvoiceInput!): CustomerInvoice!
 	deleteCustomerInvoice(id: ID!): CustomerInvoice!
 	submitCustomerInvoiceForApproval(id: ID!): CustomerInvoice!
+	"""Post revenue/AR journal and GL for an approved invoice (safe to retry)."""
+	syncCustomerInvoiceAccounting(id: ID!): CustomerInvoice!
 }

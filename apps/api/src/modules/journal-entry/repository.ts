@@ -15,4 +15,8 @@ export class JournalEntryRepository extends MongoBaseRepository<IJournalEntry> {
   async findByEntryNumber(entryNumber: string, organizationId: string) {
     return this.findOne({ entryNumber, organizationId, isDeleted: false } as any);
   }
+
+  async findByReferenceNumber(referenceNumber: string, organizationId: string) {
+    return this.findOne({ referenceNumber, organizationId, isDeleted: false } as any);
+  }
 }
