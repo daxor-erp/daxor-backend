@@ -20,4 +20,10 @@ export class PurchaseOrderRepository extends MongoBaseRepository<any> {
     const total = await this.model.countDocuments(query).exec()
     return { data, total, page, pages: Math.ceil(total / limit) }
   }
+
+  async findPendingApprovalByOrganization(organizationId: string): Promise<any[]> {
+    return this.model
+      .find({ organizationId, deletedAt: null, status: 'submitted' })
+      .exec()
+  }
 }

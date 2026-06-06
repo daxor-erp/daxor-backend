@@ -15,11 +15,45 @@ export async function createPendingApprovalRequest(
 ): Promise<any> {
 	const entityIdStr = String(opts.entityId)
 
-	const existing = await deps.repository.findPendingForEntity(opts.entityType, entityIdStr)
-	if (existing) return existing
-
 	const org = await deps.organizationService.findById(String(opts.organizationId))
 	if (!org || org.deletedAt) throw new GraphQLValidationError('Organization not found')
+
+	const existing = await deps.repository.findPendingForEntity(opts.entityType, entityIdStr)
+	if (existing) {
+		const assigneeId = approverIdForModule(org, opts.moduleKey)
+		if (assigneeId && String(existing.assigneeApproverUserId ?? '') !== String(assigneeId)) {
+			const rowId = String(existing._id ?? existing.id ?? '')
+			if (rowId) {
+				await deps.repository.update(rowId, {
+					assigneeApproverUserId: assigneeId,
+					updatedAt: new Date(),
+				})
+				const updated = await deps.repository.findById(rowId)
+				if (updated && deps.notificationService) {
+					const requesterDisplayName = await resolveRequesterName(deps, opts.requesterUserId)
+					try {
+						await deps.notificationService.notify({
+							organizationId: String(opts.organizationId),
+							recipientUserId: String(assigneeId),
+							actorUserId: String(opts.requesterUserId),
+							kind: 'APPROVAL_REQUEST',
+							severity: 'WARNING',
+							title: `Approval needed: ${opts.title}`,
+							message: `${requesterDisplayName} submitted a ${humanizeEntity(opts.entityType)} for your approval.`,
+							link: '/notifications',
+							referenceModule: 'approval-request',
+							referenceId: rowId,
+							moduleKey: opts.moduleKey,
+						})
+					} catch {
+						// best-effort
+					}
+				}
+				return updated ?? existing
+			}
+		}
+		return existing
+	}
 
 	const assigneeId = approverIdForModule(org, opts.moduleKey)
 	if (!assigneeId) {

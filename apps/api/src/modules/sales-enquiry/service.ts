@@ -106,6 +106,10 @@ export class SalesEnquiryService {
 		return this.repository.findByAssignedTo(userId)
 	}
 
+	async findPendingApprovalByOrganization(organizationId: string): Promise<any[]> {
+		return this.repository.findPendingApprovalByOrganization(organizationId)
+	}
+
 	async findWithPagination(filter: any, options: any): Promise<any> {
 		return this.repository.findWithPagination(filter, options)
 	}

@@ -2676,6 +2676,7 @@ export type Mutation = {
   createProductionPlanning: ProductionPlanning;
   createProject: Project;
   createPurchaseOrder: PurchaseOrder;
+  createPurchaseRequisition: PurchaseOrder;
   createQCInspection: QcInspection;
   createQuotation: Quotation;
   createRawMaterialRequisition: RawMaterialRequisition;
@@ -3392,6 +3393,11 @@ export type MutationCreateProjectArgs = {
 
 
 export type MutationCreatePurchaseOrderArgs = {
+  input: CreatePurchaseOrderInput;
+};
+
+
+export type MutationCreatePurchaseRequisitionArgs = {
   input: CreatePurchaseOrderInput;
 };
 
@@ -10592,6 +10598,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   createProductionPlanning: Resolver<ResolversTypes['ProductionPlanning'], ParentType, ContextType, RequireFields<MutationCreateProductionPlanningArgs, 'input'>>;
   createProject: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createPurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationCreatePurchaseOrderArgs, 'input'>>;
+  createPurchaseRequisition: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationCreatePurchaseRequisitionArgs, 'input'>>;
   createQCInspection: Resolver<ResolversTypes['QCInspection'], ParentType, ContextType, RequireFields<MutationCreateQcInspectionArgs, 'input'>>;
   createQuotation: Resolver<ResolversTypes['Quotation'], ParentType, ContextType, RequireFields<MutationCreateQuotationArgs, 'input'>>;
   createRawMaterialRequisition: Resolver<ResolversTypes['RawMaterialRequisition'], ParentType, ContextType, RequireFields<MutationCreateRawMaterialRequisitionArgs, 'input'>>;

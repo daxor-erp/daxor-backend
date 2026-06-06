@@ -21,6 +21,24 @@ export const resolvers = {
   Mutation: {
     createPurchaseOrder: (_: unknown, { input }: any, ctx: GraphQLContext) =>
       service.create(input, ctx.user?.id ?? ''),
+
+    createPurchaseRequisition: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const orgId = ctx.user?.organizationId
+      if (orgId == null || String(orgId) === '') {
+        throw new GraphQLAuthError('Organization context required')
+      }
+      if (String(input.organizationId) !== String(orgId)) {
+        throw new GraphQLAuthError('Forbidden')
+      }
+      await approvalService.ensureApproverConfiguredForPurchases(String(orgId))
+      const created = await service.create(input, ctx.user!.id)
+      const poId = String(created._id ?? created.id)
+      await service.submit(poId, ctx.user!.id)
+      await approvalService.enqueuePurchaseOrderSubmitted(poId, ctx.user!.id)
+      return service.findById(poId)
+    },
+
     updatePurchaseOrder: (_: unknown, { id, input }: any, ctx: GraphQLContext) =>
       service.update(id, input, ctx.user?.id),
     deletePurchaseOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {

@@ -18,7 +18,11 @@ export const resolvers = {
 		myPendingApprovalRequests: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
 			assertAuthenticated(ctx)
 			const uid = ctx.user!.id
-			const rows = await approvalService.listPendingForAssignee(uid)
+			const orgId = ctx.user?.organizationId
+			if (orgId) {
+				await approvalService.reconcileApprovalsForAssignee(String(orgId), uid)
+			}
+			const rows = await approvalService.listPendingForAssignee(uid, orgId ? String(orgId) : undefined)
 			return rows ?? []
 		},
 		myApprovalRequests: async (

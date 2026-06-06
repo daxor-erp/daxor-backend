@@ -104,6 +104,7 @@ export const ERP_GRAPHQL_MUTATION_PERMISSIONS: Record<string, MutationPermission
 	]),
 	...sub('purchases', 'purchases_enter_purchase_orders', [
 		['createPurchaseOrder', 'create'],
+		['createPurchaseRequisition', 'create'],
 		['updatePurchaseOrder', 'update'],
 		['deletePurchaseOrder', 'delete'],
 		['submitPurchaseOrder', 'update'],
