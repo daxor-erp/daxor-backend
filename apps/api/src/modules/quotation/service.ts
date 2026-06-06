@@ -3,7 +3,7 @@ import { logger } from '~/lib/logger'
 import { Quotation } from './model'
 import { QuotationRepository } from './repository'
 import { sendQuotationEmailToClient } from './quotation-email'
-import { normalizeQuotationCustomerId } from './party'
+import { normalizeQuotationCustomerId, QUOTATION_PARTY_POPULATE } from './party'
 
 export class QuotationService {
   private repository: QuotationRepository
@@ -138,7 +138,7 @@ export class QuotationService {
     })
     if (!updated) throw new GraphQLValidationError('Quotation not found')
 
-    const out = await Quotation.populate(updated, { path: 'clientId', select: 'name email' })
+    const out = await Quotation.populate(updated, [...QUOTATION_PARTY_POPULATE])
     return { quotation: out, emailSent }
   }
 }

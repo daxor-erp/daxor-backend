@@ -29,18 +29,32 @@ export class QuotationRepository extends MongoBaseRepository<IQuotationDocument>
   }
 
   async findByOrganization(organizationId: string) {
-    return this.model.find({ organizationId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
+    return this.model
+      .find({ organizationId, deletedAt: null })
+      .populate([...QUOTATION_PARTY_POPULATE])
+      .populate('sentBy')
   }
 
   async findByClient(clientId: string) {
-    return this.model.find({ clientId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
+    return this.model
+      .find({
+        deletedAt: null,
+        $or: [{ clientId }, { customerId: clientId }],
+      })
+      .populate([...QUOTATION_PARTY_POPULATE])
+      .populate('sentBy')
   }
 
   async findByStatus(status: string, organizationId: string) {
-    return this.model.find({ status, organizationId, deletedAt: null }).populate('clientId', 'name email').populate('sentBy')
+    return this.model
+      .find({ status, organizationId, deletedAt: null })
+      .populate([...QUOTATION_PARTY_POPULATE])
+      .populate('sentBy')
   }
 
   async findByQuotationNumber(quotationNumber: string, organizationId: string) {
-    return this.model.findOne({ quotationNumber, organizationId, deletedAt: null }).populate('clientId', 'name email')
+    return this.model
+      .findOne({ quotationNumber, organizationId, deletedAt: null })
+      .populate([...QUOTATION_PARTY_POPULATE])
   }
 }
