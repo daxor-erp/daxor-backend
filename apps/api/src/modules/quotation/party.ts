@@ -14,24 +14,40 @@ export function normalizeQuotationCustomerId(data: {
   return String(id)
 }
 
+function partyFromDoc(
+  doc: { _id?: unknown; id?: unknown; name?: string; email?: string; docNumber?: string },
+  includeDocNumber = false,
+): { id: string; name: string; email?: string; docNumber?: string } {
+  const id = String(doc._id ?? doc.id ?? '')
+  const name = String(doc.name ?? '').trim() || 'Unknown customer'
+  const out: { id: string; name: string; email?: string; docNumber?: string } = {
+    id: id || 'unknown',
+    name,
+    email: doc.email ?? undefined,
+  }
+  if (includeDocNumber && doc.docNumber) out.docNumber = doc.docNumber
+  return out
+}
+
 export function mapPartyRef(parent: any): { id: string; name: string; email?: string; docNumber?: string } {
   const c = parent?.customerId
   if (c && typeof c === 'object') {
-    return {
-      id: String(c._id ?? c.id),
-      name: String(c.name ?? ''),
-      email: c.email ?? undefined,
-      docNumber: c.docNumber ?? undefined,
-    }
+    return partyFromDoc(c, true)
   }
   const cl = parent?.clientId
   if (cl && typeof cl === 'object') {
-    return {
-      id: String(cl._id ?? cl.id),
-      name: String(cl.name ?? ''),
-      email: cl.email ?? undefined,
-    }
+    return partyFromDoc(cl, false)
   }
-  const id = parent?.customerId?.toString?.() ?? parent?.clientId?.toString?.() ?? ''
-  return { id, name: '', email: undefined }
+  const rawId = parent?.customerId ?? parent?.clientId
+  const id =
+    rawId != null && typeof rawId === 'object'
+      ? String((rawId as { _id?: unknown; id?: unknown })._id ?? (rawId as { id?: unknown }).id ?? '')
+      : rawId != null
+        ? String(rawId)
+        : ''
+  return {
+    id: id || 'unknown',
+    name: 'Unknown customer',
+    email: undefined,
+  }
 }
