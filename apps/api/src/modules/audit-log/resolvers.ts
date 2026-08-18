@@ -1,8 +1,10 @@
 import type { GraphQLContext } from '~/types/graphql.context'
 import { assertAuthenticated } from '../auth/authz'
 import { AuditLogService } from './service'
+import { UserService } from '../user/service'
 
 const service = new AuditLogService()
+const userService = new UserService()
 
 function iso(d: unknown): string | null {
 	if (d == null) return null
@@ -59,6 +61,7 @@ export const resolvers = {
 	AuditLog: {
 		id: (p: any) => String(p?._id ?? p?.id ?? ''),
 		userId: (p: any) => (p.userId != null ? String(p.userId) : null),
+		user: async (p: any) => (p.userId != null ? userService.findById(String(p.userId)) : null),
 		entityId: (p: any) => (p.entityId != null ? String(p.entityId) : null),
 		entityType: (p: any) => p.entityType ?? '',
 		action: (p: any) => p.action ?? '',

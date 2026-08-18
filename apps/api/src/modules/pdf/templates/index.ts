@@ -6,6 +6,7 @@ export { renderVendorBillHtml } from './vendor-bill'
 export { renderVendorPaymentHtml } from './vendor-payment'
 export { renderCustomerPaymentHtml } from './customer-payment'
 export { renderJournalEntryHtml } from './journal-entry'
+export { renderProductLabelHtml } from './product-label'
 export { pdfShell, escapeHtml, pdfMoney, pdfDate } from './shared'
 
 /** All document types supported by /api/pdf/document. */
@@ -18,6 +19,7 @@ export const PDF_DOCUMENT_TYPES = [
 	'vendor-bill',
 	'vendor-payment',
 	'journal-entry',
+	'product-label',
 ] as const
 
 export type PdfDocumentType = (typeof PDF_DOCUMENT_TYPES)[number]

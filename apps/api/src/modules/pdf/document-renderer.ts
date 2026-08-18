@@ -15,6 +15,7 @@ import {
 	renderVendorPaymentHtml,
 	renderCustomerPaymentHtml,
 	renderJournalEntryHtml,
+	renderProductLabelHtml,
 	type PdfDocumentType,
 } from './templates'
 
@@ -26,6 +27,7 @@ import { VendorBill } from '../vendor-bill/model'
 import { VendorPayment } from '../vendor-payment/model'
 import { CustomerPayment } from '../customer-payment/model'
 import { JournalEntry } from '../journal-entry/model'
+import { Product } from '../product/model'
 import { Organization } from '../organization/model'
 import { Customer } from '../customer/model'
 import { Vendor } from '../vendor/model'
@@ -133,6 +135,13 @@ export async function renderDocumentToHtml(type: PdfDocumentType, id: string, ct
 			assertOrgAccess(doc.organizationId, ctx)
 			const organization = await pickOrg(doc.organizationId)
 			return { html: renderJournalEntryHtml({ doc, organization }), filename: `journal-entry-${doc.entryNumber || doc.seqNo || id}` }
+		}
+		case 'product-label': {
+			const doc: any = await Product.findById(id).lean()
+			if (!doc) throw new Error('Product not found')
+			assertOrgAccess(doc.organizationId, ctx)
+			const organization = await pickOrg(doc.organizationId)
+			return { html: renderProductLabelHtml({ doc, organization }), filename: `product-label-${doc.internalReference || doc.seqNo || id}` }
 		}
 		default:
 			throw new Error(`Unsupported document type: ${type}`)

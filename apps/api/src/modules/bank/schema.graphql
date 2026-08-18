@@ -1,0 +1,40 @@
+"""Master bank record (the bank itself — not a specific account)."""
+type Bank {
+	id: ID!
+	name: String!
+	bankIdentifierCode: String
+	address: String
+	phone: String
+	email: String
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateBankInput {
+	name: String!
+	bankIdentifierCode: String
+	address: String
+	phone: String
+	email: String
+	organizationId: ID!
+}
+
+input UpdateBankInput {
+	name: String
+	bankIdentifierCode: String
+	address: String
+	phone: String
+	email: String
+}
+
+extend type Query {
+	bank(id: ID!): Bank
+	banks(organizationId: ID!, search: String): [Bank!]!
+}
+
+extend type Mutation {
+	createBank(input: CreateBankInput!): Bank!
+	updateBank(id: ID!, input: UpdateBankInput!): Bank!
+	deleteBank(id: ID!): Boolean!
+}

@@ -12,7 +12,10 @@
 		"dev": "NODE_ENV=development dotenv -e .env.development -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e ts,graphql",
 		"prod": "NODE_ENV=production dotenv -e .env.production -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
 		"seed:roles": "node -r esbuild-register ./src/scripts/seed-roles.ts",
-		"seed:users": "node -r esbuild-register ./src/scripts/seed-users.ts"
+		"seed:users": "node -r esbuild-register ./src/scripts/seed-users.ts",
+		"test:vendor-flow": "node -r esbuild-register ./src/scripts/test-vendor-flow.ts",
+		"test:product-flow": "node -r esbuild-register ./src/scripts/test-product-flow.ts",
+		"test:purchase-order-flow": "node -r esbuild-register ./src/scripts/test-purchase-order-flow.ts"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.12.0",

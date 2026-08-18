@@ -29,8 +29,12 @@ export class VendorDebitNoteService {
       }
       const po = await this.poRepo.findById(String(data.purchaseOrderId))
       if (!po) throw new Error('Purchase order not found')
-      if (!['received', 'billed', 'approved', 'sent', 'debited'].includes(String(po.status))) {
-        throw new Error('PO must be received or billed before issuing a debit note')
+      if (
+        !['received', 'partially_received', 'billed', 'partially_billed', 'purchase_order', 'sent', 'debited', 'locked'].includes(
+          String(po.status),
+        )
+      ) {
+        throw new Error('PO must be confirmed, received, or billed before issuing a debit note')
       }
       const poTotal = Number(po.totalAmount ?? 0)
       if (poTotal > 0 && totalAmount > poTotal + 0.01) {

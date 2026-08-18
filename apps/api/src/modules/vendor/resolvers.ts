@@ -9,12 +9,14 @@ import {
 } from '../approval-request/service'
 import { OrganizationService } from '../organization/service'
 import { UserService } from '../user/service'
+import { BankService } from '../bank/service'
 import { approverIdsForModule, uniqApproverIds } from '~/helpers/approval-workflow'
 
 const service = new VendorService()
 const approvalService = new ApprovalRequestService()
 const organizationService = new OrganizationService()
 const userService = new UserService()
+const bankService = new BankService()
 
 export const resolvers = {
 	Query: {
@@ -125,15 +127,43 @@ export const resolvers = {
 			}
 			return service.getVendorById(id)
 		},
+
+		addVendorBankAccount: async (_: unknown, { vendorId, input }: any, ctx: GraphQLContext) =>
+			service.addBankAccount(vendorId, input, ctx.user?.id ?? ''),
+
+		removeVendorBankAccount: async (_: unknown, { vendorId, bankAccountId }: any, ctx: GraphQLContext) =>
+			service.removeBankAccount(vendorId, bankAccountId, ctx.user?.id ?? ''),
 	},
 
 	Vendor: {
 		id: (parent: { _id?: unknown; id?: string }) => parent._id || parent.id,
+		type: (parent: { type?: string }) => parent.type ?? 'company',
+		gstTreatment: (parent: { gstTreatment?: string }) => parent.gstTreatment ?? 'unregistered_business',
+		tags: (parent: { tags?: unknown[] }) => parent.tags ?? [],
+		bankAccounts: (parent: { bankAccounts?: unknown[] }) => parent.bankAccounts ?? [],
+		warnings: (parent: { warnings?: unknown }) =>
+			parent.warnings ?? { salesOrder: 'no_message', purchaseOrder: 'no_message', picking: 'no_message' },
 		orgApprovalStatus: (parent: { orgApprovalStatus?: string }) => parent.orgApprovalStatus ?? 'approved',
 		createdBy: async (parent: { createdBy?: unknown }) => {
 			const cid = parent?.createdBy
 			if (!cid) return null
 			return userService.findById(String(cid))
 		},
+	},
+
+	VendorBankAccount: {
+		id: (p: any) => String(p._id ?? p.id ?? ''),
+		sendMoney: (p: any) => !!p.sendMoney,
+		currency: (p: any) => p.currency ?? 'INR',
+		bank: async (p: any) => {
+			if (!p.bankId) return null
+			return bankService.findById(String(p.bankId))
+		},
+	},
+
+	VendorWarnings: {
+		salesOrder: (p: any) => p?.salesOrder ?? 'no_message',
+		purchaseOrder: (p: any) => p?.purchaseOrder ?? 'no_message',
+		picking: (p: any) => p?.picking ?? 'no_message',
 	},
 }

@@ -1,11 +1,182 @@
+type VendorAddress {
+  street: String
+  city: String
+  zip: String
+  country: String
+}
+
+input VendorAddressInput {
+  street: String
+  city: String
+  zip: String
+  country: String
+}
+
+type VendorTag {
+  tagId: ID!
+  name: String!
+  color: String!
+  category: String
+}
+
+input VendorTagInput {
+  tagId: ID!
+}
+
+"""Inline "Create Tag" during vendor tagging (Step 4)."""
+input CreateTagInline {
+  name: String!
+  color: String
+  category: String
+}
+
+type VendorSalesInfo {
+  salesperson: ID
+  paymentTerms: ID
+  paymentMethod: String
+  priceList: ID
+  deliveryMethod: String
+}
+
+input VendorSalesInfoInput {
+  salesperson: ID
+  paymentTerms: ID
+  paymentMethod: String
+  priceList: ID
+  deliveryMethod: String
+}
+
+type VendorPurchaseInfo {
+  buyer: ID
+  paymentTerms: ID
+  """Bank account id (within this vendor's bankAccounts[]) used as the default payment method."""
+  paymentMethod: ID
+  fiscalPosition: String
+}
+
+input VendorPurchaseInfoInput {
+  buyer: ID
+  paymentTerms: ID
+  paymentMethod: ID
+  fiscalPosition: String
+}
+
+type VendorInventoryInfo {
+  customerLocation: String
+  vendorLocation: String
+  subcontractingLocation: String
+}
+
+input VendorInventoryInfoInput {
+  customerLocation: String
+  vendorLocation: String
+  subcontractingLocation: String
+}
+
+type VendorMiscInfo {
+  reference: String
+  companyId: ID
+  """Free-text display name of the operating company, independent of the linked Organization record."""
+  company: String
+  slaPolicies: String
+}
+
+input VendorMiscInfoInput {
+  reference: String
+  companyId: ID
+  company: String
+  slaPolicies: String
+}
+
+type VendorBankAccount {
+  id: ID!
+  accountNumber: String!
+  bankId: ID
+  bank: Bank
+  bankName: String
+  currency: String!
+  accountHolder: String
+  sendMoney: Boolean!
+  createdAt: String
+}
+
+"""Nested "Create Bank Account" modal (Step 6). If bankId is omitted, provide newBank to create the master Bank record inline."""
+input VendorBankAccountInput {
+  accountNumber: String!
+  bankId: ID
+  newBank: CreateBankInline
+  currency: String
+  """Defaults to the vendor's name when omitted."""
+  accountHolder: String
+  sendMoney: Boolean
+}
+
+"""Nested "Create Bank" master-record modal, used when the bank isn't found in the bank picker."""
+input CreateBankInline {
+  name: String!
+  bankIdentifierCode: String
+  address: String
+  phone: String
+  email: String
+}
+
+type VendorAccountingInfo {
+  accountReceivable: String
+  accountPayable: String
+  """How invoices/bills should be sent to this vendor by default: email | postal | manual."""
+  invoiceSendingPreference: String!
+}
+
+input VendorAccountingInfoInput {
+  accountReceivable: String
+  accountPayable: String
+  invoiceSendingPreference: String
+}
+
+"""No Message / Warning / Blocking Message."""
+type VendorWarnings {
+  salesOrder: String!
+  purchaseOrder: String!
+  picking: String!
+}
+
+input VendorWarningsInput {
+  salesOrder: String
+  purchaseOrder: String
+  picking: String
+}
+
 type Vendor {
   id: ID!
   seqNo: String
+  type: String!
   name: String!
-  contactPerson: String
-  email: String
+  address: VendorAddress
+
+  gstTreatment: String!
+  gstin: String
+  pan: String
+
   phone: String
-  address: String
+  mobile: String
+  email: String
+  website: String
+
+  tags: [VendorTag!]!
+
+  sales: VendorSalesInfo
+  purchase: VendorPurchaseInfo
+  inventory: VendorInventoryInfo
+  misc: VendorMiscInfo
+
+  bankAccounts: [VendorBankAccount!]!
+  accounting: VendorAccountingInfo
+
+  warnings: VendorWarnings
+  internalNotes: String
+
+  """Legacy flat fields — retained for backward compatibility with existing reports/PDF templates."""
+  contactPerson: String
   city: String
   state: String
   country: String
@@ -13,6 +184,7 @@ type Vendor {
   taxNumber: String
   paymentTerms: String
   notes: String
+
   organizationId: ID!
   """draft | submitted | approval_declined | approved — omitted on legacy rows means approved"""
   orgApprovalStatus: String!
@@ -23,11 +195,35 @@ type Vendor {
 }
 
 input CreateVendorInput {
+  type: String
   name: String!
-  contactPerson: String
-  email: String
+  address: VendorAddressInput
+
+  gstTreatment: String
+  gstin: String
+  pan: String
+
   phone: String
-  address: String
+  mobile: String
+  email: String
+  website: String
+
+  tags: [VendorTagInput!]
+  createTags: [CreateTagInline!]
+
+  sales: VendorSalesInfoInput
+  purchase: VendorPurchaseInfoInput
+  inventory: VendorInventoryInfoInput
+  misc: VendorMiscInfoInput
+
+  bankAccounts: [VendorBankAccountInput!]
+  accounting: VendorAccountingInfoInput
+
+  warnings: VendorWarningsInput
+  internalNotes: String
+
+  # Legacy passthrough (optional; new UI should prefer the structured fields above)
+  contactPerson: String
   city: String
   state: String
   country: String
@@ -35,15 +231,39 @@ input CreateVendorInput {
   taxNumber: String
   paymentTerms: String
   notes: String
+
   organizationId: ID!
 }
 
 input UpdateVendorInput {
+  type: String
   name: String
-  contactPerson: String
-  email: String
+  address: VendorAddressInput
+
+  gstTreatment: String
+  gstin: String
+  pan: String
+
   phone: String
-  address: String
+  mobile: String
+  email: String
+  website: String
+
+  tags: [VendorTagInput!]
+  createTags: [CreateTagInline!]
+
+  sales: VendorSalesInfoInput
+  purchase: VendorPurchaseInfoInput
+  inventory: VendorInventoryInfoInput
+  misc: VendorMiscInfoInput
+
+  bankAccounts: [VendorBankAccountInput!]
+  accounting: VendorAccountingInfoInput
+
+  warnings: VendorWarningsInput
+  internalNotes: String
+
+  contactPerson: String
   city: String
   state: String
   country: String
@@ -51,6 +271,7 @@ input UpdateVendorInput {
   taxNumber: String
   paymentTerms: String
   notes: String
+
   status: String
 }
 
@@ -73,4 +294,8 @@ extend type Mutation {
   """
   submitVendorForApproval(id: ID!, assigneeApproverUserIds: [ID!]): Vendor!
   deleteVendor(id: ID!): Boolean!
+
+  """Add a bank account to an existing vendor (Step 6 nested "Create Bank Account" modal)."""
+  addVendorBankAccount(vendorId: ID!, input: VendorBankAccountInput!): Vendor!
+  removeVendorBankAccount(vendorId: ID!, bankAccountId: ID!): Vendor!
 }

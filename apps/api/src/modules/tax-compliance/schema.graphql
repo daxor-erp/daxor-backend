@@ -1,0 +1,32 @@
+"""Result of validating a GSTIN against the configured provider (mock until live credentials are set)."""
+type GstinCheckResult {
+	gstin: String!
+	valid: Boolean!
+	status: String!
+	legalName: String
+	tradeName: String
+	gstTreatment: String
+	stateCode: String
+	registrationDate: String
+	message: String!
+	"""MOCK while no live GSTN/KYC-aggregator credentials are configured; LIVE once wired."""
+	source: String!
+}
+
+type PanLookupResult {
+	pan: String!
+	valid: Boolean!
+	holderType: String
+	nameOnRecord: String
+	message: String!
+	source: String!
+}
+
+extend type Query {
+	"""Vendor form 'Check Status' action — validates a GSTIN before save."""
+	checkGstinStatus(gstin: String!): GstinCheckResult!
+	"""Vendor form PAN lookup/verification action."""
+	lookupPan(pan: String!): PanLookupResult!
+	"""Vendor form PAN autocomplete-as-you-type suggestions."""
+	suggestPan(partial: String!): [String!]!
+}

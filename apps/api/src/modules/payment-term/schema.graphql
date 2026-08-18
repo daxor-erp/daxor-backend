@@ -1,0 +1,38 @@
+type PaymentTerm {
+	id: ID!
+	name: String!
+	dueDays: Int!
+	description: String
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreatePaymentTermInput {
+	name: String!
+	dueDays: Int
+	description: String
+	isActive: Boolean
+	organizationId: ID!
+}
+
+input UpdatePaymentTermInput {
+	name: String
+	dueDays: Int
+	description: String
+	isActive: Boolean
+}
+
+extend type Query {
+	paymentTerm(id: ID!): PaymentTerm
+	paymentTerms(organizationId: ID!, isActive: Boolean): [PaymentTerm!]!
+}
+
+extend type Mutation {
+	createPaymentTerm(input: CreatePaymentTermInput!): PaymentTerm!
+	updatePaymentTerm(id: ID!, input: UpdatePaymentTermInput!): PaymentTerm!
+	deletePaymentTerm(id: ID!): Boolean!
+	"""Idempotent: seeds Due on Receipt / Net 15 / 30 / 45 / 60 for orgs with none configured yet."""
+	ensureDefaultPaymentTerms(organizationId: ID!): [PaymentTerm!]!
+}

@@ -1,0 +1,40 @@
+type AttributeValue {
+	id: ID!
+	value: String!
+}
+
+"""Reusable product attribute (e.g. Make, Model, Size) with a reusable list of values."""
+type Attribute {
+	id: ID!
+	name: String!
+	values: [AttributeValue!]!
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateAttributeInput {
+	name: String!
+	values: [String!]
+	isActive: Boolean
+	organizationId: ID!
+}
+
+input UpdateAttributeInput {
+	name: String
+	values: [String!]
+	isActive: Boolean
+}
+
+extend type Query {
+	attribute(id: ID!): Attribute
+	attributes(organizationId: ID!, isActive: Boolean): [Attribute!]!
+}
+
+extend type Mutation {
+	createAttribute(input: CreateAttributeInput!): Attribute!
+	updateAttribute(id: ID!, input: UpdateAttributeInput!): Attribute!
+	addAttributeValue(id: ID!, value: String!): Attribute!
+	deleteAttribute(id: ID!): Boolean!
+}

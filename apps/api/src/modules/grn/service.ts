@@ -243,21 +243,28 @@ export class GRNService {
     }
   }
 
-  /** Called when a PO is marked as received */
+  /**
+   * Called when a PO is marked as received. Reflects each line's *current* qtyReceived
+   * (post-rework POs support partial receipts, so this snapshots the state after the receive
+   * action rather than assuming every line was received in full).
+   */
   async createFromPO(po: Record<string, unknown>, userId: string) {
     const orgId = po.organizationId != null ? String(po.organizationId) : ''
     const poId = po._id != null ? String(po._id) : po.id != null ? String(po.id) : ''
+    const lines = (Array.isArray(po.items) ? po.items : []) as Array<Record<string, unknown>>
+    const receivedLines = lines.filter((item) => Number(item.qtyReceived ?? item.quantity ?? 0) > 0)
     return this.createGRN(
       {
         purchaseOrderId: poId || undefined,
         vendorId: po.vendorId != null ? String(po.vendorId) : undefined,
         vendorName: po.vendorName != null ? String(po.vendorName) : undefined,
         receivedDate: new Date().toISOString(),
-        lineItems: (Array.isArray(po.items) ? po.items : []).map((item: Record<string, unknown>) => ({
-          itemDescription: item.itemDescription,
+        lineItems: receivedLines.map((item) => ({
+          itemDescription: item.productName ?? item.itemDescription ?? 'Item',
           orderedQty: item.quantity ?? 0,
-          receivedQty: item.quantity ?? 0,
+          receivedQty: item.qtyReceived ?? item.quantity ?? 0,
           unitPrice: item.unitPrice ?? 0,
+          lotSerialNumbers: Array.isArray(item.lotSerialNumbers) ? item.lotSerialNumbers : [],
         })),
         notes: `Auto-created from PO ${po.seqNo != null ? String(po.seqNo) : ''}`.trim(),
         organizationId: orgId,

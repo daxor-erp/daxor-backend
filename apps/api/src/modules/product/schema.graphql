@@ -1,73 +1,218 @@
+type ProductAttributeLine {
+	attributeId: ID!
+	attribute: Attribute
+	valueIds: [ID!]!
+}
+
+input ProductAttributeLineInput {
+	attributeId: ID!
+	valueIds: [ID!]!
+}
+
+type VendorPricelistLine {
+	id: ID!
+	vendorId: ID!
+	vendor: Vendor
+	leadTimeDays: Int!
+	minQty: Float!
+	price: Float!
+}
+
+input VendorPricelistLineInput {
+	vendorId: ID!
+	leadTimeDays: Int
+	minQty: Float
+	price: Float!
+}
+
+type ProductPackagingLine {
+	id: ID!
+	name: String!
+	qtyPerPackage: Float!
+	barcode: String
+}
+
+input ProductPackagingLineInput {
+	name: String!
+	qtyPerPackage: Float!
+	barcode: String
+}
+
+type ProductReorderingRule {
+	id: ID!
+	warehouseId: ID
+	warehouse: Warehouse
+	minQty: Float!
+	maxQty: Float!
+}
+
+input ProductReorderingRuleInput {
+	warehouseId: ID
+	minQty: Float!
+	maxQty: Float!
+}
+
+"""Result of the Replenish action — the draft RFQ created from the product's cheapest vendor pricelist entry."""
+type ReplenishResult {
+	purchaseOrder: PurchaseOrder!
+	vendorId: ID!
+	quantity: Float!
+	unitPrice: Float!
+}
+
 type Product {
-  id: ID!
-  seqNo: String
-  name: String!
-  sku: String!
-  description: String
-  category: String
-  brand: String
-  unit: String!
-  price: Float!
-  costPrice: Float
-  taxRate: Float
-  minStockLevel: Float
-  maxStockLevel: Float
-  reorderPoint: Float
-  barcode: String
-  images: [String]
-  status: String!
-  organizationId: ID!
-  createdAt: String!
-  updatedAt: String!
+	id: ID!
+	seqNo: String
+	name: String!
+	internalReference: String
+	barcode: String
+	hsnSac: String
+	images: [String!]!
+	notes: String
+
+	"""Smart buttons — real stock/purchase data, computed after save."""
+	onHandQty: Float!
+	forecastedQty: Float!
+	purchasedQty: Float!
+	"""Quantity currently held in QC inspection (received but not cleared for available use)."""
+	qcHoldQty: Float!
+	reorderingRules: [ProductReorderingRule!]!
+	packagings: [ProductPackagingLine!]!
+
+	canBeSold: Boolean!
+	canBePurchased: Boolean!
+	canBeExpensed: Boolean!
+
+	productType: String!
+	trackInventory: Boolean!
+	trackingMethod: String!
+
+	salesPrice: Float!
+	costPrice: Float!
+	uomId: ID
+	uom: Uom
+	purchaseUomId: ID
+	purchaseUom: Uom
+	salesTaxIds: [ID!]!
+	salesTaxes: [TaxRate!]!
+	purchaseTaxIds: [ID!]!
+	purchaseTaxes: [TaxRate!]!
+
+	categoryId: ID
+	category: ProductCategory
+
+	attributeLines: [ProductAttributeLine!]!
+	variants: [ProductVariant!]!
+
+	vendorPricelist: [VendorPricelistLine!]!
+
+	incomeAccount: String
+	expenseAccount: String
+	stockAccount: String
+
+	status: String!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
 }
 
 input CreateProductInput {
-  name: String!
-  sku: String!
-  description: String
-  category: String
-  brand: String
-  unit: String!
-  price: Float!
-  costPrice: Float
-  taxRate: Float
-  minStockLevel: Float
-  maxStockLevel: Float
-  reorderPoint: Float
-  barcode: String
-  images: [String]
-  status: String
-  organizationId: ID!
+	name: String!
+	"""Auto-generated from seqNo when omitted."""
+	internalReference: String
+	barcode: String
+	hsnSac: String
+	images: [String!]
+	notes: String
+
+	canBeSold: Boolean
+	canBePurchased: Boolean
+	canBeExpensed: Boolean
+
+	productType: String
+	trackInventory: Boolean
+	trackingMethod: String
+
+	salesPrice: Float
+	costPrice: Float
+	uomId: ID
+	purchaseUomId: ID
+	salesTaxIds: [ID!]
+	purchaseTaxIds: [ID!]
+
+	categoryId: ID
+	attributeLines: [ProductAttributeLineInput!]
+	vendorPricelist: [VendorPricelistLineInput!]
+	packagings: [ProductPackagingLineInput!]
+	reorderingRules: [ProductReorderingRuleInput!]
+
+	incomeAccount: String
+	expenseAccount: String
+	stockAccount: String
+
+	status: String
+	organizationId: ID!
 }
 
 input UpdateProductInput {
-  name: String
-  sku: String
-  description: String
-  category: String
-  brand: String
-  unit: String
-  price: Float
-  costPrice: Float
-  taxRate: Float
-  minStockLevel: Float
-  maxStockLevel: Float
-  reorderPoint: Float
-  barcode: String
-  images: [String]
-  status: String
+	name: String
+	internalReference: String
+	barcode: String
+	hsnSac: String
+	images: [String!]
+	notes: String
+
+	canBeSold: Boolean
+	canBePurchased: Boolean
+	canBeExpensed: Boolean
+
+	productType: String
+	trackInventory: Boolean
+	trackingMethod: String
+
+	salesPrice: Float
+	costPrice: Float
+	uomId: ID
+	purchaseUomId: ID
+	salesTaxIds: [ID!]
+	purchaseTaxIds: [ID!]
+
+	categoryId: ID
+	attributeLines: [ProductAttributeLineInput!]
+	vendorPricelist: [VendorPricelistLineInput!]
+	packagings: [ProductPackagingLineInput!]
+	reorderingRules: [ProductReorderingRuleInput!]
+
+	incomeAccount: String
+	expenseAccount: String
+	stockAccount: String
+
+	status: String
 }
 
 extend type Query {
-  product(id: ID!): Product
-  products: [Product!]!
-  productsByOrganization(organizationId: ID!): [Product!]!
-  productsByCategory(category: String!, organizationId: ID!): [Product!]!
-  productsByStatus(status: String!, organizationId: ID!): [Product!]!
+	product(id: ID!): Product
+	products(
+		organizationId: ID!
+		search: String
+		categoryId: ID
+		canBePurchased: Boolean
+		canBeSold: Boolean
+		status: String
+	): [Product!]!
 }
 
 extend type Mutation {
-  createProduct(input: CreateProductInput!): Product!
-  updateProduct(id: ID!, input: UpdateProductInput!): Product!
-  deleteProduct(id: ID!): Boolean!
+	createProduct(input: CreateProductInput!): Product!
+	updateProduct(id: ID!, input: UpdateProductInput!): Product!
+	deleteProduct(id: ID!): Boolean!
+
+	"""Sets on-hand quantity for a product (optionally scoped to a warehouse) to an absolute value."""
+	updateProductQuantity(productId: ID!, quantity: Float!, warehouseId: ID, notes: String): Product!
+	"""Creates a draft RFQ for this product using the cheapest vendor pricelist entry."""
+	replenishProduct(productId: ID!, quantity: Float): ReplenishResult!
+	"""Move received goods into QC inspection hold (not yet available stock)."""
+	holdProductForQc(productId: ID!, quantity: Float!, warehouseId: ID, referenceId: ID): Product!
+	"""Release goods from QC hold. decision: 'pass' moves to available stock; 'fail' scraps/returns."""
+	releaseProductFromQc(productId: ID!, quantity: Float!, decision: String!, warehouseId: ID, notes: String): Product!
 }

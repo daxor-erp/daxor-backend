@@ -162,3 +162,17 @@ export function partyBlock(title: string, name: string, info: string[]): string 
 export function metaRow(label: string, value: string): string {
 	return `<div><div class="pdf-meta-label">${escapeHtml(label)}</div><div class="pdf-meta-value">${escapeHtml(value)}</div></div>`
 }
+
+/**
+ * Vendor.address changed from a flat string to a structured { street, city, zip, country } object.
+ * Accepts either shape so historical documents/snapshots still render.
+ */
+export function formatVendorAddress(address: unknown): string {
+	if (address == null) return ''
+	if (typeof address === 'string') return address
+	if (typeof address === 'object') {
+		const a = address as { street?: string; city?: string; zip?: string; country?: string }
+		return [a.street, a.city, a.zip, a.country].filter(Boolean).join(', ')
+	}
+	return ''
+}

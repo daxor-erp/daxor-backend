@@ -1,0 +1,36 @@
+"""Hierarchical product category (e.g. All -> Tools -> Tools Consumables)."""
+type ProductCategory {
+	id: ID!
+	name: String!
+	parentId: ID
+	"""Denormalized breadcrumb, e.g. "All / Tools / Tools Consumables"."""
+	fullPath: String!
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateProductCategoryInput {
+	name: String!
+	parentId: ID
+	isActive: Boolean
+	organizationId: ID!
+}
+
+input UpdateProductCategoryInput {
+	name: String
+	parentId: ID
+	isActive: Boolean
+}
+
+extend type Query {
+	productCategory(id: ID!): ProductCategory
+	productCategories(organizationId: ID!, isActive: Boolean): [ProductCategory!]!
+}
+
+extend type Mutation {
+	createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
+	updateProductCategory(id: ID!, input: UpdateProductCategoryInput!): ProductCategory!
+	deleteProductCategory(id: ID!): Boolean!
+}
