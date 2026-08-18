@@ -2,44 +2,37 @@ import { MongoBaseRepository, IBaseEntity } from '../base/mongo-repository'
 import { Product } from './model'
 
 interface IProductDocument extends IBaseEntity {
-  seqNo?: string
-  name: string
-  sku: string
-  description?: string
-  category?: string
-  brand?: string
-  unit: string
-  price: number
-  costPrice?: number
-  taxRate?: number
-  minStockLevel?: number
-  maxStockLevel?: number
-  reorderPoint?: number
-  barcode?: string
-  images?: string[]
-  specifications?: Map<string, string>
-  status: string
-  organizationId: any
+	seqNo?: string
+	name: string
+	internalReference?: string
+	canBeSold: boolean
+	canBePurchased: boolean
+	organizationId: unknown
+	status: string
 }
 
 export class ProductRepository extends MongoBaseRepository<IProductDocument> {
-  constructor() {
-    super(Product as any)
-  }
+	constructor() {
+		super(Product as any)
+	}
 
-  async findByOrganization(organizationId: string) {
-    return this.model.find({ organizationId, deletedAt: null })
-  }
+	async findByOrganization(organizationId: string, filters: { search?: string; categoryId?: string; canBePurchased?: boolean; canBeSold?: boolean; status?: string } = {}) {
+		const q: Record<string, unknown> = { organizationId, deletedAt: null }
+		if (filters.categoryId) q.categoryId = filters.categoryId
+		if (filters.canBePurchased != null) q.canBePurchased = filters.canBePurchased
+		if (filters.canBeSold != null) q.canBeSold = filters.canBeSold
+		if (filters.status) q.status = filters.status
+		if (filters.search?.trim()) {
+			q.$or = [
+				{ name: { $regex: filters.search.trim(), $options: 'i' } },
+				{ internalReference: { $regex: filters.search.trim(), $options: 'i' } },
+				{ barcode: { $regex: filters.search.trim(), $options: 'i' } },
+			]
+		}
+		return this.model.find(q).sort({ name: 1 }).limit(500).exec()
+	}
 
-  async findBySku(sku: string, organizationId: string) {
-    return this.model.findOne({ sku, organizationId, deletedAt: null })
-  }
-
-  async findByCategory(category: string, organizationId: string) {
-    return this.model.find({ category, organizationId, deletedAt: null })
-  }
-
-  async findByStatus(status: string, organizationId: string) {
-    return this.model.find({ status, organizationId, deletedAt: null })
-  }
+	async findByInternalReference(internalReference: string, organizationId: string) {
+		return this.model.findOne({ internalReference, organizationId, deletedAt: null })
+	}
 }

@@ -1,0 +1,37 @@
+type VariantAttributeValue {
+	attributeId: ID!
+	attributeName: String!
+	valueId: ID!
+	value: String!
+}
+
+"""A generated combination of a product's attribute-line values (e.g. Make=NAKSHTRA, Model=250MIG/ARC, Size=0.8mm)."""
+type ProductVariant {
+	id: ID!
+	productId: ID!
+	displayName: String!
+	attributeValues: [VariantAttributeValue!]!
+	sku: String
+	barcode: String
+	extraPrice: Float!
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input UpdateProductVariantInput {
+	sku: String
+	barcode: String
+	extraPrice: Float
+	isActive: Boolean
+}
+
+extend type Query {
+	productVariant(id: ID!): ProductVariant
+	productVariantsByProduct(productId: ID!): [ProductVariant!]!
+}
+
+extend type Mutation {
+	updateProductVariant(id: ID!, input: UpdateProductVariantInput!): ProductVariant!
+}

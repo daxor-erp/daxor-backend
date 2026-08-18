@@ -1,6 +1,7 @@
 type AuditLog {
 	id: ID!
 	userId: ID
+	user: User
 	action: String!
 	entityType: String!
 	entityId: ID

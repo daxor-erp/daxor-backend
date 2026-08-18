@@ -26,6 +26,24 @@ export class VendorPaymentService {
       throw new Error(`Allocation total (${allocTotal}) must equal payment total (${totalAmount})`)
     }
 
+    // Gap 15 — warn if the vendor has no bank accounts configured.
+    const { Vendor } = await import('../vendor/model')
+    const vendor = await Vendor.findById(String(data.vendorId)).lean()
+    if (vendor) {
+      const bankAccounts: any[] = (vendor as any).bankAccounts ?? []
+      if (bankAccounts.length === 0) {
+        throw new Error(
+          `Vendor "${(vendor as any).name}" has no bank accounts configured. Add a bank account to this vendor before recording a payment.`,
+        )
+      }
+      const hasSendMoney = bankAccounts.some((b: any) => !!b.sendMoney)
+      if (!hasSendMoney) {
+        throw new Error(
+          `Vendor "${(vendor as any).name}" has no bank account marked "Send Money". Enable "Send Money" on the intended payment account in the vendor's Accounting tab.`,
+        )
+      }
+    }
+
     const paymentNumber = await this.generatePaymentNumber(data.organizationId)
 
     const payment = await this.repository.create({

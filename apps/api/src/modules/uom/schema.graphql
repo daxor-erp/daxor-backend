@@ -1,0 +1,47 @@
+"""Unit of Measure master, e.g. Nos, Box, kg — with GST UQC for HSN/GST filing."""
+type Uom {
+	id: ID!
+	name: String!
+	category: String!
+	"""Ratio relative to the category's reference unit (1 for the reference unit itself)."""
+	ratio: Float!
+	type: String!
+	"""Indian GST Unit Quantity Code, e.g. NOS, BOX, KGS."""
+	gstUqc: String
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateUomInput {
+	name: String!
+	category: String!
+	ratio: Float
+	type: String
+	gstUqc: String
+	isActive: Boolean
+	organizationId: ID!
+}
+
+input UpdateUomInput {
+	name: String
+	category: String
+	ratio: Float
+	type: String
+	gstUqc: String
+	isActive: Boolean
+}
+
+extend type Query {
+	uom(id: ID!): Uom
+	uoms(organizationId: ID!, category: String, isActive: Boolean): [Uom!]!
+}
+
+extend type Mutation {
+	createUom(input: CreateUomInput!): Uom!
+	updateUom(id: ID!, input: UpdateUomInput!): Uom!
+	deleteUom(id: ID!): Boolean!
+	"""Idempotent: seeds Nos/Box/kg/g/Litre/Meter with GST UQC codes for orgs with none configured yet."""
+	ensureDefaultUoms(organizationId: ID!): [Uom!]!
+}

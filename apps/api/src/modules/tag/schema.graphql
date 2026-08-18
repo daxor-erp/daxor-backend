@@ -1,0 +1,36 @@
+type Tag {
+	id: ID!
+	name: String!
+	color: String!
+	category: String
+	isActive: Boolean!
+	organizationId: ID!
+	createdAt: String!
+	updatedAt: String!
+}
+
+input CreateTagInput {
+	name: String!
+	color: String
+	category: String
+	isActive: Boolean
+	organizationId: ID!
+}
+
+input UpdateTagInput {
+	name: String
+	color: String
+	category: String
+	isActive: Boolean
+}
+
+extend type Query {
+	tag(id: ID!): Tag
+	tags(organizationId: ID!, search: String, category: String, isActive: Boolean): [Tag!]!
+}
+
+extend type Mutation {
+	createTag(input: CreateTagInput!): Tag!
+	updateTag(id: ID!, input: UpdateTagInput!): Tag!
+	deleteTag(id: ID!): Boolean!
+}

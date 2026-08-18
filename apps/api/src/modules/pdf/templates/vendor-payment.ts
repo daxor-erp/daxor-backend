@@ -1,4 +1,4 @@
-import { escapeHtml, metaRow, partyBlock, pdfDate, pdfMoney, pdfShell } from './shared'
+import { escapeHtml, formatVendorAddress, metaRow, partyBlock, pdfDate, pdfMoney, pdfShell } from './shared'
 
 export function renderVendorPaymentHtml({ doc, organization, vendor }: { doc: any; organization?: any; vendor?: any }): string {
 	const allocs: any[] = Array.isArray(doc.allocations) ? doc.allocations : []
@@ -14,7 +14,7 @@ export function renderVendorPaymentHtml({ doc, organization, vendor }: { doc: an
 
 		<div class="pdf-parties">
 			${partyBlock('Paid by', organization?.name || 'Daxor', [organization?.address, organization?.email, organization?.phone])}
-			${partyBlock('Paid to', vendor?.name || 'Vendor', [vendor?.email, vendor?.phone, vendor?.address])}
+			${partyBlock('Paid to', vendor?.name || 'Vendor', [vendor?.email, vendor?.phone, formatVendorAddress(vendor?.address)])}
 		</div>
 
 		<table>

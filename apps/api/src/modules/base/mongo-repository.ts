@@ -124,6 +124,34 @@ export abstract class MongoBaseRepository<T extends IBaseEntity> {
   }
 
   /**
+   * Optimistic-concurrency update. Callers that track a `version` field pass `expectedVersion`;
+   * the update only applies (and `version` is incremented) if the stored version still matches.
+   * Returns `null` if the document was concurrently modified since the caller last read it — the
+   * caller should surface this as a conflict rather than silently overwriting the other edit.
+   * Opt-in — does not change behavior of the plain `update()` method used elsewhere.
+   */
+  async updateWithVersion(
+    id: string | any,
+    data: UpdateQuery<T>,
+    expectedVersion: number,
+  ): Promise<T | null> {
+    try {
+      const payload = sanitizeWritePayload(data as Record<string, unknown>) as Record<string, unknown>;
+      const { $inc, ...rest } = payload as Record<string, unknown> & { $inc?: Record<string, unknown> };
+      return await this.model
+        .findOneAndUpdate(
+          { _id: id, version: expectedVersion } as FilterQuery<T>,
+          { ...rest, $inc: { version: 1, ...(($inc as Record<string, unknown>) ?? {}) } } as UpdateQuery<T>,
+          { new: true },
+        )
+        .exec();
+    } catch (error) {
+      logger.error(`Error version-updating document in ${this.model.collection.name}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Update multiple documents
    */
   async updateMany(filters: FilterQuery<T>, data: UpdateQuery<T>): Promise<any> {

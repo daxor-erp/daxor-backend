@@ -1,4 +1,4 @@
-import { escapeHtml, metaRow, partyBlock, pdfDate, pdfMoney, pdfShell } from './shared'
+import { escapeHtml, formatVendorAddress, metaRow, partyBlock, pdfDate, pdfMoney, pdfShell } from './shared'
 
 export function renderVendorBillHtml({ doc, organization, vendor, purchaseOrder }: { doc: any; organization?: any; vendor?: any; purchaseOrder?: any }): string {
 	const lines: any[] = Array.isArray(doc.lineItems) ? doc.lineItems : Array.isArray(doc.items) ? doc.items : []
@@ -25,8 +25,8 @@ export function renderVendorBillHtml({ doc, organization, vendor, purchaseOrder 
 				vendor?.contactPerson,
 				vendor?.email,
 				vendor?.phone,
-				vendor?.address,
-				vendor?.taxNumber ? `GSTIN: ${vendor.taxNumber}` : '',
+				formatVendorAddress(vendor?.address),
+				(vendor?.gstin || vendor?.taxNumber) ? `GSTIN: ${vendor.gstin || vendor.taxNumber}` : '',
 			])}
 		</div>
 

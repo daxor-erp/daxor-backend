@@ -5,6 +5,12 @@ const lineItemSchema = new Schema({
   orderedQty: { type: Number, default: 0 },
   receivedQty: { type: Number, required: true },
   unitPrice: { type: Number, default: 0 },
+  /**
+   * Lot/batch or serial numbers for this receipt line — required when the linked product has
+   * trackingMethod 'lot' or 'serial'. Stored as a simple string array for display; inventory
+   * control enforces uniqueness per serial tracked product.
+   */
+  lotSerialNumbers: [{ type: String }],
 }, { _id: false })
 
 const grnSchema = new Schema({

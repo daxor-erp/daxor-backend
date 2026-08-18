@@ -1,17 +1,64 @@
 type POLineItem {
+  id: ID!
+  """product (default) | section | note — mixed catalog/section/note line types."""
+  lineType: String!
+  productId: ID
+  product: Product
+  variantId: ID
+  variant: ProductVariant
+  """Denormalized display name — kept in sync with the linked Product/Variant."""
+  productName: String
+  hsnSac: String
+  quantity: Float
+  uomId: ID
+  uom: Uom
+  packagingId: ID
+  packaging: ProductPackagingLine
+  packagingQty: Float!
+  unitPrice: Float
+  taxIds: [ID!]!
+  taxes: [TaxRate!]!
+  discountPercent: Float!
+  lineUntaxed: Float!
+  lineTax: Float!
+  lineTotal: Float!
+  qtyReceived: Float!
+  qtyBilled: Float!
+  """True when the vendor confirmed no further delivery is expected on this line (backorder closed)."""
+  closedForReceiving: Boolean!
+  """Free text — populated for section headers and note lines (lineType != 'product')."""
+  note: String
+
+  """Legacy (pre-catalog-rework) fields — retained for backward-compatible reads only."""
   itemId: ID
   itemDescription: String
-  quantity: Float
-  unitPrice: Float
-  lineTotal: Float
 }
 
 input POLineItemInput {
+  lineType: String
+  productId: ID
+  variantId: ID
+  productName: String
+  hsnSac: String
+  quantity: Float
+  uomId: ID
+  packagingId: ID
+  packagingQty: Float
+  unitPrice: Float
+  taxIds: [ID!]
+  discountPercent: Float
+  note: String
+
+  """Legacy passthrough — only used when migrating/reading old free-text lines."""
   itemId: ID
-  itemDescription: String!
-  quantity: Float!
-  unitPrice: Float!
-  lineTotal: Float!
+  itemDescription: String
+}
+
+"""Header-level GST split, computed from the aggregate tax amount and fiscalPosition."""
+type PoTaxBreakdown {
+  cgst: Float!
+  sgst: Float!
+  igst: Float!
 }
 
 type PurchaseOrder {
@@ -20,43 +67,125 @@ type PurchaseOrder {
   vendorId: ID
   vendor: Vendor
   vendorName: String
+  gstTreatment: String
+  vendorReference: String
+  currency: String!
+  """Foreign-currency units per 1 INR (base). 1.0 for INR POs. Snapshotted at create/update."""
+  exchangeRate: Float!
+  """totalAmount converted to base currency (INR) using exchangeRate — used for accounting/reporting."""
+  totalAmountBaseCurrency: Float!
+  agreement: String
+  sourceDocument: String
+  incoterms: String
+
   projectId: ID
   projectName: String
-  deliveryDate: String
-  subtotal: Float
-  taxAmount: Float
-  totalAmount: Float
-  status: String!
+
   orderDate: String
+  orderDeadline: String
+  expectedArrival: String
+  """Legacy alias for expectedArrival."""
+  deliveryDate: String
+  askConfirmation: Boolean!
+  lastPrintedAt: String
+
+  deliverToLocationId: ID
+  deliverToLocation: Warehouse
+  paymentTerms: ID
+  paymentTermsInfo: PaymentTerm
+  deliveryTerms: String
+  buyerId: ID
+  buyer: User
+  fiscalPosition: String
+  confirmationDate: String
+
+  """Legacy alias for untaxedAmount."""
+  subtotal: Float
+  untaxedAmount: Float
+  taxAmount: Float
+  taxBreakdown: PoTaxBreakdown!
+  totalAmount: Float
+
+  """rfq | rfq_sent | submitted | approved | purchase_order | sent | received | partially_received | billed | partially_billed | debited | cancelled | rejected | locked"""
+  status: String!
+  receiptStatus: String!
+  billingStatus: String!
+
   items: [POLineItem!]
   notes: String
   organizationId: ID!
+  """Optimistic-concurrency version counter — pass as expectedVersion in updatePurchaseOrder to detect conflicting edits."""
+  version: Int!
   createdAt: String
   updatedAt: String
 }
 
 input CreatePurchaseOrderInput {
   vendorId: ID
+  gstTreatment: String
+  vendorReference: String
+  currency: String
+  """Foreign-currency units per 1 INR. Defaults to 1 (base currency)."""
+  exchangeRate: Float
+  agreement: String
+  sourceDocument: String
+  incoterms: String
   projectId: ID
   deliveryDate: String
   orderDate: String!
+  orderDeadline: String
+  expectedArrival: String
+  askConfirmation: Boolean
+  deliverToLocationId: ID
+  paymentTerms: ID
+  deliveryTerms: String
+  buyerId: ID
+  fiscalPosition: String
   items: [POLineItemInput!]!
-  subtotal: Float!
-  taxAmount: Float
-  totalAmount: Float!
   notes: String
   organizationId: ID!
 }
 
 input UpdatePurchaseOrderInput {
   vendorId: ID
+  gstTreatment: String
+  vendorReference: String
+  currency: String
+  exchangeRate: Float
+  agreement: String
+  sourceDocument: String
+  incoterms: String
   projectId: ID
   deliveryDate: String
+  orderDeadline: String
+  expectedArrival: String
+  askConfirmation: Boolean
+  deliverToLocationId: ID
+  paymentTerms: ID
+  deliveryTerms: String
+  buyerId: ID
+  fiscalPosition: String
   items: [POLineItemInput!]
-  subtotal: Float
-  taxAmount: Float
-  totalAmount: Float
+  notes: String
   status: String
+  """Current version value from the client — if provided and mismatched, the update is rejected (optimistic concurrency)."""
+  expectedVersion: Int
+}
+
+"""Partial-receipt line input for receivePurchaseOrder; omit to receive every line's remaining quantity."""
+input PoReceiveLineInput {
+  lineId: ID!
+  qtyReceived: Float!
+  """Set true to record more than the ordered quantity (vendor over-shipment). Defaults to false (over-receipt is capped/rejected)."""
+  allowOverReceipt: Boolean
+  """Lot/batch number or list of serial numbers for this receipt. Required when the product has trackingMethod: lot/serial."""
+  lotSerialNumbers: [String!]
+}
+
+"""Partial-bill line input for billPurchaseOrder; omit to bill every line's full received-but-unbilled quantity."""
+input PoBillLineInput {
+  lineId: ID!
+  quantity: Float!
 }
 
 extend type Query {
@@ -69,8 +198,27 @@ extend type Mutation {
   createPurchaseRequisition(input: CreatePurchaseOrderInput!): PurchaseOrder!
   updatePurchaseOrder(id: ID!, input: UpdatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(id: ID!): Boolean!
+
+  """Optional 'Print RFQ / Send by Email' step prior to formal submission — rfq -> rfq_sent."""
+  markPurchaseOrderRfqSent(id: ID!): PurchaseOrder!
+  """Standalone 'Print RFQ' action — records that the RFQ was printed without emailing or changing status."""
+  markPurchaseOrderPrinted(id: ID!): PurchaseOrder!
   submitPurchaseOrder(id: ID!): PurchaseOrder!
-  approvePurchaseOrder(id: ID!): PurchaseOrder!
-  receivePurchaseOrder(id: ID!): PurchaseOrder!
-  billPurchaseOrder(id: ID!, billDate: String!, dueDate: String!): VendorBill!
+  """vendorId is optional — assigns/changes the vendor when approving a requisition raised without one."""
+  approvePurchaseOrder(id: ID!, vendorId: ID): PurchaseOrder!
+  """Approved RFQ -> formal Purchase Order (assigns confirmationDate)."""
+  confirmPurchaseOrder(id: ID!): PurchaseOrder!
+  """Emails the vendor with the PO PDF attached, then marks the PO as sent."""
+  sendPurchaseOrderByEmail(id: ID!): PurchaseOrder!
+  """Omit `lines` to receive every line's remaining quantity in full (legacy one-click behavior)."""
+  receivePurchaseOrder(id: ID!, lines: [PoReceiveLineInput!]): PurchaseOrder!
+  cancelPurchaseOrder(id: ID!): PurchaseOrder!
+  lockPurchaseOrder(id: ID!): PurchaseOrder!
+  """Bills the received-but-unbilled quantity by default (3-way match: capped at qtyReceived - qtyBilled per line).
+  Omit `lines` to bill every line's full receivable-but-unbilled quantity. Supports multiple partial bills per PO."""
+  billPurchaseOrder(id: ID!, billDate: String!, dueDate: String!, lines: [PoBillLineInput!]): VendorBill!
+  """Marks a PO line as closed for further receiving (e.g. vendor confirmed no more stock coming) — 'backorder' cancel."""
+  closePurchaseOrderLine(id: ID!, lineId: ID!): PurchaseOrder!
+  """Duplicates an existing PO/RFQ into a brand-new draft RFQ with the same vendor/lines (qty/received/billed reset)."""
+  duplicatePurchaseOrder(id: ID!): PurchaseOrder!
 }

@@ -6,11 +6,22 @@ export function isSmtpConfigured(): boolean {
 	return Boolean(config.email.user && config.email.password)
 }
 
+export interface EmailAttachment {
+	filename: string
+	content: Buffer
+}
+
 /**
  * Sends mail over SMTP using Nodemailer.
  * Port 465: implicit TLS (secure: true). Port 587: STARTTLS (secure: false, requireTLS: true).
  */
-export async function sendHtmlEmail(params: { to: string; subject: string; html: string; text: string }): Promise<void> {
+export async function sendHtmlEmail(params: {
+	to: string
+	subject: string
+	html: string
+	text: string
+	attachments?: EmailAttachment[]
+}): Promise<void> {
 	const { host, port, user, password, from } = config.email
 	if (!user || !password) {
 		throw new Error(
@@ -36,6 +47,7 @@ export async function sendHtmlEmail(params: { to: string; subject: string; html:
 			subject: params.subject,
 			html: params.html,
 			text: params.text,
+			attachments: params.attachments,
 		})
 		logger.info(`SMTP: sent mail to ${params.to} subject "${params.subject.slice(0, 80)}"`)
 	} catch (err) {
