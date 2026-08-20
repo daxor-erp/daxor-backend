@@ -24,7 +24,10 @@ type ChartOfAccounts {
   accountCode: String!
   accountNumber: String
   accountName: String!
+  """asset | liability | equity | revenue | expense | bank | receivable | payable | other"""
   accountType: String!
+  """ObjectId reference to parent ChartOfAccounts for tree structure."""
+  parentAccountId: ID
   parentAccount: String
   level: Int!
   isActive: Boolean!
@@ -55,8 +58,10 @@ input ChartOfAccountsInput {
   """Optional human-entered identifier (e.g. legacy ledger number)."""
   accountNumber: String
   accountName: String!
+  """asset | liability | equity | revenue | expense | bank | receivable | payable | other"""
   accountType: String!
-  parentAccount: String
+  """ID of parent ChartOfAccounts document (for tree structure)."""
+  parentAccountId: ID
   level: Int
   isActive: Boolean
   organizationId: String!
@@ -100,6 +105,57 @@ type BalanceSheetReport {
   balanced: Boolean!
 }
 
+type AgedPayableBillLine {
+  billId: ID!
+  billNumber: String!
+  billDate: String!
+  dueDate: String!
+  totalAmount: Float!
+  outstandingAmount: Float!
+  daysOverdue: Int!
+  status: String!
+}
+
+type AgedPayableRow {
+  vendorId: ID!
+  vendorName: String!
+  """Not yet due"""
+  current: Float!
+  """1–30 days overdue"""
+  days30: Float!
+  """31–60 days overdue"""
+  days60: Float!
+  """61–90 days overdue"""
+  days90: Float!
+  """Over 90 days overdue"""
+  over90: Float!
+  total: Float!
+  bills: [AgedPayableBillLine!]!
+}
+
+type AgedReceivableInvoiceLine {
+  invoiceId: ID!
+  invoiceNumber: String!
+  invoiceDate: String!
+  dueDate: String!
+  totalAmount: Float!
+  outstandingAmount: Float!
+  daysOverdue: Int!
+  status: String!
+}
+
+type AgedReceivableRow {
+  customerId: ID!
+  customerName: String!
+  current: Float!
+  days30: Float!
+  days60: Float!
+  days90: Float!
+  over90: Float!
+  total: Float!
+  invoices: [AgedReceivableInvoiceLine!]!
+}
+
 extend type Query {
   generalLedger(id: ID!): GeneralLedger
   generalLedgers(organizationId: String!, page: Int, limit: Int, fiscalYear: String, status: String): [GeneralLedger!]!
@@ -108,6 +164,10 @@ extend type Query {
   trialBalance(organizationId: String!): [TrialBalanceLine!]!
   incomeStatement(organizationId: String!): IncomeStatementReport!
   balanceSheet(organizationId: String!): BalanceSheetReport!
+  """Aged Payable report — outstanding vendor bills bucketed by days overdue (0 / 1-30 / 31-60 / 61-90 / 90+)."""
+  agedPayable(organizationId: String!): [AgedPayableRow!]!
+  """Aged Receivable report — outstanding customer invoices bucketed by days overdue."""
+  agedReceivable(organizationId: String!): [AgedReceivableRow!]!
 }
 
 extend type Mutation {

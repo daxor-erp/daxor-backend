@@ -82,6 +82,18 @@ const productSchema = new Schema(
 		// Inventory
 		reorderingRules: { type: [reorderingRuleSchema], default: [] },
 
+		/**
+		 * Odoo 19: Bill Control Policy is set per-product (Purchase tab → Vendor Bills section).
+		 * ordered_quantities  — bill as soon as PO is confirmed (default for services).
+		 * received_quantities — bill only after receipt is validated (default for goods).
+		 * When unset (''), the PO-level billControlPolicy takes precedence.
+		 */
+		billControlPolicy: {
+			type: String,
+			enum: ['ordered_quantities', 'received_quantities', ''],
+			default: '',
+		},
+
 		// Accounting (inherits from category if left blank)
 		incomeAccount: { type: String, default: '' },
 		expenseAccount: { type: String, default: '' },

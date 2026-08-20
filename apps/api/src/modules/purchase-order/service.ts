@@ -9,6 +9,7 @@ import { VendorBillService } from '../vendor-bill/service'
 import { VendorBillRepository } from '../vendor-bill/repository'
 import { PoLineCalculator, type PoLineInput } from './line-calculator'
 import { ProductStockService } from '../product-stock/service'
+import { Product } from '../product/model'
 import { logger } from '../../lib/logger'
 
 type AnyRecord = Record<string, unknown>
@@ -507,9 +508,36 @@ export class PurchaseOrderService {
 			throw new GraphQLValidationError('PO must be confirmed (or received) before billing')
 		}
 
-		// Gap 1 — bill only against received quantity; block billing before any receipt
-		// UNLESS the organization chooses to allow invoice-on-order (common in services).
-		// We enforce "must have at least some received qty" as the safer default.
+		// Bill Control Policy (Odoo 19 — per-product first, then falls back to PO-level header policy):
+		//   ordered_quantities  → bill on PO confirm (default for services).
+		//   received_quantities → bill only after receipt (default for goods).
+		const poBillPolicy = String((po as any).billControlPolicy ?? 'received_quantities')
+
+		// Load per-product policies for all product lines in this PO.
+		// We do this once up-front to avoid N+1 queries inside the line loop.
+		const productIdSet = new Set<string>()
+		for (const line of (po as any).items ?? []) {
+			if (line.productId) productIdSet.add(String(line.productId))
+		}
+		const productPolicies = new Map<string, string>()
+		if (productIdSet.size > 0) {
+			const products = await Product.find({ _id: { $in: [...productIdSet] } }).select('_id billControlPolicy').lean()
+			for (const p of products as any[]) {
+				const policy = String(p.billControlPolicy ?? '').trim()
+				if (policy) productPolicies.set(String(p._id), policy)
+			}
+		}
+
+		/**
+		 * Resolve effective bill control policy for a line:
+		 * 1. Product-level policy (if set) — Odoo 19 standard.
+		 * 2. PO-level policy (header fallback).
+		 */
+		const resolveLinePolicy = (line: any): string => {
+			const productId = line.productId ? String(line.productId) : ''
+			return productPolicies.get(productId) ?? poBillPolicy
+		}
+
 		const productLines = ((po as any).items ?? []).filter(
 			(l: any) => !l.lineType || l.lineType === 'product',
 		)
@@ -517,9 +545,20 @@ export class PurchaseOrderService {
 			(s: number, l: any) => s + Number(l.qtyReceived ?? 0),
 			0,
 		)
-		if (totalReceived === 0) {
+
+		// Global pre-check: at least one line must be billab le under its resolved policy.
+		// Lines with ordered_quantities are always billable; lines with received_quantities need receipt.
+		const anyBillable = productLines.some((l: any) => {
+			const policy = resolveLinePolicy(l)
+			if (policy === 'ordered_quantities') return true
+			return Number(l.qtyReceived ?? 0) > 0
+		})
+
+		if (!anyBillable) {
 			throw new GraphQLValidationError(
-				'Cannot bill a PO before any products have been received. Receive goods first, then create the bill.',
+				'Cannot bill a PO before any products have been received (no lines are billable yet). ' +
+				'Lines using the received_quantities policy require at least partial receipt first. ' +
+				'Receive goods first, then create the bill, or change the bill control policy to ordered_quantities.',
 			)
 		}
 
@@ -542,10 +581,15 @@ export class PurchaseOrderService {
 			if (line.lineType && line.lineType !== 'product') return line.toObject?.() ?? line
 
 			const lineId = String(line._id)
+			const qtyOrdered = Number(line.quantity ?? 0)
 			const qtyReceived = Number(line.qtyReceived ?? 0)
 			const qtyAlreadyBilled = Number(line.qtyBilled ?? 0)
-			// Billable remaining = received but not yet billed.
-			const billableRemaining = Math.max(0, qtyReceived - qtyAlreadyBilled)
+
+			// For ordered_quantities policy, the billable base is the ordered qty.
+			// For received_quantities policy (default), the billable base is the received qty.
+			const billableBase = resolveLinePolicy(line) === 'ordered_quantities' ? qtyOrdered : qtyReceived
+			// Billable remaining = billable base minus what was already billed.
+			const billableRemaining = Math.max(0, billableBase - qtyAlreadyBilled)
 
 			let qtyToBill: number
 			if (explicitByLineId.size > 0) {
@@ -763,6 +807,19 @@ export class PurchaseOrderService {
 			throw new GraphQLValidationError('Only confirmed purchase orders can be locked')
 		}
 		return this.repository.update(id, { status: 'locked', updatedBy: userId })
+	}
+
+	/**
+	 * Unlock a locked PO — mirrors Odoo's Unlock button.
+	 * Restores the PO to 'purchase_order' so edits and receiving are possible again.
+	 */
+	async unlock(id: string, userId: string): Promise<any> {
+		const po = await this.repository.findById(id)
+		if (!po) throw new GraphQLValidationError('Purchase order not found')
+		if (String(po.status) !== 'locked') {
+			throw new GraphQLValidationError('Only locked purchase orders can be unlocked')
+		}
+		return this.repository.update(id, { status: 'purchase_order', updatedBy: userId })
 	}
 
 	async softDelete(id: string, userId: string): Promise<any> {

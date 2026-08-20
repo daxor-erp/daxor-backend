@@ -46,4 +46,8 @@ extend type Mutation {
 	syncCustomerInvoiceAccounting(id: ID!): CustomerInvoice!
 	"""Issue credit memo: reverse AR/revenue and update invoice balance."""
 	applyCustomerCreditMemo(id: ID!, creditAmount: Float!, reason: String): CustomerInvoice!
+	"""Move invoice from in_payment to paid — call after bank statement line is matched (reconciliation step)."""
+	reconcileCustomerInvoice(id: ID!): CustomerInvoice!
+	"""Approve a submitted customer invoice — posts revenue and AR journal entry."""
+	approveCustomerInvoiceApproval(id: ID!): CustomerInvoice!
 }

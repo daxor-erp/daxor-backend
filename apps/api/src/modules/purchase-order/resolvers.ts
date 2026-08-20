@@ -148,6 +148,11 @@ export const resolvers = {
       return service.lock(id, ctx.user!.id)
     },
 
+    unlockPurchaseOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      return service.unlock(id, ctx.user!.id)
+    },
+
     billPurchaseOrder: (
       _: unknown,
       { id, billDate, dueDate, lines }: { id: string; billDate: string; dueDate: string; lines?: Array<{ lineId: string; quantity: number }> },
@@ -162,6 +167,12 @@ export const resolvers = {
     duplicatePurchaseOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       assertAuthenticated(ctx)
       return service.duplicate(id, ctx.user!.id)
+    },
+
+    runReorderScheduler: async (_: unknown, { organizationId }: { organizationId: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      const { runReorderScheduler } = await import('../../lib/reorder-scheduler')
+      return runReorderScheduler(organizationId, ctx.user!.id)
     },
   },
   PurchaseOrder: {
@@ -207,6 +218,7 @@ export const resolvers = {
     totalAmount: (p: any) => p.totalAmount ?? 0,
     receiptStatus: (p: any) => p.receiptStatus ?? 'not_received',
     billingStatus: (p: any) => p.billingStatus ?? 'not_billed',
+    billControlPolicy: (p: any) => p.billControlPolicy ?? 'received_quantities',
     currency: (p: any) => p.currency ?? 'INR',
     exchangeRate: (p: any) => Number(p.exchangeRate ?? 1) || 1,
     totalAmountBaseCurrency: (p: any) => Number(p.totalAmountBaseCurrency ?? p.totalAmount ?? 0),

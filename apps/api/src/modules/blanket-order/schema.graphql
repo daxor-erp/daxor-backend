@@ -1,0 +1,91 @@
+type BlanketOrderLine {
+  id: ID!
+  productId: ID
+  productName: String
+  quantity: Float!
+  orderedQty: Float!
+  unitPrice: Float!
+  """Computed: quantity × unitPrice."""
+  lineTotal: Float!
+  uomId: ID
+  notes: String
+}
+
+input BlanketOrderLineInput {
+  productId: ID
+  productName: String
+  quantity: Float!
+  unitPrice: Float!
+  uomId: ID
+  notes: String
+}
+
+type BlanketOrder {
+  id: ID!
+  seqNo: String
+  """Alias for seqNo — the human-readable blanket order number shown in the UI."""
+  boNumber: String
+  vendorId: ID!
+  vendorName: String
+  agreementType: String!
+  lines: [BlanketOrderLine!]!
+  validityStart: String
+  validityEnd: String
+  """Alias for validityStart used by the frontend."""
+  startDate: String
+  """Alias for validityEnd used by the frontend."""
+  endDate: String
+  currency: String!
+  notes: String
+  """Computed: sum of (quantity × unitPrice) across all lines."""
+  totalValue: Float!
+  """Computed: sum of (orderedQty × unitPrice) across all lines — the amount called off so far."""
+  committedValue: Float!
+  """draft | open | closed | cancelled"""
+  status: String!
+  organizationId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input CreateBlanketOrderInput {
+  vendorId: ID!
+  vendorName: String
+  agreementType: String
+  lines: [BlanketOrderLineInput!]!
+  validityStart: String
+  validityEnd: String
+  """Alias for validityStart — accepted from the frontend date picker."""
+  startDate: String
+  """Alias for validityEnd — accepted from the frontend date picker."""
+  endDate: String
+  currency: String
+  notes: String
+  organizationId: ID!
+}
+
+input UpdateBlanketOrderInput {
+  vendorId: ID
+  vendorName: String
+  lines: [BlanketOrderLineInput!]
+  validityStart: String
+  validityEnd: String
+  currency: String
+  notes: String
+}
+
+extend type Query {
+  blanketOrder(id: ID!): BlanketOrder
+  blanketOrders(organizationId: ID!, status: String, vendorId: ID): [BlanketOrder!]!
+}
+
+extend type Mutation {
+  createBlanketOrder(input: CreateBlanketOrderInput!): BlanketOrder!
+  updateBlanketOrder(id: ID!, input: UpdateBlanketOrderInput!): BlanketOrder!
+  confirmBlanketOrder(id: ID!): BlanketOrder!
+  closeBlanketOrder(id: ID!): BlanketOrder!
+  cancelBlanketOrder(id: ID!): BlanketOrder!
+  deleteBlanketOrder(id: ID!): Boolean!
+  """Record a call-off quantity against a specific line on an open blanket order."""
+  recordCallOff(id: ID!, lineId: ID!, qty: Float!): BlanketOrder!
+}

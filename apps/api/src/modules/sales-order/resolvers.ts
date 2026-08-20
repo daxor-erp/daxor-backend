@@ -50,8 +50,27 @@ export const resolvers = {
 			await approvalService.enqueueSalesOrderSubmitted(id, ctx.user!.id)
 			return submitted
 		},
+
+		approveSalesOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			return service.approve(id, ctx.user!.id)
+		},
+
+		rejectSalesOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			return service.reject(id, ctx.user!.id)
+		},
 		refundCashSale: async (_: unknown, { input }: any, ctx: GraphQLContext) =>
 			service.refundCashSale(input, ctx.user?.id ?? ''),
+
+		createInvoiceFromSalesOrder: async (
+			_: unknown,
+			{ salesOrderId, invoiceDate, dueDate }: { salesOrderId: string; invoiceDate: string; dueDate?: string },
+			ctx: GraphQLContext,
+		) => {
+			assertAuthenticated(ctx)
+			return service.createInvoiceFromSalesOrder(salesOrderId, invoiceDate, dueDate, ctx.user!.id)
+		},
 	},
 	SalesOrder: {
 		seqNo: (parent: any) => String(parent.seqNo ?? parent.salesOrderNumber ?? parent._id ?? ''),
@@ -60,6 +79,8 @@ export const resolvers = {
 		organizationId: (parent: any) => String(parent.organizationId ?? ''),
 		quotationId: (parent: any) => (parent.quotationId != null ? String(parent.quotationId) : null),
 		cashSale: (parent: any) => parent.cashSale === true,
+		invoicingPolicy: (parent: any) => parent.invoicingPolicy ?? 'ordered_quantities',
+		deliveredQuantity: (parent: any) => Number(parent.deliveredQuantity ?? 0),
 		refundedAt: (parent: any) =>
 			parent.refundedAt ? new Date(parent.refundedAt).toISOString() : null,
 		refundAmount: (parent: any) =>

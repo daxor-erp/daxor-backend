@@ -90,4 +90,6 @@ extend type Mutation {
 	updateDeliveryOrder(id: ID!, input: UpdateDeliveryOrderInput!): DeliveryOrder!
 	deleteDeliveryOrder(id: ID!): DeliveryOrder!
 	transitionDeliveryOrderStatus(id: ID!, status: String!, signedBy: String): DeliveryOrder!
+	"""Cancel a delivery order. If it was already DISPATCHED, stock deduction is reversed."""
+	cancelDeliveryOrder(id: ID!): DeliveryOrder!
 }

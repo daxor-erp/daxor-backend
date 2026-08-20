@@ -24,7 +24,9 @@ export interface IChartOfAccounts extends IBaseEntity {
   accountCode: string;
   accountNumber?: string;
   accountName: string;
-  accountType: string;
+  accountType: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense' | 'bank' | 'receivable' | 'payable' | 'other';
+  parentAccountId?: string;
+  /** @deprecated use parentAccountId */
   parentAccount?: string;
   level: number;
   isActive: boolean;
@@ -56,7 +58,15 @@ const ChartOfAccountsSchema = new Schema<IChartOfAccounts>({
   accountCode: { type: String, required: true },
   accountNumber: String,
   accountName: { type: String, required: true },
-  accountType: { type: String, required: true },
+  accountType: {
+    type: String,
+    required: true,
+    enum: ['asset', 'liability', 'equity', 'revenue', 'expense', 'bank', 'receivable', 'payable', 'other'],
+    default: 'other',
+  },
+  /** Structured parent reference — ObjectId pointing to another ChartOfAccounts document. */
+  parentAccountId: { type: Schema.Types.ObjectId, ref: 'ChartOfAccounts', default: null },
+  /** @deprecated retained for backward read compatibility with existing rows that stored a string code. */
   parentAccount: String,
   level: { type: Number, default: 1 },
   isActive: { type: Boolean, default: true },

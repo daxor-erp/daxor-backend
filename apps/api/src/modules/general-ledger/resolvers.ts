@@ -28,6 +28,10 @@ export const resolvers = {
       service.getIncomeStatement(organizationId),
     balanceSheet: async (_: unknown, { organizationId }: { organizationId: string }) =>
       service.getBalanceSheet(organizationId),
+    agedPayable: async (_: unknown, { organizationId }: { organizationId: string }) =>
+      service.getAgedPayable(organizationId),
+    agedReceivable: async (_: unknown, { organizationId }: { organizationId: string }) =>
+      service.getAgedReceivable(organizationId),
   },
   TrialBalanceLine: {
     net: (p: any) => p.net ?? Math.round((Number(p.debit) - Number(p.credit)) * 100) / 100,

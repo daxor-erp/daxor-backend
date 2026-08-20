@@ -24,10 +24,11 @@ const vendorBillSchema = new Schema({
   debitNotesApplied: { type: Number, default: 0 }, // vendor debit notes applied to this bill
   outstandingAmount: { type: Number, default: 0 }, // totalAmount - paidAmount - debitNotesApplied
   notes: { type: String },
-  // draft → submitted → approved → partially_paid → paid → cancelled
+  // draft → submitted → approved → in_payment → partially_paid → paid → cancelled
+  // in_payment: payment registered; cleared to paid once bank statement is reconciled
   status: {
     type: String,
-    enum: ['draft', 'submitted', 'approval_declined', 'approved', 'partially_paid', 'paid', 'cancelled'],
+    enum: ['draft', 'submitted', 'approval_declined', 'approved', 'in_payment', 'partially_paid', 'paid', 'cancelled'],
     default: 'draft',
   },
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },

@@ -103,7 +103,9 @@ export class CustomerInvoiceService {
 		}
 		const newPaid = paid + amount
 		const newOutstanding = total - newPaid
-		const newStatus = newOutstanding <= 0.01 ? 'paid' : 'partially_paid'
+		// Odoo flow: Register Payment → In Payment (awaiting bank reconciliation) → Paid.
+		// Full payment → in_payment until reconciled; partial → in_payment.
+		const newStatus = newOutstanding <= 0.01 ? 'paid' : 'in_payment'
 		await this.repository.update(invoiceId, { paidAmount: newPaid, status: newStatus })
 	}
 
@@ -204,6 +206,24 @@ export class CustomerInvoiceService {
 		if (!inv || (inv as any).deletedAt) throw new Error('Invoice not found')
 		await accountingPosting.postCustomerInvoiceRevenue(inv, userId)
 		return inv
+	}
+
+	/**
+	 * Bank reconciliation step: in_payment → paid.
+	 * Call after the bank statement line is matched to this invoice's payment.
+	 * Idempotent — safe to call on an already-paid invoice.
+	 */
+	async reconcileInvoice(id: string, userId: string): Promise<any> {
+		const inv = await this.repository.findById(id)
+		if (!inv || (inv as any).deletedAt) throw new Error('Invoice not found')
+		const st = String((inv as any).status ?? '')
+		if (st === 'paid') return inv   // already reconciled — no-op
+		if (st !== 'in_payment') {
+			throw new Error(
+				`Only invoices in 'in_payment' status can be reconciled (current: ${st})`,
+			)
+		}
+		return this.repository.update(id, { status: 'paid', updatedBy: userId, updatedAt: new Date() })
 	}
 
 	async declineApproval(id: string, userId: string): Promise<any> {

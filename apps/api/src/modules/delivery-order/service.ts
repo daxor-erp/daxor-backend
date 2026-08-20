@@ -1,5 +1,10 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { DeliveryOrderRepository } from './repository'
+import { InventoryControlService } from '../inventory-control/service'
+import { accountingPosting } from '../../lib/accounting-posting'
+import { SalesOrder } from '../sales-order/model'
+
+const inventoryService = new InventoryControlService()
 
 export interface DeliveryItemInput {
 	itemId?: string | null
@@ -72,10 +77,88 @@ export class DeliveryOrderService {
 		return this.repository.softDelete(id)
 	}
 
-	async transitionStatus(id: string, status: string, signedBy?: string): Promise<any> {
+	async cancel(id: string, userId = 'system'): Promise<any> {
+		const doc = await this.repository.findById(id)
+		if (!doc) throw new GraphQLValidationError('Delivery order not found')
+		const st = String((doc as any).status ?? '').toUpperCase()
+		if (st === 'DELIVERED') throw new GraphQLValidationError('Cannot cancel a delivery that has already been delivered')
+		if (st === 'CANCELLED') throw new GraphQLValidationError('Delivery order is already cancelled')
+
+		// If already dispatched, reverse the inventory deduction
+		if (st === 'DISPATCHED') {
+			const orgId = String((doc as any).organizationId ?? '')
+			const items: any[] = (doc as any).items ?? []
+			if (orgId && items.length > 0) {
+				await inventoryService.applyReceiptLines({
+					organizationId: orgId,
+					userId,
+					referenceModule: 'delivery_order_cancel',
+					referenceId: id,
+					lines: items.map((i: any) => ({
+						itemId: i.itemId ? String(i.itemId) : undefined,
+						itemDescription: String(i.itemName ?? 'Item'),
+						quantity: Number(i.quantity ?? 0),
+						unit: i.unit,
+					})),
+					direction: 'in', // reversal: stock comes back in
+				})
+				// Reverse SO delivered quantity if linked
+				const salesOrderId = (doc as any).salesOrderId
+				if (salesOrderId) {
+					const totalDispatched = items.reduce((s: number, i: any) => s + Number(i.quantity ?? 0), 0)
+					await SalesOrder.findByIdAndUpdate(salesOrderId, {
+						$inc: { deliveredQuantity: -totalDispatched },
+					}).exec()
+				}
+			}
+		}
+
+		return this.repository.update(id, { status: 'CANCELLED', cancelledAt: new Date(), cancelledBy: userId } as any)
+	}
+
+	async transitionStatus(id: string, status: string, signedBy?: string, userId = 'system'): Promise<any> {
+		const doc = await this.repository.findById(id)
+		if (!doc) throw new GraphQLValidationError('Delivery order not found')
+
 		const patch: Record<string, unknown> = { status }
 		const upper = status.toUpperCase()
-		if (upper === 'DISPATCHED') patch.dispatchedAt = new Date()
+
+		if (upper === 'DISPATCHED') {
+			patch.dispatchedAt = new Date()
+
+			// Odoo flow: Validate delivery → stock deducted immediately.
+			// Deduct each item line from inventory-control at the source warehouse.
+			const orgId = String(doc.organizationId ?? '')
+			const items: any[] = (doc as any).items ?? []
+			if (orgId && items.length > 0) {
+				await inventoryService.applyReceiptLines({
+					organizationId: orgId,
+					userId,
+					referenceModule: 'delivery_order',
+					referenceId: id,
+					lines: items.map((i: any) => ({
+						itemId: i.itemId ? String(i.itemId) : undefined,
+						itemDescription: String(i.itemName ?? 'Item'),
+						quantity: Number(i.quantity ?? 0),
+						unit: i.unit,
+					})),
+					direction: 'out',
+				})
+
+				// Post COGS journal entry: Dr COGS / Cr Inventory
+				await accountingPosting.postDeliveryOrderDispatch(doc, userId)
+
+				// Update the linked Sales Order's deliveredQuantity for invoicing policy enforcement.
+				const salesOrderId = (doc as any).salesOrderId
+				if (salesOrderId) {
+					const totalDispatched = items.reduce((s: number, i: any) => s + Number(i.quantity ?? 0), 0)
+					await SalesOrder.findByIdAndUpdate(salesOrderId, {
+						$inc: { deliveredQuantity: totalDispatched },
+					}).exec()
+				}
+			}
+		}
+
 		if (upper === 'DELIVERED') {
 			patch.deliveredAt = new Date()
 			patch.actualArrival = new Date()
@@ -84,6 +167,7 @@ export class DeliveryOrderService {
 				patch.signedAt = new Date()
 			}
 		}
+
 		return this.repository.update(id, patch as any)
 	}
 

@@ -86,6 +86,12 @@ export const resolvers = {
 			return true
 		},
 
+		deactivateVendor: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
+			service.updateVendor(id, { status: 'inactive' }, ctx.user?.id ?? ''),
+
+		reactivateVendor: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
+			service.updateVendor(id, { status: 'active' }, ctx.user?.id ?? ''),
+
 		submitVendorForApproval: async (
 			_: unknown,
 			args: { id: string; assigneeApproverUserIds?: string[] | null },
