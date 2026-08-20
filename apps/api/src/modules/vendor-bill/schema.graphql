@@ -82,4 +82,8 @@ extend type Mutation {
   """Post expense/AP journal and GL for an approved bill (safe to retry)."""
   syncVendorBillAccounting(id: ID!): VendorBill!
   deleteVendorBill(id: ID!): Boolean!
+  """Move bill from in_payment to paid — call after bank statement line is matched (reconciliation step)."""
+  reconcileVendorBill(id: ID!): VendorBill!
+  """Apply a debit note / vendor credit against an approved bill — reduces outstanding balance (Odoo: Outstanding Credits)."""
+  applyVendorCredit(id: ID!, amount: Float!): VendorBill!
 }

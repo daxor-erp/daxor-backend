@@ -1,10 +1,13 @@
 import { SalesOrderRepository } from './repository'
+import { CustomerInvoiceService } from '../customer-invoice/service'
 
 export class SalesOrderService {
 	private repository: SalesOrderRepository
+	private invoiceService: CustomerInvoiceService
 
 	constructor() {
 		this.repository = new SalesOrderRepository()
+		this.invoiceService = new CustomerInvoiceService()
 	}
 
 	private async generateSalesOrderNumber(organizationId: string): Promise<string> {
@@ -119,5 +122,59 @@ export class SalesOrderService {
 			refundedBy: userId,
 			updatedBy: userId,
 		} as any)
+	}
+
+	/**
+	 * Create a Customer Invoice from a Sales Order, enforcing the SO's invoicingPolicy.
+	 *
+	 * Odoo rules:
+	 *   ordered_quantities   → invoice as soon as SO is confirmed (status: approved | active).
+	 *   delivered_quantities → invoice only after deliveredQuantity > 0.
+	 *     Attempting to invoice before any delivery raises:
+	 *     "There is no invoiceable line. If a product has a Delivered quantities invoicing
+	 *      policy, please make sure that a quantity has been delivered."
+	 */
+	async createInvoiceFromSalesOrder(
+		salesOrderId: string,
+		invoiceDate: string,
+		dueDate: string | undefined,
+		userId: string,
+	): Promise<any> {
+		const so = await this.repository.findById(salesOrderId)
+		if (!so) throw new Error('Sales order not found')
+		if ((so as any).deletedAt) throw new Error('Sales order was deleted')
+
+		const status = String((so as any).status ?? '')
+		if (!['approved', 'active', 'completed'].includes(status)) {
+			throw new Error(
+				`Cannot create an invoice for a sales order in status "${status}". ` +
+				'The order must be approved or active first.',
+			)
+		}
+
+		const policy = String((so as any).invoicingPolicy ?? 'ordered_quantities')
+
+		if (policy === 'delivered_quantities') {
+			const delivered = Number((so as any).deliveredQuantity ?? 0)
+			if (delivered <= 0) {
+				throw new Error(
+					'There is no invoiceable line. This sales order uses the "Delivered quantities" invoicing policy. ' +
+					'Please make sure that at least some quantity has been delivered before creating an invoice.',
+				)
+			}
+		}
+
+		return this.invoiceService.create({
+			salesOrderId,
+			customerId: (so as any).customerId ?? (so as any).clientId,
+			invoiceDate: invoiceDate ? new Date(invoiceDate) : new Date(),
+			dueDate: dueDate ? new Date(dueDate) : undefined,
+			totalAmount: Number((so as any).totalAmount ?? 0),
+			subtotal: Number((so as any).subtotal ?? (so as any).totalAmount ?? 0),
+			taxAmount: Number((so as any).taxAmount ?? 0),
+			projectId: (so as any).projectId ?? undefined,
+			organizationId: String((so as any).organizationId),
+			createdBy: userId,
+		})
 	}
 }

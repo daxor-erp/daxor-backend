@@ -11,6 +11,10 @@ type SalesOrder {
 	orderDate: String!
 	organizationId: ID!
 	cashSale: Boolean!
+	"""ordered_quantities: invoice on SO confirm. delivered_quantities: invoice only after delivery validated."""
+	invoicingPolicy: String!
+	"""Running total of quantity delivered — used to gate invoice creation under delivered_quantities policy."""
+	deliveredQuantity: Float!
 	refundedAt: String
 	refundAmount: Float
 	refundMethod: String
@@ -27,6 +31,8 @@ input CreateSalesOrderInput {
 	totalAmount: Float!
 	orderDate: String!
 	organizationId: ID!
+	"""ordered_quantities | delivered_quantities. Defaults to ordered_quantities."""
+	invoicingPolicy: String
 }
 
 input UpdateSalesOrderInput {
@@ -34,6 +40,10 @@ input UpdateSalesOrderInput {
 	projectId: ID
 	totalAmount: Float
 	status: String
+	"""ordered_quantities | delivered_quantities."""
+	invoicingPolicy: String
+	"""Updated when a delivery order is dispatched/delivered — tracks total quantity fulfilled."""
+	deliveredQuantity: Float
 }
 
 input RefundCashSaleInput {
@@ -57,5 +67,16 @@ extend type Mutation {
 	deleteSalesOrder(id: ID!): SalesOrder!
 	"""Draft → pending approval inbox for the Sales approver configured under Org admin → Approvals."""
 	submitSalesOrder(id: ID!): SalesOrder!
+	"""Approve a submitted sales order (called by the designated approver)."""
+	approveSalesOrder(id: ID!): SalesOrder!
+	"""Reject a submitted sales order back to rejected status."""
+	rejectSalesOrder(id: ID!): SalesOrder!
 	refundCashSale(input: RefundCashSaleInput!): SalesOrder!
+	"""
+	Create a Customer Invoice from a Sales Order, enforcing the SO's invoicingPolicy:
+	  ordered_quantities   → invoice immediately on SO confirm (no delivery required).
+	  delivered_quantities → blocks invoice creation until at least some quantity has been delivered
+	                         (deliveredQuantity > 0). Raises an error if nothing has been delivered yet.
+	"""
+	createInvoiceFromSalesOrder(salesOrderId: ID!, invoiceDate: String!, dueDate: String): CustomerInvoice!
 }

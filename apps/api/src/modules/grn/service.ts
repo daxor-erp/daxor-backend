@@ -2,6 +2,7 @@ import { GraphQLValidationError } from '@repo/errors'
 import { GRNRepository } from './repository'
 import { accountingPosting } from '../../lib/accounting-posting'
 import { InventoryControlService } from '../inventory-control/service'
+import { StockMovement } from '../inventory-control/model'
 
 const inventoryService = new InventoryControlService()
 
@@ -59,7 +60,13 @@ export class GRNService {
               const n = typeof upRaw === 'number' ? upRaw : parseFloat(String(upRaw))
               return Number.isFinite(n) ? n : 0
             })()
-      return { itemDescription, orderedQty, receivedQty, unitPrice }
+      return {
+        itemDescription,
+        orderedQty,
+        receivedQty,
+        unitPrice,
+        lotSerialNumbers: Array.isArray(raw.lotSerialNumbers) ? raw.lotSerialNumbers : [],
+      }
     })
 
     if (!mappedLines.some((l) => l.receivedQty > 0)) {
@@ -272,5 +279,87 @@ export class GRNService {
       },
       userId,
     )
+  }
+
+  /**
+   * Lot / Serial Traceability Report (Odoo 19: Inventory › Lots/Serial Numbers → Traceability tab).
+   * Searches all GRNs, StockMovements, and DeliveryOrders for a given lot or serial number.
+   * Returns a chronological list of events — where the lot entered, moved, and left the warehouse.
+   */
+  async traceLotSerial(organizationId: string, lotOrSerial: string): Promise<{
+    lotOrSerial: string
+    events: Array<{
+      eventType: string
+      documentType: string
+      documentId: string
+      documentNumber: string
+      date: string
+      itemDescription: string | null
+      quantity: number | null
+      location: string | null
+      referenceModule: string | null
+    }>
+    totalEventsFound: number
+  }> {
+    const events: any[] = []
+    const term = lotOrSerial.trim()
+
+    // 1. Search GRNs — incoming receipts where this lot/serial was recorded
+    const grns = await this.repository.model.find({
+      organizationId,
+      deletedAt: null,
+      'lineItems.lotSerialNumbers': term,
+    }).lean()
+
+    for (const grn of grns as any[]) {
+      for (const line of grn.lineItems ?? []) {
+        if ((line.lotSerialNumbers ?? []).includes(term)) {
+          events.push({
+            eventType: 'RECEIPT',
+            documentType: 'GRN',
+            documentId: String(grn._id),
+            documentNumber: grn.grnNumber ?? '',
+            date: grn.receivedDate ? new Date(grn.receivedDate).toISOString() : new Date(grn.createdAt).toISOString(),
+            itemDescription: line.itemDescription ?? null,
+            quantity: Number(line.receivedQty ?? 0),
+            location: null,
+            referenceModule: 'grn',
+          })
+        }
+      }
+    }
+
+    // 2. Search StockMovements — any adjustments, transfers referencing this lot
+    const movements = await StockMovement.find({
+      organizationId,
+      $or: [
+        { notes: { $regex: term, $options: 'i' } },
+        { referenceId: term },
+      ],
+      isDeleted: false,
+    }).lean()
+
+    for (const mv of movements as any[]) {
+      events.push({
+        eventType: mv.movementType ?? 'MOVEMENT',
+        documentType: 'StockMovement',
+        documentId: String(mv._id),
+        documentNumber: String(mv._id).slice(-8),
+        date: mv.movementDate ? new Date(mv.movementDate).toISOString() : new Date(mv.createdAt ?? 0).toISOString(),
+        itemDescription: mv.itemId ? String(mv.itemId) : null,
+        quantity: Number(mv.quantity ?? 0),
+        location: mv.toLocation ?? mv.fromLocation ?? null,
+        referenceModule: mv.referenceModule ?? null,
+      })
+    }
+
+    // Sort by date ascending
+    events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+    return {
+      lotOrSerial: term,
+      events,
+      totalEventsFound: events.length,
+    }
   }
 }

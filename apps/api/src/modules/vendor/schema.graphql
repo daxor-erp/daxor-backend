@@ -294,6 +294,10 @@ extend type Mutation {
   """
   submitVendorForApproval(id: ID!, assigneeApproverUserIds: [ID!]): Vendor!
   deleteVendor(id: ID!): Boolean!
+  """Deactivate an approved vendor (blocks if open POs exist). Sets status = inactive."""
+  deactivateVendor(id: ID!): Vendor!
+  """Reactivate an inactive vendor. Sets status = active."""
+  reactivateVendor(id: ID!): Vendor!
 
   """Add a bank account to an existing vendor (Step 6 nested "Create Bank Account" modal)."""
   addVendorBankAccount(vendorId: ID!, input: VendorBankAccountInput!): Vendor!

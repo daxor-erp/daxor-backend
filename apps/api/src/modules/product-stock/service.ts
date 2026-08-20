@@ -125,11 +125,12 @@ export class ProductStockService {
 		return stock
 	}
 
-	/** Applies an incoming receipt (e.g. from a PO) to on-hand stock. Positive delta only. */
+	/** Applies an incoming receipt (e.g. from a PO) to on-hand stock. Positive delta only.
+	 *  Also updates AVCO (Average Cost) running weighted average. */
 	async applyReceipt(
 		productId: string,
 		qty: number,
-		options: { warehouseId?: string | null; organizationId: string; referenceId?: string },
+		options: { warehouseId?: string | null; organizationId: string; referenceId?: string; unitCost?: number },
 	) {
 		if (qty <= 0) return null
 		const warehouseId = options.warehouseId ?? null
@@ -137,14 +138,28 @@ export class ProductStockService {
 		const previousQty = existing?.onHandQty ?? 0
 		const resultingQty = previousQty + qty
 
+		// AVCO update: new_avco = (prev_qty * prev_avco + incoming_qty * unit_cost) / result_qty
+		const prevAvco = Number((existing as any)?.averageCost ?? 0)
+		const unitCost = Number(options.unitCost ?? 0)
+		const newAvco = resultingQty > 0
+			? Math.round(((previousQty * prevAvco + qty * unitCost) / resultingQty) * 100_000) / 100_000
+			: 0
+		const newInventoryValue = Math.round(resultingQty * newAvco * 100) / 100
+
 		let stock
 		if (existing) {
-			stock = await this.stockRepo.update(String(existing._id), { onHandQty: resultingQty })
+			stock = await this.stockRepo.update(String(existing._id), {
+				onHandQty: resultingQty,
+				averageCost: newAvco,
+				inventoryValue: newInventoryValue,
+			})
 		} else {
 			stock = await this.stockRepo.create({
 				productId,
 				warehouseId,
 				onHandQty: resultingQty,
+				averageCost: newAvco,
+				inventoryValue: newInventoryValue,
 				organizationId: options.organizationId,
 			} as any)
 		}

@@ -1,4 +1,9 @@
 import { ReturnAuthorizationRepository } from './repository'
+import { InventoryControlService } from '../inventory-control/service'
+import { accountingPosting } from '../../lib/accounting-posting'
+import { CustomerInvoice } from '../customer-invoice/model'
+
+const inventoryService = new InventoryControlService()
 
 export class ReturnAuthorizationService {
 	private repository: ReturnAuthorizationRepository
@@ -71,6 +76,9 @@ export class ReturnAuthorizationService {
 		const receivedDate = new Date(input.receivedDate)
 		if (Number.isNaN(receivedDate.getTime())) throw new Error('Invalid received date')
 
+		// Accumulate per-line received quantities for inventory update below.
+		const inventoryLines: Array<{ lineId: string; itemId?: string; description: string; qty: number }> = []
+
 		for (const row of linesIn) {
 			const sub = (doc as any).lines.id(row.lineId)
 			if (!sub) throw new Error(`Line ${row.lineId} not found`)
@@ -78,7 +86,18 @@ export class ReturnAuthorizationService {
 			if (!(add > 0)) throw new Error('Each line must have a positive quantity received')
 			const max = Number(sub.quantity)
 			const prev = Number(sub.quantityReceived ?? 0)
-			sub.quantityReceived = Math.min(max, prev + add)
+			const newQty = Math.min(max, prev + add)
+			sub.quantityReceived = newQty
+			// Track how much we're actually adding this call (capped at max).
+			const actualAdded = newQty - prev
+			if (actualAdded > 0) {
+				inventoryLines.push({
+					lineId: row.lineId,
+					itemId: sub.itemId ? String(sub.itemId) : undefined,
+					description: String(sub.description ?? 'Item'),
+					qty: actualAdded,
+				})
+			}
 		}
 
 		;(doc as any).markModified('lines')
@@ -91,7 +110,92 @@ export class ReturnAuthorizationService {
 		;(doc as any).goodsReceivedBy = userId
 		;(doc as any).updatedBy = userId
 		await (doc as any).save()
+
+		// Odoo flow: when returned goods are received back into the warehouse,
+		// stock is immediately increased (direction: 'in').
+		// The RA's organizationId is a plain string — pass it directly.
+		const orgId = String((doc as any).organizationId ?? '')
+		if (orgId && inventoryLines.length > 0) {
+			await inventoryService.applyReceiptLines({
+				organizationId: orgId,
+				userId,
+				referenceModule: 'return_authorization',
+				referenceId: String((doc as any)._id ?? input.returnAuthorizationId),
+				lines: inventoryLines.map((l) => ({
+					itemId: l.itemId,
+					itemDescription: l.description,
+					quantity: l.qty,
+				})),
+				direction: 'in',
+			})
+
+			// Post revenue reversal journal entry: Dr Revenue / Cr AR.
+			// Uses the existing postSalesReturn helper — the RA acts as the sales return doc.
+			const raDoc = await this.repository.findById(input.returnAuthorizationId)
+			if (raDoc) {
+				await accountingPosting.postSalesReturn(raDoc, userId)
+			}
+
+			// Odoo flow: on receipt of returned goods, automatically create a credit note
+			// (reverse invoice) so AR is credited and the customer gets a refund/credit.
+			if (allComplete || inventoryLines.length > 0) {
+				await this.createCreditNoteForRA(doc as any, userId)
+			}
+		}
+
 		return doc
+	}
+
+	/**
+	 * Auto-create a Customer Invoice credit note for the returned amount.
+	 * Matches Odoo behaviour: when returned goods are received back, a credit note
+	 * is auto-generated in draft status for the AR team to review and post.
+	 */
+	private async createCreditNoteForRA(ra: any, userId: string): Promise<void> {
+		try {
+			// Build unique invoice number for the credit note
+			const count = await CustomerInvoice.countDocuments({
+				organizationId: ra.organizationId,
+				deletedAt: null,
+			})
+			const seq = (count + 1).toString().padStart(4, '0')
+			const orgSlice = String(ra.organizationId ?? '').slice(-6).toUpperCase()
+			const invoiceNumber = `CN-RA-${orgSlice}-${seq}`
+
+			// Sum the returned line totals
+			const lines = ra.lines ?? []
+			const totalAmount = lines.reduce(
+				(sum: number, l: any) => sum + Number(l.quantityReceived ?? 0) * Number(l.unitPrice ?? l.rate ?? 0),
+				0,
+			)
+
+			await CustomerInvoice.create({
+				invoiceNumber,
+				organizationId: ra.organizationId,
+				customerId: ra.customerId,
+				clientId: ra.customerId,
+				salesOrderId: ra.salesOrderId ?? undefined,
+				invoiceDate: new Date(),
+				subtotal: totalAmount,
+				taxAmount: 0,
+				totalAmount: totalAmount,
+				status: 'draft',
+				// Credit notes have negative totals in Odoo; mark for UI identification
+				items: lines.map((l: any) => ({
+					itemId: l.itemId ?? undefined,
+					itemDescription: String(l.description ?? 'Returned item'),
+					quantity: Number(l.quantityReceived ?? 0),
+					unitPrice: Number(l.unitPrice ?? l.rate ?? 0),
+					lineTotal: Number(l.quantityReceived ?? 0) * Number(l.unitPrice ?? l.rate ?? 0),
+				})),
+				createdBy: userId,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			})
+		} catch (err) {
+			// Non-fatal: log but do not fail the goods receipt if credit note creation fails
+			console.error('[RA] Failed to auto-create credit note:', err)
+		}
 	}
 
 	async approve(id: string, userId: string) {

@@ -15,7 +15,9 @@
 		"seed:users": "node -r esbuild-register ./src/scripts/seed-users.ts",
 		"test:vendor-flow": "node -r esbuild-register ./src/scripts/test-vendor-flow.ts",
 		"test:product-flow": "node -r esbuild-register ./src/scripts/test-product-flow.ts",
-		"test:purchase-order-flow": "node -r esbuild-register ./src/scripts/test-purchase-order-flow.ts"
+		"test:purchase-order-flow": "node -r esbuild-register ./src/scripts/test-purchase-order-flow.ts",
+		"test:erp-flows": "node -r esbuild-register ./src/scripts/test-erp-flows.ts",
+		"test:gap-fixes": "node -r esbuild-register ./src/scripts/test-gap-fixes.ts"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.12.0",

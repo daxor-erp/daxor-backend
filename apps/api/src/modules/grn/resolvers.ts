@@ -95,6 +95,13 @@ export const resolvers = {
       const rows = await service.getGRNsByPO(purchaseOrderId)
       return rows.map((r) => grnToGraphQL(r))
     },
+
+    lotSerialTrace: async (
+      _: unknown,
+      { organizationId, lotOrSerial }: { organizationId: string; lotOrSerial: string },
+    ) => {
+      return service.traceLotSerial(organizationId, lotOrSerial)
+    },
   },
   Mutation: {
     createGRN: async (

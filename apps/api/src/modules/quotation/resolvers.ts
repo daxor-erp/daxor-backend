@@ -81,6 +81,11 @@ export const resolvers = {
         quotation: await withPartyPopulated(result.quotation),
       }
     },
+
+    createSOFromQuotation: async (_: unknown, { quotationId }: { quotationId: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      return service.createSOFromQuotation(quotationId, ctx.user!.id)
+    },
   },
 
   Quotation: {

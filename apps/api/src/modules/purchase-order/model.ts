@@ -114,6 +114,11 @@ const purchaseOrderSchema = new Schema(
 			],
 			default: 'rfq',
 		},
+		/** Odoo-style billing control policy.
+		 *  ordered_quantities: bill can be created as soon as PO is confirmed (before any receipt).
+		 *  received_quantities: bill can only be created after at least partial receipt. Default. */
+		billControlPolicy: { type: String, enum: ['ordered_quantities', 'received_quantities'], default: 'received_quantities' },
+
 		/** Derived from line qtyReceived vs quantity — surfaced separately per Odoo's Other Information tab. */
 		receiptStatus: { type: String, enum: ['not_received', 'partially_received', 'received'], default: 'not_received' },
 		billingStatus: { type: String, enum: ['not_billed', 'partially_billed', 'billed'], default: 'not_billed' },

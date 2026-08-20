@@ -57,6 +57,17 @@ export const resolvers = {
       return service.getBillById(id)
     },
 
+    reconcileVendorBill: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      return service.reconcileBill(id, ctx.user!.id)
+    },
+
+    applyVendorCredit: async (_: unknown, { id, amount }: { id: string; amount: number }, ctx: GraphQLContext) => {
+      assertAuthenticated(ctx)
+      await service.applyDebitNoteAllocation(id, amount)
+      return service.getBillById(id)
+    },
+
     deleteVendorBill: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
       await service.deleteBill(id, ctx.user?.id ?? '')
       return true

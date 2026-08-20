@@ -5,6 +5,24 @@ type GRNLineItem {
   unitPrice: Float
 }
 
+type LotSerialTraceEvent {
+  eventType: String!
+  documentType: String!
+  documentId: ID!
+  documentNumber: String!
+  date: String!
+  itemDescription: String
+  quantity: Float
+  location: String
+  referenceModule: String
+}
+
+type LotSerialTraceResult {
+  lotOrSerial: String!
+  events: [LotSerialTraceEvent!]!
+  totalEventsFound: Int!
+}
+
 type GRN {
   id: ID!
   grnNumber: String!
@@ -48,6 +66,12 @@ extend type Query {
   grn(id: ID!): GRN
   grns(organizationId: ID!, page: Int, limit: Int): [GRN!]!
   grnsByPO(purchaseOrderId: ID!): [GRN!]!
+  """
+  Lot/Serial Traceability Report — forward and backward trace.
+  Given a lot or serial number, returns every document where it appears:
+  GRN receipts (where it entered), stock movements, and delivery orders (where it left).
+  """
+  lotSerialTrace(organizationId: ID!, lotOrSerial: String!): LotSerialTraceResult!
 }
 
 extend type Mutation {

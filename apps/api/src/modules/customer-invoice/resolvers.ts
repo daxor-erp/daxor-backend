@@ -80,6 +80,16 @@ export const resolvers = {
 			assertAuthenticated(ctx)
 			return service.applyCreditMemo(id, creditAmount, reason, ctx.user!.id)
 		},
+
+		reconcileCustomerInvoice: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			return service.reconcileInvoice(id, ctx.user!.id)
+		},
+
+		approveCustomerInvoiceApproval: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			return service.approveApproval(id, ctx.user!.id)
+		},
 	},
 	CustomerInvoice: {
 		seqNo: (parent: any) => String(parent.seqNo ?? parent.invoiceNumber ?? parent._id ?? ''),

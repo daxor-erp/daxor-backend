@@ -39,7 +39,11 @@ export const resolvers = {
 		},
 		transitionDeliveryOrderStatus: async (_: unknown, { id, status, signedBy }: any, ctx: GraphQLContext) => {
 			assertAuthenticated(ctx)
-			return service.transitionStatus(id, status, signedBy)
+			return service.transitionStatus(id, status, signedBy, ctx.user?.id ?? 'system')
+		},
+		cancelDeliveryOrder: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			return service.cancel(id, ctx.user?.id ?? 'system')
 		},
 	},
 	DeliveryOrder: {

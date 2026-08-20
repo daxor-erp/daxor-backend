@@ -125,7 +125,7 @@ export class VendorBillService {
   async applyPayment(billId: string, amount: number): Promise<void> {
     const bill = await this.repository.findById(billId)
     if (!bill) throw new Error(`Vendor bill ${billId} not found`)
-    if (!['approved', 'partially_paid'].includes(String(bill.status))) {
+    if (!['approved', 'in_payment', 'partially_paid'].includes(String(bill.status))) {
       throw new Error(`Bill ${bill.billNumber} must be approved before applying payments`)
     }
 
@@ -137,11 +137,22 @@ export class VendorBillService {
       throw new Error(`Payment amount exceeds outstanding balance on bill ${bill.billNumber}`)
     }
 
-    const newStatus = newOutstanding <= 0.01 ? 'paid' : 'partially_paid'
+    /**
+     * Odoo flow: Register Payment → bill status = in_payment (outstanding payment account).
+     * Bank reconciliation (clearing outstanding account) → status = paid.
+     * Since Daxor does not yet have a bank-statement reconciliation step, we use:
+     *   - partial payment  → in_payment  (money is on its way, partially)
+     *   - full payment     → in_payment  (money registered, awaiting bank confirmation)
+     * A separate reconcileVendorBill mutation (or auto-reconcile) sets it to paid.
+     * For backwards compatibility, if the bill is already in_payment and fully cleared, mark paid.
+     */
+    const newStatus = newOutstanding <= 0.01 ? 'in_payment' : 'in_payment'
+    // Mark fully cleared bills as paid when paidAmount covers totalAmount.
+    const finalStatus = newOutstanding <= 0.01 ? 'paid' : 'in_payment'
     await this.repository.update(billId, {
       paidAmount: newPaid,
       outstandingAmount: Math.max(0, Math.round(newOutstanding * 100) / 100),
-      status: newStatus,
+      status: finalStatus,
     })
   }
 
@@ -149,7 +160,7 @@ export class VendorBillService {
   async applyDebitNoteAllocation(billId: string, amount: number): Promise<void> {
     const bill = await this.repository.findById(billId)
     if (!bill) throw new Error(`Vendor bill ${billId} not found`)
-    if (!['approved', 'partially_paid'].includes(String(bill.status))) {
+    if (!['approved', 'in_payment', 'partially_paid'].includes(String(bill.status))) {
       throw new Error(`Bill ${bill.billNumber} must be approved before applying debit notes`)
     }
 
@@ -165,12 +176,30 @@ export class VendorBillService {
       throw new Error(`Debit note amount exceeds outstanding on bill ${bill.billNumber}`)
     }
 
-    const newStatus = newOutstanding <= 0.01 ? 'paid' : 'partially_paid'
+    const newStatus = newOutstanding <= 0.01 ? 'paid' : 'in_payment'
     await this.repository.update(billId, {
       debitNotesApplied: debitApplied,
       outstandingAmount: Math.max(0, Math.round(newOutstanding * 100) / 100),
       status: newStatus,
     })
+  }
+
+  /**
+   * Bank reconciliation step: in_payment → paid.
+   * Call this after the bank statement line has been matched to this payment.
+   * Idempotent — safe to call on a bill already in 'paid' status.
+   */
+  async reconcileBill(id: string, userId: string) {
+    const bill = await this.repository.findById(id)
+    if (!bill || bill.deletedAt) throw new GraphQLValidationError('Vendor bill not found')
+    const st = String(bill.status)
+    if (st === 'paid') return bill   // already reconciled — no-op
+    if (st !== 'in_payment') {
+      throw new GraphQLValidationError(
+        `Only bills in 'in_payment' status can be reconciled (current: ${st})`,
+      )
+    }
+    return this.repository.update(id, { status: 'paid', updatedBy: userId })
   }
 
   async syncAccounting(id: string, userId: string) {

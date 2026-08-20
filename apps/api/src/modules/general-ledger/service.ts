@@ -1,6 +1,8 @@
 import { GeneralLedgerRepository, ChartOfAccountsRepository } from './repository';
 import { IGeneralLedger, IChartOfAccounts } from './model';
 import { JournalEntryRepository } from '../journal-entry/repository';
+import { VendorBill } from '../vendor-bill/model';
+import { CustomerInvoice } from '../customer-invoice/model';
 import {
   buildBalanceSheetFromTrialBalance,
   buildIncomeStatementFromTrialBalance,
@@ -44,7 +46,13 @@ export class GeneralLedgerService {
   async createChartOfAccount(data: Partial<IChartOfAccounts>) {
     const accountCode = await this.generateAccountCode(data.organizationId!, data.accountType!);
     const { accountCode: _ignored, ...rest } = data;
-    return this.coaRepository.create({ ...rest, accountCode } as IChartOfAccounts);
+    // Compute level from parent depth if parentAccountId is provided.
+    let level = data.level ?? 1;
+    if ((data as any).parentAccountId) {
+      const parent = await this.coaRepository.findById(String((data as any).parentAccountId));
+      if (parent) level = (Number((parent as any).level) || 1) + 1;
+    }
+    return this.coaRepository.create({ ...rest, accountCode, level } as IChartOfAccounts);
   }
 
   private async generateAccountCode(organizationId: string, accountType: string): Promise<string> {
@@ -137,5 +145,147 @@ export class GeneralLedgerService {
   async getBalanceSheet(organizationId: string) {
     const tb = await this.getTrialBalance(organizationId);
     return buildBalanceSheetFromTrialBalance(tb);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Aged Payable (AP) — Odoo 19 Accounting › Reporting › Aged Payable
+  // ---------------------------------------------------------------------------
+
+  async getAgedPayable(organizationId: string): Promise<{
+    vendorId: string
+    vendorName: string
+    current: number
+    days30: number
+    days60: number
+    days90: number
+    over90: number
+    total: number
+    bills: Array<{
+      billId: string
+      billNumber: string
+      billDate: string
+      dueDate: string
+      totalAmount: number
+      outstandingAmount: number
+      daysOverdue: number
+      status: string
+    }>
+  }[]> {
+    const now = new Date()
+
+    const bills = await VendorBill.find({
+      organizationId,
+      deletedAt: null,
+      status: { $in: ['approved', 'in_payment', 'partially_paid'] },
+    })
+      .populate('vendorId', 'name')
+      .lean()
+
+    const byVendor = new Map<string, any>()
+
+    for (const b of bills as any[]) {
+      const vendorId = String(b.vendorId?._id ?? b.vendorId ?? 'unknown')
+      const vendorName = String(b.vendorId?.name ?? 'Unknown Vendor')
+      const outstanding = Number(b.outstandingAmount ?? 0)
+      if (outstanding <= 0.009) continue
+
+      const dueDate = b.dueDate ? new Date(b.dueDate) : now
+      const daysOverdue = Math.max(0, Math.floor((now.getTime() - dueDate.getTime()) / 86_400_000))
+
+      if (!byVendor.has(vendorId)) {
+        byVendor.set(vendorId, { vendorId, vendorName, current: 0, days30: 0, days60: 0, days90: 0, over90: 0, total: 0, bills: [] })
+      }
+      const row = byVendor.get(vendorId)!
+      row.total = Math.round((row.total + outstanding) * 100) / 100
+
+      if (daysOverdue === 0)            row.current = Math.round((row.current + outstanding) * 100) / 100
+      else if (daysOverdue <= 30)       row.days30  = Math.round((row.days30  + outstanding) * 100) / 100
+      else if (daysOverdue <= 60)       row.days60  = Math.round((row.days60  + outstanding) * 100) / 100
+      else if (daysOverdue <= 90)       row.days90  = Math.round((row.days90  + outstanding) * 100) / 100
+      else                              row.over90  = Math.round((row.over90  + outstanding) * 100) / 100
+
+      row.bills.push({
+        billId: String(b._id),
+        billNumber: b.billNumber ?? '',
+        billDate: b.billDate ? new Date(b.billDate).toISOString() : '',
+        dueDate: b.dueDate  ? new Date(b.dueDate).toISOString()  : '',
+        totalAmount: Number(b.totalAmount ?? 0),
+        outstandingAmount: outstanding,
+        daysOverdue,
+        status: b.status,
+      })
+    }
+
+    return Array.from(byVendor.values()).sort((a, b) => b.total - a.total)
+  }
+
+  // ---------------------------------------------------------------------------
+  // Aged Receivable (AR) — Odoo 19 Accounting › Reporting › Aged Receivable
+  // ---------------------------------------------------------------------------
+
+  async getAgedReceivable(organizationId: string): Promise<{
+    customerId: string
+    customerName: string
+    current: number
+    days30: number
+    days60: number
+    days90: number
+    over90: number
+    total: number
+    invoices: Array<{
+      invoiceId: string
+      invoiceNumber: string
+      invoiceDate: string
+      dueDate: string
+      totalAmount: number
+      outstandingAmount: number
+      daysOverdue: number
+      status: string
+    }>
+  }[]> {
+    const now = new Date()
+
+    const invoices = await CustomerInvoice.find({
+      organizationId,
+      deletedAt: null,
+      status: { $in: ['approved', 'sent', 'in_payment', 'partially_paid', 'overdue'] },
+    })
+      .lean()
+
+    const byCustomer = new Map<string, any>()
+
+    for (const inv of invoices as any[]) {
+      const customerId = String(inv.customerId ?? inv.clientId ?? 'unknown')
+      const outstanding = Math.round(Math.max(0, (Number(inv.totalAmount ?? 0) - Number(inv.paidAmount ?? 0))) * 100) / 100
+      if (outstanding <= 0.009) continue
+
+      const dueDate = inv.dueDate ? new Date(inv.dueDate) : now
+      const daysOverdue = Math.max(0, Math.floor((now.getTime() - dueDate.getTime()) / 86_400_000))
+
+      if (!byCustomer.has(customerId)) {
+        byCustomer.set(customerId, { customerId, customerName: customerId.slice(-8), current: 0, days30: 0, days60: 0, days90: 0, over90: 0, total: 0, invoices: [] })
+      }
+      const row = byCustomer.get(customerId)!
+      row.total = Math.round((row.total + outstanding) * 100) / 100
+
+      if (daysOverdue === 0)            row.current = Math.round((row.current + outstanding) * 100) / 100
+      else if (daysOverdue <= 30)       row.days30  = Math.round((row.days30  + outstanding) * 100) / 100
+      else if (daysOverdue <= 60)       row.days60  = Math.round((row.days60  + outstanding) * 100) / 100
+      else if (daysOverdue <= 90)       row.days90  = Math.round((row.days90  + outstanding) * 100) / 100
+      else                              row.over90  = Math.round((row.over90  + outstanding) * 100) / 100
+
+      row.invoices.push({
+        invoiceId: String(inv._id),
+        invoiceNumber: inv.invoiceNumber ?? inv.seqNo ?? '',
+        invoiceDate: inv.invoiceDate ? new Date(inv.invoiceDate).toISOString() : '',
+        dueDate: inv.dueDate ? new Date(inv.dueDate).toISOString() : '',
+        totalAmount: Number(inv.totalAmount ?? 0),
+        outstandingAmount: outstanding,
+        daysOverdue,
+        status: inv.status,
+      })
+    }
+
+    return Array.from(byCustomer.values()).sort((a, b) => b.total - a.total)
   }
 }

@@ -28,6 +28,18 @@ const salesOrderSchema = new Schema({
 		default: 'draft',
 	},
 	cashSale: { type: Boolean, default: false },
+	/**
+	 * Odoo-style invoicing policy:
+	 *   ordered_quantities  — invoice as soon as the SO is confirmed (default for most businesses).
+	 *   delivered_quantities — invoice only after delivery is validated; blocks invoice creation otherwise.
+	 */
+	invoicingPolicy: {
+		type: String,
+		enum: ['ordered_quantities', 'delivered_quantities'],
+		default: 'ordered_quantities',
+	},
+	/** Running count of quantity delivered across all delivery orders, used for invoicing policy check. */
+	deliveredQuantity: { type: Number, default: 0 },
 	refundedAt: { type: Date },
 	refundAmount: { type: Number },
 	refundMethod: { type: String },

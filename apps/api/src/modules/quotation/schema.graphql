@@ -106,4 +106,6 @@ extend type Mutation {
 	deleteQuotation(id: ID!): Boolean!
 	submitQuotationForApproval(id: ID!): Quotation!
 	sendQuotation(id: ID!): SendQuotationResult!
+	"""Convert an approved/accepted quotation into a Sales Order (Odoo: Confirm button)."""
+	createSOFromQuotation(quotationId: ID!): SalesOrder!
 }

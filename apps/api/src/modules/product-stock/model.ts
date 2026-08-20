@@ -14,6 +14,15 @@ const productStockSchema = new Schema(
 		onHandQty: { type: Number, default: 0 },
 		/** Quantity currently held in QC inspection — received but not yet cleared for use. */
 		qcHoldQty: { type: Number, default: 0 },
+		/**
+		 * AVCO (Average Cost) — running weighted average unit cost.
+		 * Updated on every receipt: new_avco = (current_qty * current_avco + incoming_qty * unit_cost)
+		 *                                      / (current_qty + incoming_qty)
+		 * Used to value COGS on each delivery (Dr COGS = qty_delivered × avco).
+		 */
+		averageCost: { type: Number, default: 0 },
+		/** Total inventory value at AVCO cost = onHandQty × averageCost */
+		inventoryValue: { type: Number, default: 0 },
 		organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
 	},
 	{ timestamps: true },

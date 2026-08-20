@@ -110,6 +110,8 @@ type PurchaseOrder {
   status: String!
   receiptStatus: String!
   billingStatus: String!
+  """ordered_quantities: bill on PO confirm (Odoo default for services). received_quantities: bill only after receipt (default for goods)."""
+  billControlPolicy: String!
 
   items: [POLineItem!]
   notes: String
@@ -144,6 +146,8 @@ input CreatePurchaseOrderInput {
   items: [POLineItemInput!]!
   notes: String
   organizationId: ID!
+  """ordered_quantities | received_quantities — controls when a vendor bill can be created. Defaults to received_quantities."""
+  billControlPolicy: String
 }
 
 input UpdatePurchaseOrderInput {
@@ -168,6 +172,8 @@ input UpdatePurchaseOrderInput {
   items: [POLineItemInput!]
   notes: String
   status: String
+  """ordered_quantities | received_quantities — controls when a vendor bill can be created."""
+  billControlPolicy: String
   """Current version value from the client — if provided and mismatched, the update is rejected (optimistic concurrency)."""
   expectedVersion: Int
 }
@@ -186,6 +192,27 @@ input PoReceiveLineInput {
 input PoBillLineInput {
   lineId: ID!
   quantity: Float!
+}
+
+type ReorderSchedulerProductResult {
+  productId: ID!
+  productName: String!
+  onHandQty: Float!
+  minQty: Float!
+  maxQty: Float!
+  qtyToOrder: Float!
+  vendorId: ID!
+  unitPrice: Float!
+  poCreated: Boolean!
+  poId: ID
+  error: String
+}
+
+type ReorderSchedulerResult {
+  triggered: Boolean!
+  scanned: Int!
+  replenished: Int!
+  products: [ReorderSchedulerProductResult!]!
 }
 
 extend type Query {
@@ -214,6 +241,8 @@ extend type Mutation {
   receivePurchaseOrder(id: ID!, lines: [PoReceiveLineInput!]): PurchaseOrder!
   cancelPurchaseOrder(id: ID!): PurchaseOrder!
   lockPurchaseOrder(id: ID!): PurchaseOrder!
+  """Unlock a locked PO to allow edits — mirrors Odoo's Unlock button on confirmed orders."""
+  unlockPurchaseOrder(id: ID!): PurchaseOrder!
   """Bills the received-but-unbilled quantity by default (3-way match: capped at qtyReceived - qtyBilled per line).
   Omit `lines` to bill every line's full receivable-but-unbilled quantity. Supports multiple partial bills per PO."""
   billPurchaseOrder(id: ID!, billDate: String!, dueDate: String!, lines: [PoBillLineInput!]): VendorBill!
@@ -221,4 +250,10 @@ extend type Mutation {
   closePurchaseOrderLine(id: ID!, lineId: ID!): PurchaseOrder!
   """Duplicates an existing PO/RFQ into a brand-new draft RFQ with the same vendor/lines (qty/received/billed reset)."""
   duplicatePurchaseOrder(id: ID!): PurchaseOrder!
+  """
+  Manually trigger the reorder scheduler for an organization.
+  Scans all products with reorderingRules where onHandQty < minQty and creates draft RFQs.
+  Safe to call multiple times — only creates new RFQs, never modifies existing ones.
+  """
+  runReorderScheduler(organizationId: ID!): ReorderSchedulerResult!
 }

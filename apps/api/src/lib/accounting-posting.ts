@@ -1200,6 +1200,55 @@ export class AccountingPostingService {
 		return { accountCode: String(created.accountCode), accountName: String(created.accountName) }
 	}
 
+	/**
+	 * Delivery Order dispatched: Dr COGS, Cr Inventory.
+	 * Fires when status transitions to DISPATCHED.
+	 */
+	async postDeliveryOrderDispatch(deliveryOrder: any, userId: string) {
+		const d = plainDoc(deliveryOrder)
+		const organizationId = orgIdOf(d)
+		const id = docId(d)
+		if (!organizationId || !id) return null
+
+		const docNo = String(d.docNumber || '').trim() || id
+		const ref = formatAccountingRef('DO-COGS', docNo)
+		if (await this.alreadyPostedAny(organizationId, legacyAccountingRefCandidates('DO-COGS', docNo, id))) {
+			return null
+		}
+
+		// Estimate COGS from item lines — quantity × unitCost (falls back to 0 if no cost data).
+		const items: any[] = d.items ?? []
+		const amount = roundMoney(
+			items.reduce((s: number, i: any) => {
+				const qty = Number(i.quantity ?? 0)
+				const cost = Number(i.unitCost ?? i.costPrice ?? 0)
+				return s + qty * cost
+			}, 0),
+		)
+		// If no cost data available, skip the JE (don't post a zero entry).
+		if (amount <= 0) return null
+
+		const cogs = await this.resolveAccount(organizationId, 'cogs')
+		const inventory = await this.resolveAccount(organizationId, 'inventory_asset')
+		const entryDate = d.dispatchedAt ? new Date(d.dispatchedAt) : new Date()
+
+		return this.createPostedJournal({
+			organizationId,
+			userId,
+			referenceNumber: ref,
+			entryDate,
+			description: `Delivery dispatch ${docNo}`,
+			lines: [
+				{ accountCode: cogs.accountCode, accountName: cogs.accountName, debit: amount, credit: 0, description: docNo },
+				{ accountCode: inventory.accountCode, accountName: inventory.accountName, debit: 0, credit: amount, description: docNo },
+			],
+			glPairs: [{ debit: cogs, credit: inventory, amount, description: `Delivery ${docNo} — COGS` }],
+			referenceModule: 'delivery_order',
+			referenceId: id,
+			transactionType: 'DELIVERY_COGS',
+		})
+	}
+
 	/** Production plan completed: capitalize WIP to finished goods. */
 	async postProductionCompletion(plan: any, userId: string) {
 		const p = plainDoc(plan)

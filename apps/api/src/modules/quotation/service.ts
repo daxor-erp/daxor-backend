@@ -4,6 +4,9 @@ import { Quotation } from './model'
 import { QuotationRepository } from './repository'
 import { sendQuotationEmailToClient } from './quotation-email'
 import { normalizeQuotationCustomerId, QUOTATION_PARTY_POPULATE } from './party'
+import { SalesOrderService } from '../sales-order/service'
+
+const salesOrderService = new SalesOrderService()
 
 export class QuotationService {
   private repository: QuotationRepository
@@ -140,5 +143,58 @@ export class QuotationService {
 
     const out = await Quotation.populate(updated, [...QUOTATION_PARTY_POPULATE])
     return { quotation: out, emailSent }
+  }
+
+  /**
+   * Convert an accepted/approved quotation into a Sales Order — matching Odoo 19's
+   * "Confirm" button on the quotation form.
+   *
+   * Allowed source statuses: draft, approved, sent, accepted
+   * (mirrors Odoo which lets you confirm from any pre-sale state).
+   */
+  async createSOFromQuotation(id: string, userId: string): Promise<any> {
+    const doc = await this.repository.findById(id)
+    if (!doc || doc.deletedAt) throw new GraphQLValidationError('Quotation not found')
+
+    const st = String(doc.status ?? '')
+    const ALLOWED = ['draft', 'approved', 'sent', 'accepted']
+    if (!ALLOWED.includes(st)) {
+      throw new GraphQLValidationError(
+        `Cannot convert a quotation with status "${st}" to a sales order. ` +
+        'The quotation must be in draft, approved, sent, or accepted state.',
+      )
+    }
+
+    // Map quotation line items → SO items format
+    const lineItems: any[] = (doc as any).lineItems ?? []
+    const soItems = lineItems.map((li: any) => ({
+      itemId: li.itemId ?? undefined,
+      itemDescription: String(li.description ?? li.itemDescription ?? 'Item'),
+      quantity: Number(li.quantity ?? 1),
+      unitPrice: Number(li.unitPrice ?? 0),
+      lineTotal: Number(li.total ?? li.lineTotal ?? (Number(li.quantity ?? 1) * Number(li.unitPrice ?? 0))),
+    }))
+
+    const so = await salesOrderService.create({
+      organizationId: String((doc as any).organizationId ?? ''),
+      customerId: (doc as any).customerId ?? (doc as any).clientId,
+      quotationId: String((doc as any)._id ?? id),
+      orderDate: new Date(),
+      subtotal: Number((doc as any).subtotal ?? 0),
+      taxAmount: Number((doc as any).taxAmount ?? 0),
+      totalAmount: Number((doc as any).totalAmount ?? 0),
+      items: soItems,
+      status: 'draft',
+      createdBy: userId,
+    })
+
+    // Mark quotation as accepted now that it produced an SO
+    await this.repository.update(id, {
+      status: 'accepted',
+      updatedBy: userId,
+      updatedAt: new Date(),
+    })
+
+    return so
   }
 }
