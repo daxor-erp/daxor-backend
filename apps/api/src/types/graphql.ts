@@ -548,15 +548,25 @@ export type BillOfMaterials = {
 export type BlanketOrder = {
   __typename?: 'BlanketOrder';
   agreementType: Scalars['String']['output'];
+  /** Alias for seqNo — the human-readable blanket order number shown in the UI. */
+  boNumber: Maybe<Scalars['String']['output']>;
+  /** Computed: sum of (orderedQty × unitPrice) across all lines — the amount called off so far. */
+  committedValue: Scalars['Float']['output'];
   createdAt: Scalars['String']['output'];
   currency: Scalars['String']['output'];
+  /** Alias for validityEnd used by the frontend. */
+  endDate: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   lines: Array<BlanketOrderLine>;
   notes: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['ID']['output'];
   seqNo: Maybe<Scalars['String']['output']>;
+  /** Alias for validityStart used by the frontend. */
+  startDate: Maybe<Scalars['String']['output']>;
   /** draft | open | closed | cancelled */
   status: Scalars['String']['output'];
+  /** Computed: sum of (quantity × unitPrice) across all lines. */
+  totalValue: Scalars['Float']['output'];
   updatedAt: Scalars['String']['output'];
   validityEnd: Maybe<Scalars['String']['output']>;
   validityStart: Maybe<Scalars['String']['output']>;
@@ -567,6 +577,8 @@ export type BlanketOrder = {
 export type BlanketOrderLine = {
   __typename?: 'BlanketOrderLine';
   id: Scalars['ID']['output'];
+  /** Computed: quantity × unitPrice. */
+  lineTotal: Scalars['Float']['output'];
   notes: Maybe<Scalars['String']['output']>;
   orderedQty: Scalars['Float']['output'];
   productId: Maybe<Scalars['ID']['output']>;
@@ -875,9 +887,13 @@ export type CreateBankInput = {
 export type CreateBlanketOrderInput = {
   agreementType: InputMaybe<Scalars['String']['input']>;
   currency: InputMaybe<Scalars['String']['input']>;
+  /** Alias for validityEnd — accepted from the frontend date picker. */
+  endDate: InputMaybe<Scalars['String']['input']>;
   lines: Array<BlanketOrderLineInput>;
   notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['ID']['input'];
+  /** Alias for validityStart — accepted from the frontend date picker. */
+  startDate: InputMaybe<Scalars['String']['input']>;
   validityEnd: InputMaybe<Scalars['String']['input']>;
   validityStart: InputMaybe<Scalars['String']['input']>;
   vendorId: Scalars['ID']['input'];
@@ -2888,11 +2904,15 @@ export type Mutation = {
   /** Apply a debit note / vendor credit against an approved bill — reduces outstanding balance (Odoo: Outstanding Credits). */
   applyVendorCredit: VendorBill;
   applyVendorDebitNoteToBill: VendorDebitNote;
+  /** Approve a submitted customer invoice — posts revenue and AR journal entry. */
+  approveCustomerInvoiceApproval: CustomerInvoice;
   approveLeaveApplication: LeaveApplication;
   approveLeaveReinstatement: LeaveReinstatement;
   /** vendorId is optional — assigns/changes the vendor when approving a requisition raised without one. */
   approvePurchaseOrder: PurchaseOrder;
   approveReturnAuthorization: ReturnAuthorization;
+  /** Approve a submitted sales order (called by the designated approver). */
+  approveSalesOrder: SalesOrder;
   approveVendorBill: VendorBill;
   archiveAllNotifications: Scalars['Int']['output'];
   archiveNotification: Notification;
@@ -3162,10 +3182,14 @@ export type Mutation = {
   reconcileCustomerInvoice: CustomerInvoice;
   /** Move bill from in_payment to paid — call after bank statement line is matched (reconciliation step). */
   reconcileVendorBill: VendorBill;
+  /** Record a call-off quantity against a specific line on an open blanket order. */
+  recordCallOff: BlanketOrder;
   refundCashSale: SalesOrder;
   rejectLeaveApplication: LeaveApplication;
   rejectLeaveReinstatement: LeaveReinstatement;
   rejectReturnAuthorization: ReturnAuthorization;
+  /** Reject a submitted sales order back to rejected status. */
+  rejectSalesOrder: SalesOrder;
   /** Release goods from QC hold. decision: 'pass' moves to available stock; 'fail' scraps/returns. */
   releaseProductFromQc: Product;
   removeVendorBankAccount: Vendor;
@@ -3374,6 +3398,11 @@ export type MutationApplyVendorDebitNoteToBillArgs = {
 };
 
 
+export type MutationApproveCustomerInvoiceApprovalArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationApproveLeaveApplicationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3391,6 +3420,11 @@ export type MutationApprovePurchaseOrderArgs = {
 
 
 export type MutationApproveReturnAuthorizationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationApproveSalesOrderArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -4616,6 +4650,13 @@ export type MutationReconcileVendorBillArgs = {
 };
 
 
+export type MutationRecordCallOffArgs = {
+  id: Scalars['ID']['input'];
+  lineId: Scalars['ID']['input'];
+  qty: Scalars['Float']['input'];
+};
+
+
 export type MutationRefundCashSaleArgs = {
   input: RefundCashSaleInput;
 };
@@ -4636,6 +4677,11 @@ export type MutationRejectLeaveReinstatementArgs = {
 export type MutationRejectReturnAuthorizationArgs = {
   id: Scalars['ID']['input'];
   reason: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationRejectSalesOrderArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -11039,14 +11085,19 @@ export type BillOfMaterialsResolvers<ContextType = GraphQLContext, ParentType ex
 
 export type BlanketOrderResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['BlanketOrder'] = ResolversParentTypes['BlanketOrder']> = ResolversObject<{
   agreementType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  boNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  committedValue: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currency: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lines: Resolver<Array<ResolversTypes['BlanketOrderLine']>, ParentType, ContextType>;
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  startDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  totalValue: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   validityEnd: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   validityStart: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -11057,6 +11108,7 @@ export type BlanketOrderResolvers<ContextType = GraphQLContext, ParentType exten
 
 export type BlanketOrderLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['BlanketOrderLine'] = ResolversParentTypes['BlanketOrderLine']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lineTotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   orderedQty: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   productId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -12184,10 +12236,12 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   applyCustomerCreditMemo: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationApplyCustomerCreditMemoArgs, 'creditAmount' | 'id'>>;
   applyVendorCredit: Resolver<ResolversTypes['VendorBill'], ParentType, ContextType, RequireFields<MutationApplyVendorCreditArgs, 'amount' | 'id'>>;
   applyVendorDebitNoteToBill: Resolver<ResolversTypes['VendorDebitNote'], ParentType, ContextType, RequireFields<MutationApplyVendorDebitNoteToBillArgs, 'amount' | 'billId' | 'debitNoteId'>>;
+  approveCustomerInvoiceApproval: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationApproveCustomerInvoiceApprovalArgs, 'id'>>;
   approveLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationApproveLeaveApplicationArgs, 'id'>>;
   approveLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationApproveLeaveReinstatementArgs, 'id'>>;
   approvePurchaseOrder: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationApprovePurchaseOrderArgs, 'id'>>;
   approveReturnAuthorization: Resolver<ResolversTypes['ReturnAuthorization'], ParentType, ContextType, RequireFields<MutationApproveReturnAuthorizationArgs, 'id'>>;
+  approveSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationApproveSalesOrderArgs, 'id'>>;
   approveVendorBill: Resolver<ResolversTypes['VendorBill'], ParentType, ContextType, RequireFields<MutationApproveVendorBillArgs, 'id'>>;
   archiveAllNotifications: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   archiveNotification: Resolver<ResolversTypes['Notification'], ParentType, ContextType, RequireFields<MutationArchiveNotificationArgs, 'id'>>;
@@ -12431,10 +12485,12 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   reconcileCashBank: Resolver<ResolversTypes['CashBank'], ParentType, ContextType, RequireFields<MutationReconcileCashBankArgs, 'id'>>;
   reconcileCustomerInvoice: Resolver<ResolversTypes['CustomerInvoice'], ParentType, ContextType, RequireFields<MutationReconcileCustomerInvoiceArgs, 'id'>>;
   reconcileVendorBill: Resolver<ResolversTypes['VendorBill'], ParentType, ContextType, RequireFields<MutationReconcileVendorBillArgs, 'id'>>;
+  recordCallOff: Resolver<ResolversTypes['BlanketOrder'], ParentType, ContextType, RequireFields<MutationRecordCallOffArgs, 'id' | 'lineId' | 'qty'>>;
   refundCashSale: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationRefundCashSaleArgs, 'input'>>;
   rejectLeaveApplication: Resolver<ResolversTypes['LeaveApplication'], ParentType, ContextType, RequireFields<MutationRejectLeaveApplicationArgs, 'id' | 'reason'>>;
   rejectLeaveReinstatement: Resolver<ResolversTypes['LeaveReinstatement'], ParentType, ContextType, RequireFields<MutationRejectLeaveReinstatementArgs, 'id'>>;
   rejectReturnAuthorization: Resolver<ResolversTypes['ReturnAuthorization'], ParentType, ContextType, RequireFields<MutationRejectReturnAuthorizationArgs, 'id'>>;
+  rejectSalesOrder: Resolver<ResolversTypes['SalesOrder'], ParentType, ContextType, RequireFields<MutationRejectSalesOrderArgs, 'id'>>;
   releaseProductFromQc: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationReleaseProductFromQcArgs, 'decision' | 'productId' | 'quantity'>>;
   removeVendorBankAccount: Resolver<ResolversTypes['Vendor'], ParentType, ContextType, RequireFields<MutationRemoveVendorBankAccountArgs, 'bankAccountId' | 'vendorId'>>;
   replenishProduct: Resolver<ResolversTypes['ReplenishResult'], ParentType, ContextType, RequireFields<MutationReplenishProductArgs, 'productId'>>;
