@@ -1,3 +1,4 @@
+import dns from 'node:dns'
 import { logger } from '@repo/observability'
 import mongoose, { Connection } from 'mongoose'
 import { dropDuplicateIndexes } from '~/lib/drop-duplicate-indexes'
@@ -5,10 +6,18 @@ import { dropLegacyCodeFieldIndexes } from '~/lib/legacy-index-drops'
 
 let dbConnection: Connection | null = null
 
+/** Node on Windows often fails mongodb+srv SRV lookups (querySrv ECONNREFUSED) with the default resolver. */
+function prepareMongoSrvDns(uri: string): void {
+	if (uri.startsWith('mongodb+srv://')) {
+		dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1'])
+	}
+}
+
 export const connectDB = async (uri: string, debugMode: boolean): Promise<Connection> => {
 	if (dbConnection) return dbConnection
 
 	try {
+		prepareMongoSrvDns(uri)
 		mongoose.set('debug', false)
 		const mongooseInstance = await mongoose.connect(uri)
 		dbConnection = mongooseInstance.connection

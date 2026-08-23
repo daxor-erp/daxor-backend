@@ -33,6 +33,12 @@ export class ReturnAuthorizationService {
 			raNumber,
 			status: 'pending',
 			requestedDate: data.requestedDate ? new Date(data.requestedDate) : new Date(),
+			lines: lines.map((line: any) => ({
+				itemId: line.itemId || undefined,
+				description: String(line.description ?? '').trim(),
+				quantity: Number(line.quantity),
+				quantityReceived: 0,
+			})),
 			createdBy: userId,
 			updatedBy: userId,
 		})

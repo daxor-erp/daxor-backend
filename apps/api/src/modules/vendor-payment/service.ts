@@ -1,5 +1,6 @@
 import { VendorPaymentRepository } from './repository'
 import { VendorBillService } from '../vendor-bill/service'
+import { Vendor } from '../vendor/model'
 import { accountingPosting } from '../../lib/accounting-posting'
 
 export class VendorPaymentService {
@@ -27,7 +28,6 @@ export class VendorPaymentService {
     }
 
     // Gap 15 — warn if the vendor has no bank accounts configured.
-    const { Vendor } = await import('../vendor/model')
     const vendor = await Vendor.findById(String(data.vendorId)).lean()
     if (vendor) {
       const bankAccounts: any[] = (vendor as any).bankAccounts ?? []
