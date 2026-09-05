@@ -144,7 +144,7 @@ export const createStatusField = (
 /**
  * Create a currency field
  */
-export const createCurrencyField = (defaultValue: string = 'SGD') => ({
+export const createCurrencyField = (defaultValue: string = 'INR') => ({
   type: String,
   default: defaultValue,
   maxlength: 3,

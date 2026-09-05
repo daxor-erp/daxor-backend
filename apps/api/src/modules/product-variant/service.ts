@@ -79,13 +79,23 @@ export class ProductVariantService {
 		if (!combos.length) return []
 
 		const created = []
-		for (const combo of combos) {
+		const productShort = String(productId).slice(-8).toUpperCase()
+		for (const [i, combo] of combos.entries()) {
 			const suffix = combo.map((c) => c.value).join(', ')
+			const skuSuffix = combo
+				.map((c) =>
+					String(c.value)
+						.replace(/[^a-zA-Z0-9]+/g, '')
+						.slice(0, 8)
+						.toUpperCase(),
+				)
+				.join('-')
 			created.push(
 				await this.repository.create({
 					productId,
 					displayName: `${productName} (${suffix})`,
 					attributeValues: combo,
+					sku: `${productShort}-${skuSuffix || i + 1}`,
 					isActive: true,
 					organizationId,
 				} as any),

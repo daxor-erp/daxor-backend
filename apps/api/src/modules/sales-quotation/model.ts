@@ -24,7 +24,7 @@ const salesQuotationSchema = new Schema({
 	totalDiscount: { type: Number, default: 0 },
 	totalTax: { type: Number, default: 0 },
 	grandTotal: { type: Number, required: true },
-	currency: { type: String, maxlength: 3, default: 'SGD' },
+	currency: { type: String, maxlength: 3, default: 'INR' },
 	paymentTerms: { type: String },
 	deliveryTerms: { type: String },
 	notes: { type: String },
