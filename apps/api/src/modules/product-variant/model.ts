@@ -20,8 +20,9 @@ const productVariantSchema = new Schema(
 		/** Denormalized for quick display without a Product lookup, e.g. "TOOLS-WELDING SPOOL (NAKSHTRA, 250MIG/ARC, 0.8 mm)". */
 		displayName: { type: String, required: true },
 		attributeValues: { type: [variantAttributeValueSchema], default: [] },
-		sku: { type: String, default: '' },
-		barcode: { type: String, default: '' },
+		// Omit empty-string defaults — sparse unique index on sku treats "" as a real value.
+		sku: { type: String },
+		barcode: { type: String },
 		/** Optional per-variant price delta added to the product's base salesPrice. */
 		extraPrice: { type: Number, default: 0 },
 		isActive: { type: Boolean, default: true },

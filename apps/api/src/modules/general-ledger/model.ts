@@ -44,7 +44,7 @@ const GeneralLedgerSchema = new Schema<IGeneralLedger>({
   debitAccount: { type: String, required: true },
   creditAccount: { type: String, required: true },
   amount: { type: Number, required: true },
-  currency: { type: String, default: 'USD' },
+  currency: { type: String, default: 'INR' },
   description: { type: String, required: true },
   fiscalYear: { type: String, required: true },
   fiscalPeriod: { type: String, required: true },

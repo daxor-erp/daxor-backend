@@ -14,7 +14,7 @@ const salesEnquirySchema = new Schema({
 	estimatedStartDate: { type: Date },
 	estimatedEndDate: { type: Date },
 	budget: { type: Number },
-	currency: { type: String, maxlength: 3, default: 'SGD' },
+	currency: { type: String, maxlength: 3, default: 'INR' },
 	status: { 
 		type: String, 
 		enum: ['new', 'under_review', 'quoted', 'negotiation', 'won', 'lost', 'submitted', 'approval_declined'], 

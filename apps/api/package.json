@@ -11,13 +11,15 @@
 		"build": "rm -rf dist && node esbuild.config.js",
 		"dev": "NODE_ENV=development dotenv -e .env.development -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e ts,graphql",
 		"prod": "NODE_ENV=production dotenv -e .env.production -c -- nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
-		"seed:roles": "node -r esbuild-register ./src/scripts/seed-roles.ts",
-		"seed:users": "node -r esbuild-register ./src/scripts/seed-users.ts",
+		"seed:roles": "MONGODB_URI=${MONGODB_URI:-mongodb://127.0.0.1:27017/daxor_db} node -r esbuild-register ./src/scripts/seed-roles.ts",
+		"seed:users": "MONGODB_URI=${MONGODB_URI:-mongodb://127.0.0.1:27017/daxor_db} node -r esbuild-register ./src/scripts/seed-users.ts",
+		"test:edge-cases": "MONGODB_URI=${MONGODB_URI:-mongodb://127.0.0.1:27017/daxor_edge_test} node -r esbuild-register ./src/scripts/test-edge-cases-az.ts",
+		"test:erp-flows": "MONGODB_URI=${MONGODB_URI:-mongodb://127.0.0.1:27017/daxor_erp_test} node -r esbuild-register ./src/scripts/test-erp-flows.ts",
+		"test:gap-fixes": "MONGODB_URI=${MONGODB_URI:-mongodb://127.0.0.1:27017/daxor_gap_test} node -r esbuild-register ./src/scripts/test-gap-fixes.ts",
 		"test:vendor-flow": "node -r esbuild-register ./src/scripts/test-vendor-flow.ts",
 		"test:product-flow": "node -r esbuild-register ./src/scripts/test-product-flow.ts",
 		"test:purchase-order-flow": "node -r esbuild-register ./src/scripts/test-purchase-order-flow.ts",
-		"test:erp-flows": "node -r esbuild-register ./src/scripts/test-erp-flows.ts",
-		"test:gap-fixes": "node -r esbuild-register ./src/scripts/test-gap-fixes.ts"
+		"test:all-edge": "npm run test:edge-cases && npm run test:erp-flows && npm run test:gap-fixes"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.12.0",

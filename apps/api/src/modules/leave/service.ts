@@ -21,10 +21,25 @@ export class LeaveService {
 
 	// --- Leave types ---
 	async createLeaveType(data: any) {
+		const code = String(data.code ?? '').trim()
+		const organizationId = data.organizationId
+		if (!code) throw new GraphQLValidationError('Leave type code is required')
+		if (!organizationId) throw new GraphQLValidationError('organizationId is required')
+
+		const existing = await this.types.findOne({
+			organizationId,
+			code,
+			deletedAt: null,
+		} as any)
+		if (existing) {
+			throw new GraphQLValidationError('A leave type with this code already exists for the organization')
+		}
+
 		try {
-			return await this.types.create(data)
+			return await this.types.create({ ...data, code })
 		} catch (e: any) {
-			if (e?.code === 11000) {
+			const dup = e?.code ?? e?.errorResponse?.code
+			if (dup === 11000 || /E11000|duplicate key/i.test(String(e?.message ?? ''))) {
 				throw new GraphQLValidationError('A leave type with this code already exists for the organization')
 			}
 			throw e
