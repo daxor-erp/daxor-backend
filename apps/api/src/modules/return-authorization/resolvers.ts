@@ -65,17 +65,24 @@ export const resolvers = {
 		createdAt: (parent: any) => toIso(parent.createdAt) ?? '',
 		updatedAt: (parent: any) => toIso(parent.updatedAt) ?? '',
 		lines: (parent: any) =>
-			(parent.lines ?? []).map((line: any) => ({
-				...line,
-				id: line._id?.toString() ?? line.id,
-				itemId: line.itemId != null ? String(line.itemId) : null,
-				quantityReceived: Number(line.quantityReceived ?? 0),
-			})),
+			(parent.lines ?? []).map((line: any) => {
+				const plain = typeof line?.toObject === 'function' ? line.toObject() : line
+				return {
+					...plain,
+					id: plain._id?.toString() ?? plain.id,
+					itemId: plain.itemId != null ? String(plain.itemId) : null,
+					description: String(plain.description ?? '').trim(),
+					quantity: Number(plain.quantity ?? 0),
+					quantityReceived: Number(plain.quantityReceived ?? 0),
+				}
+			}),
 	},
 
 	ReturnAuthorizationLine: {
 		id: (parent: any) => parent._id?.toString() ?? parent.id,
 		itemId: (parent: any) => (parent.itemId != null ? String(parent.itemId) : null),
+		description: (parent: any) => String(parent.description ?? '').trim(),
+		quantity: (parent: any) => Number(parent.quantity ?? 0),
 		quantityReceived: (parent: any) => Number(parent.quantityReceived ?? 0),
 	},
 }
