@@ -59,9 +59,12 @@ function stockMovementToGraphQL(doc: unknown) {
 		throw new Error('Stock movement operation returned no document')
 	}
 	const o = asPlain(doc)
+	const itemName =
+		o.itemName != null && String(o.itemName).trim() !== '' ? String(o.itemName).trim() : null
 	return {
 		id: String(o._id ?? o.id ?? ''),
 		itemId: String(o.itemId ?? ''),
+		itemName,
 		movementType: String(o.movementType ?? ''),
 		fromLocation: String(o.fromLocation ?? ''),
 		toLocation: String(o.toLocation ?? ''),

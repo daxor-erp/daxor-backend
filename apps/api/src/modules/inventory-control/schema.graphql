@@ -18,6 +18,8 @@ type InventoryControl {
 type StockMovement {
   id: ID!
   itemId: String!
+  """Human-readable item / product name resolved from Item or inventory control."""
+  itemName: String
   movementType: String!
   fromLocation: String!
   toLocation: String!

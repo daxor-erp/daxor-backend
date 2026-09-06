@@ -8,6 +8,7 @@ import {
 	APPROVAL_ENTITY_VENDOR,
 	APPROVAL_ENTITY_PROJECT,
 	APPROVAL_ENTITY_SALES_RETURN,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
 	APPROVAL_ENTITY_DELIVERY_CHALLAN,
 	APPROVAL_ENTITY_GRN,
 	APPROVAL_ENTITY_MATERIAL_RECEIPT,
@@ -223,6 +224,21 @@ export async function buildPendingPayloadForSubmit(
 				throw new GraphQLValidationError('Sales return must be submitted before approval routing')
 			}
 			const title = `Sales return ${(row as any).docNumber ?? entityId} — approval requested`
+			return {
+				organizationId: (row as any).organizationId,
+				moduleKey: MODULE_KEY_SALES,
+				entityType,
+				entityId: (row as any)._id ?? (row as any).id,
+				title,
+			}
+		}
+		case APPROVAL_ENTITY_RETURN_AUTHORIZATION: {
+			const row = await deps.returnAuthorizationService.getById(entityId)
+			if (!row || (row as any).deletedAt) throw new GraphQLValidationError('Return authorization not found')
+			if (String((row as any).status) !== 'pending') {
+				throw new GraphQLValidationError('Return authorization must be pending before approval routing')
+			}
+			const title = `Return authorization ${(row as any).raNumber ?? entityId} — approval requested`
 			return {
 				organizationId: (row as any).organizationId,
 				moduleKey: MODULE_KEY_SALES,

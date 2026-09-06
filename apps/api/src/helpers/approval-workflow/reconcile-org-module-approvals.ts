@@ -11,6 +11,7 @@ import {
 	APPROVAL_ENTITY_SALES_ENQUIRY,
 	APPROVAL_ENTITY_SALES_ORDER,
 	APPROVAL_ENTITY_SALES_RETURN,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
 	APPROVAL_ENTITY_VENDOR_BILL,
 	MODULE_KEY_PAYABLES,
 	MODULE_KEY_PAYROLL,
@@ -33,6 +34,7 @@ import { Project } from '~/modules/project/model'
 import { Quotation } from '~/modules/quotation/model'
 import { SalesOrder } from '~/modules/sales-order/model'
 import { SalesReturn } from '~/modules/sales-return/model'
+import { ReturnAuthorization } from '~/modules/return-authorization/model'
 import { VendorBill } from '~/modules/vendor-bill/model'
 
 type PendingEntityRef = {
@@ -107,6 +109,15 @@ async function collectPendingEntitiesForModule(
 		const returns = await SalesReturn.find({ organizationId: org, isDeleted: { $ne: true }, status: 'SUBMITTED' }).exec()
 		for (const sr of returns) {
 			const r = ref(sr, APPROVAL_ENTITY_SALES_RETURN)
+			if (r) out.push(r)
+		}
+		const ras = await ReturnAuthorization.find({
+			organizationId: org,
+			deletedAt: null,
+			status: 'pending',
+		}).exec()
+		for (const ra of ras) {
+			const r = ref(ra, APPROVAL_ENTITY_RETURN_AUTHORIZATION)
 			if (r) out.push(r)
 		}
 		const challans = await DeliveryChallan.find({ organizationId: org, isDeleted: { $ne: true }, status: 'SUBMITTED' }).exec()

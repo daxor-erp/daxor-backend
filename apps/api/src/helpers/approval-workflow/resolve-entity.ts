@@ -9,6 +9,7 @@ import {
 	APPROVAL_ENTITY_VENDOR,
 	APPROVAL_ENTITY_PROJECT,
 	APPROVAL_ENTITY_SALES_RETURN,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
 	APPROVAL_ENTITY_DELIVERY_CHALLAN,
 	APPROVAL_ENTITY_GRN,
 	APPROVAL_ENTITY_MATERIAL_RECEIPT,
@@ -89,6 +90,11 @@ export async function applyApprovalDecisionToEntity(
 	if (entityType === APPROVAL_ENTITY_SALES_RETURN) {
 		if (decision === 'APPROVED') await deps.salesReturnService.approveApproval(entityId, decidedByUserId)
 		else await deps.salesReturnService.declineApproval(entityId, decidedByUserId)
+		return
+	}
+	if (entityType === APPROVAL_ENTITY_RETURN_AUTHORIZATION) {
+		if (decision === 'APPROVED') await deps.returnAuthorizationService.approve(entityId, decidedByUserId)
+		else await deps.returnAuthorizationService.reject(entityId, decidedByUserId)
 		return
 	}
 	if (entityType === APPROVAL_ENTITY_DELIVERY_CHALLAN) {

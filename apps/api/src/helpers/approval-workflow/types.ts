@@ -14,6 +14,7 @@ import type { SalesEnquiryService } from '~/modules/sales-enquiry/service'
 import type { VendorService } from '~/modules/vendor/service'
 import type { ProjectService } from '~/modules/project/service'
 import type { SalesReturnService } from '~/modules/sales-return/service'
+import type { ReturnAuthorizationService } from '~/modules/return-authorization/service'
 import type { DeliveryChallanService } from '~/modules/delivery-challan/service'
 import type { GRNService } from '~/modules/grn/service'
 import type { MaterialReceiptService } from '~/modules/material-receipt/service'
@@ -56,6 +57,7 @@ export interface ApprovalWorkflowDeps {
 	vendorService: VendorService
 	projectService: ProjectService
 	salesReturnService: SalesReturnService
+	returnAuthorizationService: ReturnAuthorizationService
 	deliveryChallanService: DeliveryChallanService
 	grnService: GRNService
 	materialReceiptService: MaterialReceiptService

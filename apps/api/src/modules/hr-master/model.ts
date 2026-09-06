@@ -17,6 +17,7 @@ const hrMasterSchema = new Schema(
 				'SHIFT',
 				'CALENDAR',
 				'ASSET_NAME',
+				'ASSET_ISSUE',
 				'FWL_QUALIFICATION',
 				'CAREER_GRADE',
 				'EXIT_REASON',
