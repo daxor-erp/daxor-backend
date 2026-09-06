@@ -74,7 +74,37 @@ export class InventoryControlService {
       const t = d != null ? new Date(d as unknown as string | Date).getTime() : 0
       return Number.isFinite(t) ? t : 0
     }
-    return [...rows].sort((a, b) => time(b) - time(a))
+    const sorted = [...rows].sort((a, b) => time(b) - time(a))
+
+    // Resolve human-readable names for the report (Item master + inventory control fallback).
+    const ids = [...new Set(sorted.map((r) => String(r.itemId ?? '')).filter(Boolean))]
+    const nameById = new Map<string, string>()
+    if (ids.length) {
+      const [items, stockRows] = await Promise.all([
+        Item.find({ _id: { $in: ids } }).select('_id name').lean().exec(),
+        this.icRepository.findAll({
+          organizationId,
+          itemId: { $in: ids },
+          isDeleted: false,
+        } as any),
+      ])
+      for (const it of items as any[]) {
+        const id = String(it._id ?? '')
+        if (id && it.name) nameById.set(id, String(it.name))
+      }
+      for (const s of stockRows as any[]) {
+        const id = String(s.itemId ?? '')
+        if (id && s.itemName && !nameById.has(id)) nameById.set(id, String(s.itemName))
+      }
+    }
+
+    return sorted.map((r) => {
+      const id = String(r.itemId ?? '')
+      return {
+        ...(typeof (r as any).toObject === 'function' ? (r as any).toObject() : r),
+        itemName: nameById.get(id) ?? null,
+      }
+    })
   }
 
   async adjustStock(

@@ -1,10 +1,37 @@
 import { loadBillToParty } from '~/lib/bill-to-party'
 import { ReturnAuthorizationService } from './service'
 import type { GraphQLContext } from '~/types/graphql.context'
+import { GraphQLAuthError } from '@repo/errors'
+import { assertAuthenticated, isOrgAdmin } from '../auth/authz'
+import {
+	ApprovalRequestService,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
+	MODULE_KEY_SALES,
+} from '../approval-request/service'
 
 const service = new ReturnAuthorizationService()
+const approvalService = new ApprovalRequestService()
 
 const toIso = (d: unknown) => (d instanceof Date ? d.toISOString() : d ? new Date(d as string).toISOString() : null)
+
+async function resolveViaInboxOrDirect(
+	id: string,
+	decision: 'APPROVED' | 'REJECTED',
+	ctx: GraphQLContext,
+	reason?: string,
+) {
+	assertAuthenticated(ctx)
+	const pending = await approvalService.findPendingByEntity(APPROVAL_ENTITY_RETURN_AUTHORIZATION, id)
+	if (pending) {
+		const pendingId = String((pending as any)._id ?? (pending as any).id ?? '')
+		if (pendingId) {
+			return approvalService.resolveRequest(pendingId, decision, ctx.user!.id, isOrgAdmin(ctx), reason ?? null)
+				.then(async () => service.getById(id))
+		}
+	}
+	if (decision === 'APPROVED') return service.approve(id, ctx.user!.id)
+	return service.reject(id, ctx.user!.id, reason)
+}
 
 export const resolvers = {
 	Query: {
@@ -21,17 +48,45 @@ export const resolvers = {
 	},
 
 	Mutation: {
-		createReturnAuthorization: async (_: unknown, { input }: any, ctx: GraphQLContext) =>
-			service.create(input, ctx.user?.id ?? ''),
+		createReturnAuthorization: async (_: unknown, { input }: any, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			const orgId = String(input.organizationId ?? ctx.user?.organizationId ?? '')
+			if (!orgId) throw new GraphQLAuthError('Organization is required')
+			if (String(ctx.user?.organizationId ?? '') !== orgId) {
+				throw new GraphQLAuthError('Forbidden')
+			}
+
+			await approvalService.ensureApproverConfigured(orgId, MODULE_KEY_SALES)
+
+			const created = await service.create(input, ctx.user!.id)
+			const raId = String((created as any)._id ?? (created as any).id ?? '')
+			if (raId) {
+				await approvalService.enqueueReturnAuthorizationSubmitted(raId, ctx.user!.id)
+			}
+			return created
+		},
 
 		approveReturnAuthorization: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
-			service.approve(id, ctx.user?.id ?? ''),
+			resolveViaInboxOrDirect(id, 'APPROVED', ctx),
 
-		rejectReturnAuthorization: async (_: unknown, { id, reason }: { id: string; reason?: string }, ctx: GraphQLContext) =>
-			service.reject(id, ctx.user?.id ?? '', reason),
+		rejectReturnAuthorization: async (
+			_: unknown,
+			{ id, reason }: { id: string; reason?: string },
+			ctx: GraphQLContext,
+		) => resolveViaInboxOrDirect(id, 'REJECTED', ctx, reason),
 
-		cancelReturnAuthorization: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) =>
-			service.cancel(id, ctx.user?.id ?? ''),
+		cancelReturnAuthorization: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			assertAuthenticated(ctx)
+			const cancelled = await service.cancel(id, ctx.user!.id)
+			const pending = await approvalService.findPendingByEntity(APPROVAL_ENTITY_RETURN_AUTHORIZATION, id)
+			if (pending) {
+				const pendingId = String((pending as any)._id ?? (pending as any).id ?? '')
+				if (pendingId) {
+					await approvalService.closePendingRequestAsCancelled(pendingId, ctx.user!.id, 'Cancelled by requester')
+				}
+			}
+			return cancelled
+		},
 
 		deleteReturnAuthorization: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
 			await service.softDelete(id, ctx.user?.id ?? '')

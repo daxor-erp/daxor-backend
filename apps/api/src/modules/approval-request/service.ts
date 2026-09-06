@@ -15,6 +15,7 @@ import { SalesEnquiryService } from '../sales-enquiry/service'
 import { VendorService } from '../vendor/service'
 import { ProjectService } from '../project/service'
 import { SalesReturnService } from '../sales-return/service'
+import { ReturnAuthorizationService } from '../return-authorization/service'
 import { DeliveryChallanService } from '../delivery-challan/service'
 import { GRNService } from '../grn/service'
 import { MaterialReceiptService } from '../material-receipt/service'
@@ -28,6 +29,7 @@ import {
 	APPROVAL_ENTITY_VENDOR,
 	APPROVAL_ENTITY_PROJECT,
 	APPROVAL_ENTITY_SALES_RETURN,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
 	APPROVAL_ENTITY_DELIVERY_CHALLAN,
 	APPROVAL_ENTITY_GRN,
 	APPROVAL_ENTITY_MATERIAL_RECEIPT,
@@ -62,6 +64,7 @@ export {
 	APPROVAL_ENTITY_VENDOR,
 	APPROVAL_ENTITY_PROJECT,
 	APPROVAL_ENTITY_SALES_RETURN,
+	APPROVAL_ENTITY_RETURN_AUTHORIZATION,
 	APPROVAL_ENTITY_DELIVERY_CHALLAN,
 	APPROVAL_ENTITY_GRN,
 	APPROVAL_ENTITY_MATERIAL_RECEIPT,
@@ -96,6 +99,7 @@ export class ApprovalRequestService {
 			vendorService: new VendorService(),
 			projectService: new ProjectService(),
 			salesReturnService: new SalesReturnService(),
+			returnAuthorizationService: new ReturnAuthorizationService(),
 			deliveryChallanService: new DeliveryChallanService(),
 			grnService: new GRNService(),
 			materialReceiptService: new MaterialReceiptService(),
@@ -109,6 +113,20 @@ export class ApprovalRequestService {
 
 	async findPendingByEntity(entityType: string, entityId: string): Promise<any | null> {
 		return this.deps.repository.findPendingForEntity(entityType, entityId)
+	}
+
+	/** Mark a pending inbox row closed without re-applying entity status (entity already updated). */
+	async closePendingRequestAsCancelled(id: string, ctxUserId: string, note?: string): Promise<void> {
+		const row = await this.deps.repository.findById(id)
+		if (!row || String(row.status) !== 'PENDING') return
+		const now = new Date()
+		await this.deps.repository.update(id, {
+			status: 'REJECTED',
+			decidedByUserId: ctxUserId,
+			decidedAt: now,
+			resolutionNote: note ?? 'Cancelled',
+			updatedAt: now,
+		})
 	}
 
 	async listPendingForAssignee(assigneeUserId: string, organizationId?: string): Promise<any[]> {
@@ -298,6 +316,18 @@ export class ApprovalRequestService {
 				action: 'SUBMIT',
 				entityType: APPROVAL_ENTITY_SALES_RETURN,
 				entityId: returnId,
+				requesterUserId,
+			},
+			this.deps,
+		)
+	}
+
+	async enqueueReturnAuthorizationSubmitted(raId: string, requesterUserId: string): Promise<any> {
+		return initiateApprovalWorkflow(
+			{
+				action: 'SUBMIT',
+				entityType: APPROVAL_ENTITY_RETURN_AUTHORIZATION,
+				entityId: raId,
 				requesterUserId,
 			},
 			this.deps,

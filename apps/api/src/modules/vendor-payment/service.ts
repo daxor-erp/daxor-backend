@@ -27,20 +27,24 @@ export class VendorPaymentService {
       throw new Error(`Allocation total (${allocTotal}) must equal payment total (${totalAmount})`)
     }
 
-    // Gap 15 — warn if the vendor has no bank accounts configured.
-    const vendor = await Vendor.findById(String(data.vendorId)).lean()
-    if (vendor) {
-      const bankAccounts: any[] = (vendor as any).bankAccounts ?? []
-      if (bankAccounts.length === 0) {
-        throw new Error(
-          `Vendor "${(vendor as any).name}" has no bank accounts configured. Add a bank account to this vendor before recording a payment.`,
-        )
-      }
-      const hasSendMoney = bankAccounts.some((b: any) => !!b.sendMoney)
-      if (!hasSendMoney) {
-        throw new Error(
-          `Vendor "${(vendor as any).name}" has no bank account marked "Send Money". Enable "Send Money" on the intended payment account in the vendor's Accounting tab.`,
-        )
+    // Gap 15 — bank accounts required only for electronic payout methods (not cash/cheque).
+    const method = String(data.paymentMethod ?? '').toLowerCase()
+    const requiresVendorBank = method === 'bank_transfer' || method === 'upi' || method === 'neft' || method === 'rtgs' || method === 'imps'
+    if (requiresVendorBank) {
+      const vendor = await Vendor.findById(String(data.vendorId)).lean()
+      if (vendor) {
+        const bankAccounts: any[] = (vendor as any).bankAccounts ?? []
+        if (bankAccounts.length === 0) {
+          throw new Error(
+            `Vendor "${(vendor as any).name}" has no bank accounts configured. Open the vendor → Accounting → Add bank account, enable "Send money", then click Save changes on the vendor (or save the account if editing).`,
+          )
+        }
+        const hasSendMoney = bankAccounts.some((b: any) => !!b.sendMoney)
+        if (!hasSendMoney) {
+          throw new Error(
+            `Vendor "${(vendor as any).name}" has no bank account marked "Send Money". Enable "Send Money" on the intended payment account in the vendor's Accounting tab, then save the vendor.`,
+          )
+        }
       }
     }
 
