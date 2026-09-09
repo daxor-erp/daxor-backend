@@ -127,14 +127,19 @@ export class IndividualPriceListService {
 			if (id) byItem.set(id, l)
 		}
 
-		const lines = items.map((it: any) => {
+		const lines = items
+			.filter((it: any) => it?._id != null)
+			.map((it: any) => {
 			const id = it._id?.toString()
 			const prev = id ? byItem.get(id) : undefined
 			const std = Number(it.rate ?? 0)
+			const name =
+				String(it.name ?? it.description ?? it.seqNo ?? '')
+					.trim() || 'Unnamed item'
 			return {
 				itemId: it._id,
 				seqNo: it.seqNo,
-				name: it.name,
+				name,
 				unit: it.unit,
 				category: it.category,
 				standardRate: std,

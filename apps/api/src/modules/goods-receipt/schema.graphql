@@ -1,16 +1,50 @@
+type GoodsReceiptLineItem {
+  itemId: ID
+  itemDescription: String!
+  orderedQty: Float!
+  receivedQty: Float!
+  unit: String
+  unitPrice: Float
+}
+
 type GoodsReceipt {
   id: ID!
   docNumber: String!
   docDate: String!
   status: String!
   organizationId: String!
+  purchaseOrderId: ID
+  purchaseOrderNumber: String
+  vendorId: ID
+  vendorName: String
+  warehouseId: ID
+  warehouseName: String
+  lineItems: [GoodsReceiptLineItem!]!
+  notes: String
   createdAt: String!
+}
+
+input GoodsReceiptLineItemInput {
+  itemId: ID
+  itemDescription: String!
+  orderedQty: Float!
+  receivedQty: Float!
+  unit: String
+  unitPrice: Float
 }
 
 input GoodsReceiptInput {
   docDate: String!
   status: String
   organizationId: String!
+  purchaseOrderId: ID
+  purchaseOrderNumber: String
+  vendorId: ID
+  vendorName: String
+  warehouseId: ID
+  warehouseName: String
+  lineItems: [GoodsReceiptLineItemInput!]
+  notes: String
 }
 
 extend type Query {
@@ -21,5 +55,6 @@ extend type Query {
 extend type Mutation {
   createGoodsReceipt(input: GoodsReceiptInput!): GoodsReceipt!
   updateGoodsReceipt(id: ID!, input: GoodsReceiptInput!): GoodsReceipt!
+  postGoodsReceipt(id: ID!): GoodsReceipt!
   deleteGoodsReceipt(id: ID!): Boolean!
 }
