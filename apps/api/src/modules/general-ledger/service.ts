@@ -93,9 +93,33 @@ export class GeneralLedgerService {
     return `GL-${`${organizationId}`.slice(-4)}-${String(count + 1).padStart(6, '0')}`;
   }
 
-  async getTrialBalance(organizationId: string) {
+  private parseDateBound(value?: string | null, endOfDay = false): Date | undefined {
+    if (value == null || String(value).trim() === '') return undefined;
+    const raw = String(value).trim();
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return undefined;
+    // If caller passed a date-only YYYY-MM-DD, pin to start/end of that local day.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      const [y, m, day] = raw.split('-').map(Number);
+      return endOfDay
+        ? new Date(y, m - 1, day, 23, 59, 59, 999)
+        : new Date(y, m - 1, day, 0, 0, 0, 0);
+    }
+    return d;
+  }
+
+  async getTrialBalance(
+    organizationId: string,
+    opts?: { dateFrom?: string | null; dateTo?: string | null; asOf?: boolean },
+  ) {
     const accounts = await this.coaRepository.findByOrganization(organizationId);
-    const entries = await this.jeRepository.findByOrganization(organizationId, 'posted');
+    const dateFrom = opts?.asOf ? undefined : this.parseDateBound(opts?.dateFrom, false);
+    const dateTo = this.parseDateBound(opts?.dateTo, true);
+    const entries = await this.jeRepository.findByOrganizationInDateRange(organizationId, {
+      status: 'posted',
+      dateFrom,
+      dateTo,
+    });
     const byCode = new Map<
       string,
       { accountCode: string; accountName: string; accountType: string; debit: number; credit: number }
@@ -137,13 +161,23 @@ export class GeneralLedgerService {
       .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
   }
 
-  async getIncomeStatement(organizationId: string) {
-    const tb = await this.getTrialBalance(organizationId);
+  async getIncomeStatement(
+    organizationId: string,
+    opts?: { dateFrom?: string | null; dateTo?: string | null },
+  ) {
+    const tb = await this.getTrialBalance(organizationId, opts);
     return buildIncomeStatementFromTrialBalance(tb);
   }
 
-  async getBalanceSheet(organizationId: string) {
-    const tb = await this.getTrialBalance(organizationId);
+  async getBalanceSheet(
+    organizationId: string,
+    opts?: { dateFrom?: string | null; dateTo?: string | null },
+  ) {
+    // Balance sheet is cumulative as-of dateTo (ignore dateFrom).
+    const tb = await this.getTrialBalance(organizationId, {
+      dateTo: opts?.dateTo,
+      asOf: true,
+    });
     return buildBalanceSheetFromTrialBalance(tb);
   }
 

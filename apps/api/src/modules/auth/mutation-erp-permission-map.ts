@@ -217,6 +217,7 @@ export const ERP_GRAPHQL_MUTATION_PERMISSIONS: Record<string, MutationPermission
 	...sub('inventory', 'goods_receipt', [
 		['createGoodsReceipt', 'create'],
 		['updateGoodsReceipt', 'update'],
+		['postGoodsReceipt', 'update'],
 		['deleteGoodsReceipt', 'delete'],
 		['createIPInspection', 'create'],
 		['updateIPInspection', 'update'],

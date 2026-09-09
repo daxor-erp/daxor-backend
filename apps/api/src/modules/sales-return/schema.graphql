@@ -1,3 +1,12 @@
+type SalesReturnLine {
+  itemName: String!
+  quantity: Float!
+  unit: String
+  unitPrice: Float
+  amount: Float
+  notes: String
+}
+
 type SalesReturn {
   id: ID!
   docNumber: String!
@@ -5,11 +14,26 @@ type SalesReturn {
   status: String!
   organizationId: String!
   customerInvoiceId: ID
+  customerInvoiceNumber: String
   customerId: ID
+  customerName: String
+  salesOrderId: ID
+  salesOrderNumber: String
   totalAmount: Float
   cogsAmount: Float
   reason: String
+  notes: String
+  items: [SalesReturnLine!]!
   createdAt: String!
+}
+
+input SalesReturnLineInput {
+  itemName: String!
+  quantity: Float!
+  unit: String
+  unitPrice: Float
+  amount: Float
+  notes: String
 }
 
 input SalesReturnInput {
@@ -17,10 +41,16 @@ input SalesReturnInput {
   status: String
   organizationId: String!
   customerInvoiceId: ID
+  customerInvoiceNumber: String
   customerId: ID
+  customerName: String
+  salesOrderId: ID
+  salesOrderNumber: String
   totalAmount: Float
   cogsAmount: Float
   reason: String
+  notes: String
+  items: [SalesReturnLineInput!]
 }
 
 extend type Query {

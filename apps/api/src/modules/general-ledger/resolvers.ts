@@ -17,17 +17,36 @@ export const resolvers = {
     chartOfAccounts: async (_: unknown, { organizationId, accountType }: any) => {
       return service.getChartOfAccounts(organizationId, { accountType })
     },
-    trialBalance: async (_: unknown, { organizationId }: { organizationId: string }) => {
-      const rows = await service.getTrialBalance(organizationId)
+    trialBalance: async (
+      _: unknown,
+      {
+        organizationId,
+        dateFrom,
+        dateTo,
+      }: { organizationId: string; dateFrom?: string | null; dateTo?: string | null },
+    ) => {
+      const rows = await service.getTrialBalance(organizationId, { dateFrom, dateTo })
       return rows.map((r) => ({
         ...r,
         net: Math.round((r.debit - r.credit) * 100) / 100,
       }))
     },
-    incomeStatement: async (_: unknown, { organizationId }: { organizationId: string }) =>
-      service.getIncomeStatement(organizationId),
-    balanceSheet: async (_: unknown, { organizationId }: { organizationId: string }) =>
-      service.getBalanceSheet(organizationId),
+    incomeStatement: async (
+      _: unknown,
+      {
+        organizationId,
+        dateFrom,
+        dateTo,
+      }: { organizationId: string; dateFrom?: string | null; dateTo?: string | null },
+    ) => service.getIncomeStatement(organizationId, { dateFrom, dateTo }),
+    balanceSheet: async (
+      _: unknown,
+      {
+        organizationId,
+        dateFrom,
+        dateTo,
+      }: { organizationId: string; dateFrom?: string | null; dateTo?: string | null },
+    ) => service.getBalanceSheet(organizationId, { dateFrom, dateTo }),
     agedPayable: async (_: unknown, { organizationId }: { organizationId: string }) =>
       service.getAgedPayable(organizationId),
     agedReceivable: async (_: unknown, { organizationId }: { organizationId: string }) =>

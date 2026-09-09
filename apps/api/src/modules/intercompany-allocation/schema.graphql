@@ -1,4 +1,4 @@
-type AllocationLine {
+type IntercompanyAllocationLine {
 	targetOrganizationId: ID!
 	targetOrganizationName: String
 	percentage: Float!
@@ -17,7 +17,7 @@ type IntercompanyAllocation {
 	basisAmount: Float!
 	basisDate: String!
 	allocationMethod: String!
-	lines: [AllocationLine!]!
+	lines: [IntercompanyAllocationLine!]!
 	totalAllocated: Float!
 	status: String!
 	postedAt: String
@@ -28,7 +28,7 @@ type IntercompanyAllocation {
 	updatedAt: String!
 }
 
-input AllocationLineInput {
+input IntercompanyAllocationLineInput {
 	targetOrganizationId: ID!
 	targetOrganizationName: String
 	percentage: Float!
@@ -45,7 +45,7 @@ input CreateIntercompanyAllocationInput {
 	basisAmount: Float!
 	basisDate: String!
 	allocationMethod: String
-	lines: [AllocationLineInput!]!
+	lines: [IntercompanyAllocationLineInput!]!
 	notes: String
 	status: String
 }
@@ -58,7 +58,7 @@ input UpdateIntercompanyAllocationInput {
 	basisAmount: Float
 	basisDate: String
 	allocationMethod: String
-	lines: [AllocationLineInput!]
+	lines: [IntercompanyAllocationLineInput!]
 	notes: String
 	status: String
 }
