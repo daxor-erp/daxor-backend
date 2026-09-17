@@ -1,14 +1,46 @@
+type DeliveryChallanLine {
+  itemName: String!
+  quantity: Float!
+  unit: String
+  notes: String
+}
+
 type DeliveryChallan {
   id: ID!
   docNumber: String!
   docDate: String!
+  customerId: String
+  customerName: String
+  salesOrderId: String
+  salesOrderNumber: String
+  shippingAddress: String
+  vehicleNumber: String
+  driverName: String
+  notes: String
+  items: [DeliveryChallanLine!]!
   status: String!
   organizationId: String!
   createdAt: String!
 }
 
+input DeliveryChallanLineInput {
+  itemName: String!
+  quantity: Float!
+  unit: String
+  notes: String
+}
+
 input DeliveryChallanInput {
   docDate: String!
+  customerId: String
+  customerName: String
+  salesOrderId: String
+  salesOrderNumber: String
+  shippingAddress: String
+  vehicleNumber: String
+  driverName: String
+  notes: String
+  items: [DeliveryChallanLineInput!]
   status: String
   organizationId: String!
 }

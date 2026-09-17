@@ -89,34 +89,13 @@ export type AgedReceivableRow = {
   total: Scalars['Float']['output'];
 };
 
-export type AllocationLine = {
-  __typename?: 'AllocationLine';
-  amount: Scalars['Float']['output'];
-  costCenter: Maybe<Scalars['String']['output']>;
-  destinationAccount: Scalars['String']['output'];
-  notes: Maybe<Scalars['String']['output']>;
-  percentage: Scalars['Float']['output'];
-  targetOrganizationId: Scalars['ID']['output'];
-  targetOrganizationName: Maybe<Scalars['String']['output']>;
-};
-
-export type AllocationLineInput = {
-  amount: InputMaybe<Scalars['Float']['input']>;
-  costCenter: InputMaybe<Scalars['String']['input']>;
-  destinationAccount: Scalars['String']['input'];
-  notes: InputMaybe<Scalars['String']['input']>;
-  percentage: Scalars['Float']['input'];
-  targetOrganizationId: Scalars['ID']['input'];
-  targetOrganizationName: InputMaybe<Scalars['String']['input']>;
-};
-
 export type AllocationSchedule = {
   __typename?: 'AllocationSchedule';
   allocationMethod: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
-  lines: Array<AllocationLine>;
+  lines: Array<ScheduleAllocationLine>;
   organizationId: Scalars['String']['output'];
   scheduleName: Scalars['String']['output'];
   seqNo: Maybe<Scalars['String']['output']>;
@@ -126,7 +105,7 @@ export type AllocationSchedule = {
 export type AllocationScheduleInput = {
   allocationMethod: InputMaybe<Scalars['String']['input']>;
   isActive: InputMaybe<Scalars['Boolean']['input']>;
-  lines: Array<AllocationLineInput>;
+  lines: Array<ScheduleAllocationLineInput>;
   organizationId: Scalars['String']['input'];
   scheduleName: Scalars['String']['input'];
   sourceAccount: Scalars['String']['input'];
@@ -1089,7 +1068,7 @@ export type CreateIntercompanyAllocationInput = {
   basisAmount: Scalars['Float']['input'];
   basisDate: Scalars['String']['input'];
   description: InputMaybe<Scalars['String']['input']>;
-  lines: Array<AllocationLineInput>;
+  lines: Array<IntercompanyAllocationLineInput>;
   name: Scalars['String']['input'];
   notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['ID']['input'];
@@ -1381,6 +1360,8 @@ export type CreateSalesEnquiryInput = {
 };
 
 export type CreateSalesOrderInput = {
+  /** When true, creates an immediate cash sale (status active, skips approval). */
+  cashSale: InputMaybe<Scalars['Boolean']['input']>;
   customerId: Scalars['ID']['input'];
   /** ordered_quantities | delivered_quantities. Defaults to ordered_quantities. */
   invoicingPolicy: InputMaybe<Scalars['String']['input']>;
@@ -1806,17 +1787,50 @@ export type DashboardWidgetPreferencesInput = {
 export type DeliveryChallan = {
   __typename?: 'DeliveryChallan';
   createdAt: Scalars['String']['output'];
+  customerId: Maybe<Scalars['String']['output']>;
+  customerName: Maybe<Scalars['String']['output']>;
   docDate: Scalars['String']['output'];
   docNumber: Scalars['String']['output'];
+  driverName: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  items: Array<DeliveryChallanLine>;
+  notes: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
+  salesOrderId: Maybe<Scalars['String']['output']>;
+  salesOrderNumber: Maybe<Scalars['String']['output']>;
+  shippingAddress: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
+  vehicleNumber: Maybe<Scalars['String']['output']>;
 };
 
 export type DeliveryChallanInput = {
+  customerId: InputMaybe<Scalars['String']['input']>;
+  customerName: InputMaybe<Scalars['String']['input']>;
   docDate: Scalars['String']['input'];
+  driverName: InputMaybe<Scalars['String']['input']>;
+  items: InputMaybe<Array<DeliveryChallanLineInput>>;
+  notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
+  salesOrderId: InputMaybe<Scalars['String']['input']>;
+  salesOrderNumber: InputMaybe<Scalars['String']['input']>;
+  shippingAddress: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  vehicleNumber: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DeliveryChallanLine = {
+  __typename?: 'DeliveryChallanLine';
+  itemName: Scalars['String']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  quantity: Scalars['Float']['output'];
+  unit: Maybe<Scalars['String']['output']>;
+};
+
+export type DeliveryChallanLineInput = {
+  itemName: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  quantity: Scalars['Float']['input'];
+  unit: InputMaybe<Scalars['String']['input']>;
 };
 
 export type DeliveryItem = {
@@ -2292,14 +2306,49 @@ export type GoodsReceipt = {
   docDate: Scalars['String']['output'];
   docNumber: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  lineItems: Array<GoodsReceiptLineItem>;
+  notes: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
+  purchaseOrderId: Maybe<Scalars['ID']['output']>;
+  purchaseOrderNumber: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
+  vendorId: Maybe<Scalars['ID']['output']>;
+  vendorName: Maybe<Scalars['String']['output']>;
+  warehouseId: Maybe<Scalars['ID']['output']>;
+  warehouseName: Maybe<Scalars['String']['output']>;
 };
 
 export type GoodsReceiptInput = {
   docDate: Scalars['String']['input'];
+  lineItems: InputMaybe<Array<GoodsReceiptLineItemInput>>;
+  notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
+  purchaseOrderId: InputMaybe<Scalars['ID']['input']>;
+  purchaseOrderNumber: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  vendorId: InputMaybe<Scalars['ID']['input']>;
+  vendorName: InputMaybe<Scalars['String']['input']>;
+  warehouseId: InputMaybe<Scalars['ID']['input']>;
+  warehouseName: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GoodsReceiptLineItem = {
+  __typename?: 'GoodsReceiptLineItem';
+  itemDescription: Scalars['String']['output'];
+  itemId: Maybe<Scalars['ID']['output']>;
+  orderedQty: Scalars['Float']['output'];
+  receivedQty: Scalars['Float']['output'];
+  unit: Maybe<Scalars['String']['output']>;
+  unitPrice: Maybe<Scalars['Float']['output']>;
+};
+
+export type GoodsReceiptLineItemInput = {
+  itemDescription: Scalars['String']['input'];
+  itemId: InputMaybe<Scalars['ID']['input']>;
+  orderedQty: Scalars['Float']['input'];
+  receivedQty: Scalars['Float']['input'];
+  unit: InputMaybe<Scalars['String']['input']>;
+  unitPrice: InputMaybe<Scalars['Float']['input']>;
 };
 
 /** Result of validating a GSTIN against the configured provider (mock until live credentials are set). */
@@ -2418,7 +2467,7 @@ export type IntercompanyAllocation = {
   description: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journalEntryId: Maybe<Scalars['ID']['output']>;
-  lines: Array<AllocationLine>;
+  lines: Array<IntercompanyAllocationLine>;
   name: Scalars['String']['output'];
   notes: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['ID']['output'];
@@ -2429,6 +2478,24 @@ export type IntercompanyAllocation = {
   status: Scalars['String']['output'];
   totalAllocated: Scalars['Float']['output'];
   updatedAt: Scalars['String']['output'];
+};
+
+export type IntercompanyAllocationLine = {
+  __typename?: 'IntercompanyAllocationLine';
+  amount: Scalars['Float']['output'];
+  costCenter: Maybe<Scalars['String']['output']>;
+  notes: Maybe<Scalars['String']['output']>;
+  percentage: Scalars['Float']['output'];
+  targetOrganizationId: Scalars['ID']['output'];
+  targetOrganizationName: Maybe<Scalars['String']['output']>;
+};
+
+export type IntercompanyAllocationLineInput = {
+  costCenter: InputMaybe<Scalars['String']['input']>;
+  notes: InputMaybe<Scalars['String']['input']>;
+  percentage: Scalars['Float']['input'];
+  targetOrganizationId: Scalars['ID']['input'];
+  targetOrganizationName: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IntercompanyJournalEntry = {
@@ -3169,6 +3236,7 @@ export type Mutation = {
   postCurrencyRevaluation: CurrencyRevaluation;
   postFinanceChargeAssessment: FinanceChargeAssessment;
   postFixedAssetDepreciation: FixedAsset;
+  postGoodsReceipt: GoodsReceipt;
   postIntercompanyAllocation: IntercompanyAllocation;
   postIntercompanyJournalEntry: IntercompanyJournalEntry;
   postJournalEntry: JournalEntry;
@@ -4601,6 +4669,11 @@ export type MutationPostFinanceChargeAssessmentArgs = {
 export type MutationPostFixedAssetDepreciationArgs = {
   id: Scalars['ID']['input'];
   input: PostDepreciationInput;
+};
+
+
+export type MutationPostGoodsReceiptArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -6170,6 +6243,7 @@ export type Query = {
   auditLogs: AuditLogPage;
   availableVendorCredits: Array<VendorCredit>;
   availableVendorPrepayments: Array<VendorPrepayment>;
+  /** Balance sheet as of dateTo (cumulative). dateFrom is ignored; omit dateTo for all-time. */
   balanceSheet: BalanceSheetReport;
   bank: Maybe<Bank>;
   bankAccount: Maybe<BankAccount>;
@@ -6245,6 +6319,7 @@ export type Query = {
   grnsByPO: Array<Grn>;
   hrMaster: Maybe<HrMaster>;
   hrMasters: Array<HrMaster>;
+  /** P&L for the period — only journals with entryDate in [dateFrom, dateTo] when provided. */
   incomeStatement: IncomeStatementReport;
   individualPriceList: Maybe<IndividualPriceList>;
   individualPriceListByCustomer: Maybe<IndividualPriceList>;
@@ -6396,6 +6471,7 @@ export type Query = {
   timesheetEntries: Array<TimesheetEntry>;
   timesheetEntry: Maybe<TimesheetEntry>;
   timesheetWeeklySummary: TimesheetWeeklySummary;
+  /** Posted trial balance. Optional dateFrom/dateTo filter journal entryDate (inclusive). */
   trialBalance: Array<TrialBalanceLine>;
   uom: Maybe<Uom>;
   uoms: Array<Uom>;
@@ -6554,6 +6630,8 @@ export type QueryAvailableVendorPrepaymentsArgs = {
 
 
 export type QueryBalanceSheetArgs = {
+  dateFrom: InputMaybe<Scalars['String']['input']>;
+  dateTo: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
 };
 
@@ -7006,6 +7084,8 @@ export type QueryHrMastersArgs = {
 
 
 export type QueryIncomeStatementArgs = {
+  dateFrom: InputMaybe<Scalars['String']['input']>;
+  dateTo: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
 };
 
@@ -7781,6 +7861,8 @@ export type QueryTimesheetWeeklySummaryArgs = {
 
 
 export type QueryTrialBalanceArgs = {
+  dateFrom: InputMaybe<Scalars['String']['input']>;
+  dateTo: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
 };
 
@@ -8408,11 +8490,17 @@ export type SalesReturn = {
   createdAt: Scalars['String']['output'];
   customerId: Maybe<Scalars['ID']['output']>;
   customerInvoiceId: Maybe<Scalars['ID']['output']>;
+  customerInvoiceNumber: Maybe<Scalars['String']['output']>;
+  customerName: Maybe<Scalars['String']['output']>;
   docDate: Scalars['String']['output'];
   docNumber: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  items: Array<SalesReturnLine>;
+  notes: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['String']['output'];
   reason: Maybe<Scalars['String']['output']>;
+  salesOrderId: Maybe<Scalars['ID']['output']>;
+  salesOrderNumber: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   totalAmount: Maybe<Scalars['Float']['output']>;
 };
@@ -8421,11 +8509,49 @@ export type SalesReturnInput = {
   cogsAmount: InputMaybe<Scalars['Float']['input']>;
   customerId: InputMaybe<Scalars['ID']['input']>;
   customerInvoiceId: InputMaybe<Scalars['ID']['input']>;
+  customerInvoiceNumber: InputMaybe<Scalars['String']['input']>;
+  customerName: InputMaybe<Scalars['String']['input']>;
   docDate: Scalars['String']['input'];
+  items: InputMaybe<Array<SalesReturnLineInput>>;
+  notes: InputMaybe<Scalars['String']['input']>;
   organizationId: Scalars['String']['input'];
   reason: InputMaybe<Scalars['String']['input']>;
+  salesOrderId: InputMaybe<Scalars['ID']['input']>;
+  salesOrderNumber: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
   totalAmount: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type SalesReturnLine = {
+  __typename?: 'SalesReturnLine';
+  amount: Maybe<Scalars['Float']['output']>;
+  itemName: Scalars['String']['output'];
+  notes: Maybe<Scalars['String']['output']>;
+  quantity: Scalars['Float']['output'];
+  unit: Maybe<Scalars['String']['output']>;
+  unitPrice: Maybe<Scalars['Float']['output']>;
+};
+
+export type SalesReturnLineInput = {
+  amount: InputMaybe<Scalars['Float']['input']>;
+  itemName: Scalars['String']['input'];
+  notes: InputMaybe<Scalars['String']['input']>;
+  quantity: Scalars['Float']['input'];
+  unit: InputMaybe<Scalars['String']['input']>;
+  unitPrice: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ScheduleAllocationLine = {
+  __typename?: 'ScheduleAllocationLine';
+  amount: Maybe<Scalars['Float']['output']>;
+  destinationAccount: Scalars['String']['output'];
+  percentage: Scalars['Float']['output'];
+};
+
+export type ScheduleAllocationLineInput = {
+  amount: InputMaybe<Scalars['Float']['input']>;
+  destinationAccount: Scalars['String']['input'];
+  percentage: Scalars['Float']['input'];
 };
 
 export type SearchHit = {
@@ -8539,6 +8665,8 @@ export type StockMovement = {
   fromLocation: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   itemId: Scalars['String']['output'];
+  /** Human-readable item / product name resolved from Item or inventory control. */
+  itemName: Maybe<Scalars['String']['output']>;
   movementDate: Scalars['String']['output'];
   movementType: Scalars['String']['output'];
   notes: Maybe<Scalars['String']['output']>;
@@ -8921,7 +9049,7 @@ export type UpdateIntercompanyAllocationInput = {
   basisAmount: InputMaybe<Scalars['Float']['input']>;
   basisDate: InputMaybe<Scalars['String']['input']>;
   description: InputMaybe<Scalars['String']['input']>;
-  lines: InputMaybe<Array<AllocationLineInput>>;
+  lines: InputMaybe<Array<IntercompanyAllocationLineInput>>;
   name: InputMaybe<Scalars['String']['input']>;
   notes: InputMaybe<Scalars['String']['input']>;
   scheduleCode: InputMaybe<Scalars['String']['input']>;
@@ -9859,8 +9987,6 @@ export type ResolversTypes = ResolversObject<{
   AgedPayableRow: ResolverTypeWrapper<Partial<AgedPayableRow>>;
   AgedReceivableInvoiceLine: ResolverTypeWrapper<Partial<AgedReceivableInvoiceLine>>;
   AgedReceivableRow: ResolverTypeWrapper<Partial<AgedReceivableRow>>;
-  AllocationLine: ResolverTypeWrapper<Partial<AllocationLine>>;
-  AllocationLineInput: ResolverTypeWrapper<Partial<AllocationLineInput>>;
   AllocationSchedule: ResolverTypeWrapper<Partial<AllocationSchedule>>;
   AllocationScheduleInput: ResolverTypeWrapper<Partial<AllocationScheduleInput>>;
   Applicant: ResolverTypeWrapper<Partial<Applicant>>;
@@ -9991,6 +10117,8 @@ export type ResolversTypes = ResolversObject<{
   DashboardWidgetPreferencesInput: ResolverTypeWrapper<Partial<DashboardWidgetPreferencesInput>>;
   DeliveryChallan: ResolverTypeWrapper<Partial<DeliveryChallan>>;
   DeliveryChallanInput: ResolverTypeWrapper<Partial<DeliveryChallanInput>>;
+  DeliveryChallanLine: ResolverTypeWrapper<Partial<DeliveryChallanLine>>;
+  DeliveryChallanLineInput: ResolverTypeWrapper<Partial<DeliveryChallanLineInput>>;
   DeliveryItem: ResolverTypeWrapper<Partial<DeliveryItem>>;
   DeliveryItemInput: ResolverTypeWrapper<Partial<DeliveryItemInput>>;
   DeliveryOrder: ResolverTypeWrapper<Partial<DeliveryOrder>>;
@@ -10030,6 +10158,8 @@ export type ResolversTypes = ResolversObject<{
   GoalInput: ResolverTypeWrapper<Partial<GoalInput>>;
   GoodsReceipt: ResolverTypeWrapper<Partial<GoodsReceipt>>;
   GoodsReceiptInput: ResolverTypeWrapper<Partial<GoodsReceiptInput>>;
+  GoodsReceiptLineItem: ResolverTypeWrapper<Partial<GoodsReceiptLineItem>>;
+  GoodsReceiptLineItemInput: ResolverTypeWrapper<Partial<GoodsReceiptLineItemInput>>;
   GstinCheckResult: ResolverTypeWrapper<Partial<GstinCheckResult>>;
   HrMaster: ResolverTypeWrapper<Partial<HrMaster>>;
   ICTLineItem: ResolverTypeWrapper<Partial<IctLineItem>>;
@@ -10043,6 +10173,8 @@ export type ResolversTypes = ResolversObject<{
   IndividualPriceListLineInput: ResolverTypeWrapper<Partial<IndividualPriceListLineInput>>;
   Int: ResolverTypeWrapper<Partial<Scalars['Int']['output']>>;
   IntercompanyAllocation: ResolverTypeWrapper<Partial<IntercompanyAllocation>>;
+  IntercompanyAllocationLine: ResolverTypeWrapper<Partial<IntercompanyAllocationLine>>;
+  IntercompanyAllocationLineInput: ResolverTypeWrapper<Partial<IntercompanyAllocationLineInput>>;
   IntercompanyJournalEntry: ResolverTypeWrapper<Partial<IntercompanyJournalEntry>>;
   IntercompanyJournalLine: ResolverTypeWrapper<Partial<IntercompanyJournalLine>>;
   IntercompanyJournalLineInput: ResolverTypeWrapper<Partial<IntercompanyJournalLineInput>>;
@@ -10169,6 +10301,10 @@ export type ResolversTypes = ResolversObject<{
   SalesQuotation: ResolverTypeWrapper<Partial<SalesQuotation>>;
   SalesReturn: ResolverTypeWrapper<Partial<SalesReturn>>;
   SalesReturnInput: ResolverTypeWrapper<Partial<SalesReturnInput>>;
+  SalesReturnLine: ResolverTypeWrapper<Partial<SalesReturnLine>>;
+  SalesReturnLineInput: ResolverTypeWrapper<Partial<SalesReturnLineInput>>;
+  ScheduleAllocationLine: ResolverTypeWrapper<Partial<ScheduleAllocationLine>>;
+  ScheduleAllocationLineInput: ResolverTypeWrapper<Partial<ScheduleAllocationLineInput>>;
   SearchHit: ResolverTypeWrapper<Partial<SearchHit>>;
   SendNotificationAudienceInput: ResolverTypeWrapper<Partial<SendNotificationAudienceInput>>;
   SendNotificationInput: ResolverTypeWrapper<Partial<SendNotificationInput>>;
@@ -10294,8 +10430,6 @@ export type ResolversParentTypes = ResolversObject<{
   AgedPayableRow: Partial<AgedPayableRow>;
   AgedReceivableInvoiceLine: Partial<AgedReceivableInvoiceLine>;
   AgedReceivableRow: Partial<AgedReceivableRow>;
-  AllocationLine: Partial<AllocationLine>;
-  AllocationLineInput: Partial<AllocationLineInput>;
   AllocationSchedule: Partial<AllocationSchedule>;
   AllocationScheduleInput: Partial<AllocationScheduleInput>;
   Applicant: Partial<Applicant>;
@@ -10423,6 +10557,8 @@ export type ResolversParentTypes = ResolversObject<{
   DashboardWidgetPreferencesInput: Partial<DashboardWidgetPreferencesInput>;
   DeliveryChallan: Partial<DeliveryChallan>;
   DeliveryChallanInput: Partial<DeliveryChallanInput>;
+  DeliveryChallanLine: Partial<DeliveryChallanLine>;
+  DeliveryChallanLineInput: Partial<DeliveryChallanLineInput>;
   DeliveryItem: Partial<DeliveryItem>;
   DeliveryItemInput: Partial<DeliveryItemInput>;
   DeliveryOrder: Partial<DeliveryOrder>;
@@ -10462,6 +10598,8 @@ export type ResolversParentTypes = ResolversObject<{
   GoalInput: Partial<GoalInput>;
   GoodsReceipt: Partial<GoodsReceipt>;
   GoodsReceiptInput: Partial<GoodsReceiptInput>;
+  GoodsReceiptLineItem: Partial<GoodsReceiptLineItem>;
+  GoodsReceiptLineItemInput: Partial<GoodsReceiptLineItemInput>;
   GstinCheckResult: Partial<GstinCheckResult>;
   HrMaster: Partial<HrMaster>;
   ICTLineItem: Partial<IctLineItem>;
@@ -10475,6 +10613,8 @@ export type ResolversParentTypes = ResolversObject<{
   IndividualPriceListLineInput: Partial<IndividualPriceListLineInput>;
   Int: Partial<Scalars['Int']['output']>;
   IntercompanyAllocation: Partial<IntercompanyAllocation>;
+  IntercompanyAllocationLine: Partial<IntercompanyAllocationLine>;
+  IntercompanyAllocationLineInput: Partial<IntercompanyAllocationLineInput>;
   IntercompanyJournalEntry: Partial<IntercompanyJournalEntry>;
   IntercompanyJournalLine: Partial<IntercompanyJournalLine>;
   IntercompanyJournalLineInput: Partial<IntercompanyJournalLineInput>;
@@ -10597,6 +10737,10 @@ export type ResolversParentTypes = ResolversObject<{
   SalesQuotation: Partial<SalesQuotation>;
   SalesReturn: Partial<SalesReturn>;
   SalesReturnInput: Partial<SalesReturnInput>;
+  SalesReturnLine: Partial<SalesReturnLine>;
+  SalesReturnLineInput: Partial<SalesReturnLineInput>;
+  ScheduleAllocationLine: Partial<ScheduleAllocationLine>;
+  ScheduleAllocationLineInput: Partial<ScheduleAllocationLineInput>;
   SearchHit: Partial<SearchHit>;
   SendNotificationAudienceInput: Partial<SendNotificationAudienceInput>;
   SendNotificationInput: Partial<SendNotificationInput>;
@@ -10773,23 +10917,12 @@ export type AgedReceivableRowResolvers<ContextType = GraphQLContext, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type AllocationLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AllocationLine'] = ResolversParentTypes['AllocationLine']> = ResolversObject<{
-  amount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  costCenter: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  destinationAccount: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  percentage: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  targetOrganizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  targetOrganizationName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type AllocationScheduleResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['AllocationSchedule'] = ResolversParentTypes['AllocationSchedule']> = ResolversObject<{
   allocationMethod: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isActive: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  lines: Resolver<Array<ResolversTypes['AllocationLine']>, ParentType, ContextType>;
+  lines: Resolver<Array<ResolversTypes['ScheduleAllocationLine']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scheduleName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   seqNo: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -11438,11 +11571,28 @@ export type DashboardWidgetPreferencesResolvers<ContextType = GraphQLContext, Pa
 
 export type DeliveryChallanResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeliveryChallan'] = ResolversParentTypes['DeliveryChallan']> = ResolversObject<{
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  customerId: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  customerName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  driverName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  items: Resolver<Array<ResolversTypes['DeliveryChallanLine']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  salesOrderId: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  salesOrderNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shippingAddress: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  vehicleNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DeliveryChallanLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['DeliveryChallanLine'] = ResolversParentTypes['DeliveryChallanLine']> = ResolversObject<{
+  itemName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unit: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -11789,8 +11939,26 @@ export type GoodsReceiptResolvers<ContextType = GraphQLContext, ParentType exten
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lineItems: Resolver<Array<ResolversTypes['GoodsReceiptLineItem']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  purchaseOrderId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  purchaseOrderNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  vendorId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  vendorName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  warehouseId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  warehouseName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GoodsReceiptLineItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GoodsReceiptLineItem'] = ResolversParentTypes['GoodsReceiptLineItem']> = ResolversObject<{
+  itemDescription: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  itemId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  orderedQty: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  receivedQty: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unit: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  unitPrice: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -11885,7 +12053,7 @@ export type IntercompanyAllocationResolvers<ContextType = GraphQLContext, Parent
   description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   journalEntryId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  lines: Resolver<Array<ResolversTypes['AllocationLine']>, ParentType, ContextType>;
+  lines: Resolver<Array<ResolversTypes['IntercompanyAllocationLine']>, ParentType, ContextType>;
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -11896,6 +12064,16 @@ export type IntercompanyAllocationResolvers<ContextType = GraphQLContext, Parent
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalAllocated: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updatedAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IntercompanyAllocationLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['IntercompanyAllocationLine'] = ResolversParentTypes['IntercompanyAllocationLine']> = ResolversObject<{
+  amount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  costCenter: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  percentage: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  targetOrganizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  targetOrganizationName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -12476,6 +12654,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   postCurrencyRevaluation: Resolver<ResolversTypes['CurrencyRevaluation'], ParentType, ContextType, RequireFields<MutationPostCurrencyRevaluationArgs, 'id'>>;
   postFinanceChargeAssessment: Resolver<ResolversTypes['FinanceChargeAssessment'], ParentType, ContextType, RequireFields<MutationPostFinanceChargeAssessmentArgs, 'id'>>;
   postFixedAssetDepreciation: Resolver<ResolversTypes['FixedAsset'], ParentType, ContextType, RequireFields<MutationPostFixedAssetDepreciationArgs, 'id' | 'input'>>;
+  postGoodsReceipt: Resolver<ResolversTypes['GoodsReceipt'], ParentType, ContextType, RequireFields<MutationPostGoodsReceiptArgs, 'id'>>;
   postIntercompanyAllocation: Resolver<ResolversTypes['IntercompanyAllocation'], ParentType, ContextType, RequireFields<MutationPostIntercompanyAllocationArgs, 'id'>>;
   postIntercompanyJournalEntry: Resolver<ResolversTypes['IntercompanyJournalEntry'], ParentType, ContextType, RequireFields<MutationPostIntercompanyJournalEntryArgs, 'id'>>;
   postJournalEntry: Resolver<ResolversTypes['JournalEntry'], ParentType, ContextType, RequireFields<MutationPostJournalEntryArgs, 'id'>>;
@@ -13677,13 +13856,36 @@ export type SalesReturnResolvers<ContextType = GraphQLContext, ParentType extend
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   customerId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   customerInvoiceId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  customerInvoiceNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  customerName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   docDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   docNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  items: Resolver<Array<ResolversTypes['SalesReturnLine']>, ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   reason: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  salesOrderId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  salesOrderNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalAmount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalesReturnLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesReturnLine'] = ResolversParentTypes['SalesReturnLine']> = ResolversObject<{
+  amount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  itemName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unit: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  unitPrice: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ScheduleAllocationLineResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['ScheduleAllocationLine'] = ResolversParentTypes['ScheduleAllocationLine']> = ResolversObject<{
+  amount: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  destinationAccount: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  percentage: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -13754,6 +13956,7 @@ export type StockMovementResolvers<ContextType = GraphQLContext, ParentType exte
   fromLocation: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   itemId: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  itemName: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   movementDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   movementType: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -14219,7 +14422,6 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   AgedPayableRow: AgedPayableRowResolvers<ContextType>;
   AgedReceivableInvoiceLine: AgedReceivableInvoiceLineResolvers<ContextType>;
   AgedReceivableRow: AgedReceivableRowResolvers<ContextType>;
-  AllocationLine: AllocationLineResolvers<ContextType>;
   AllocationSchedule: AllocationScheduleResolvers<ContextType>;
   Applicant: ApplicantResolvers<ContextType>;
   Appraisal: AppraisalResolvers<ContextType>;
@@ -14265,6 +14467,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   DashboardPreferences: DashboardPreferencesResolvers<ContextType>;
   DashboardWidgetPreferences: DashboardWidgetPreferencesResolvers<ContextType>;
   DeliveryChallan: DeliveryChallanResolvers<ContextType>;
+  DeliveryChallanLine: DeliveryChallanLineResolvers<ContextType>;
   DeliveryItem: DeliveryItemResolvers<ContextType>;
   DeliveryOrder: DeliveryOrderResolvers<ContextType>;
   DepreciationEntry: DepreciationEntryResolvers<ContextType>;
@@ -14288,6 +14491,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   GeneralLedger: GeneralLedgerResolvers<ContextType>;
   Goal: GoalResolvers<ContextType>;
   GoodsReceipt: GoodsReceiptResolvers<ContextType>;
+  GoodsReceiptLineItem: GoodsReceiptLineItemResolvers<ContextType>;
   GstinCheckResult: GstinCheckResultResolvers<ContextType>;
   HrMaster: HrMasterResolvers<ContextType>;
   ICTLineItem: IctLineItemResolvers<ContextType>;
@@ -14296,6 +14500,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   IndividualPriceList: IndividualPriceListResolvers<ContextType>;
   IndividualPriceListLine: IndividualPriceListLineResolvers<ContextType>;
   IntercompanyAllocation: IntercompanyAllocationResolvers<ContextType>;
+  IntercompanyAllocationLine: IntercompanyAllocationLineResolvers<ContextType>;
   IntercompanyJournalEntry: IntercompanyJournalEntryResolvers<ContextType>;
   IntercompanyJournalLine: IntercompanyJournalLineResolvers<ContextType>;
   IntercompanyTransfer: IntercompanyTransferResolvers<ContextType>;
@@ -14373,6 +14578,8 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   SalesOrder: SalesOrderResolvers<ContextType>;
   SalesQuotation: SalesQuotationResolvers<ContextType>;
   SalesReturn: SalesReturnResolvers<ContextType>;
+  SalesReturnLine: SalesReturnLineResolvers<ContextType>;
+  ScheduleAllocationLine: ScheduleAllocationLineResolvers<ContextType>;
   SearchHit: SearchHitResolvers<ContextType>;
   SendQuotationResult: SendQuotationResultResolvers<ContextType>;
   SiteLocation: SiteLocationResolvers<ContextType>;

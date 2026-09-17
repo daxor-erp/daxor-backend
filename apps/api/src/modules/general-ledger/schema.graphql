@@ -161,9 +161,12 @@ extend type Query {
   generalLedgers(organizationId: String!, page: Int, limit: Int, fiscalYear: String, status: String): [GeneralLedger!]!
   chartOfAccount(id: ID!): ChartOfAccounts
   chartOfAccounts(organizationId: String!, page: Int, limit: Int, accountType: String): [ChartOfAccounts!]!
-  trialBalance(organizationId: String!): [TrialBalanceLine!]!
-  incomeStatement(organizationId: String!): IncomeStatementReport!
-  balanceSheet(organizationId: String!): BalanceSheetReport!
+  """Posted trial balance. Optional dateFrom/dateTo filter journal entryDate (inclusive)."""
+  trialBalance(organizationId: String!, dateFrom: String, dateTo: String): [TrialBalanceLine!]!
+  """P&L for the period — only journals with entryDate in [dateFrom, dateTo] when provided."""
+  incomeStatement(organizationId: String!, dateFrom: String, dateTo: String): IncomeStatementReport!
+  """Balance sheet as of dateTo (cumulative). dateFrom is ignored; omit dateTo for all-time."""
+  balanceSheet(organizationId: String!, dateFrom: String, dateTo: String): BalanceSheetReport!
   """Aged Payable report — outstanding vendor bills bucketed by days overdue (0 / 1-30 / 31-60 / 61-90 / 90+)."""
   agedPayable(organizationId: String!): [AgedPayableRow!]!
   """Aged Receivable report — outstanding customer invoices bucketed by days overdue."""

@@ -1,7 +1,7 @@
 import { GraphQLValidationError } from '@repo/errors'
 import { IntercompanyAllocationRepository } from './repository'
 
-export interface AllocationLineInput {
+export interface IntercompanyAllocationLineInput {
 	targetOrganizationId: string
 	targetOrganizationName?: string
 	percentage: number
@@ -18,7 +18,7 @@ export interface IntercompanyAllocationInput {
 	basisAmount: number
 	basisDate: string | Date
 	allocationMethod?: string
-	lines: AllocationLineInput[]
+	lines: IntercompanyAllocationLineInput[]
 	notes?: string
 	status?: string
 }

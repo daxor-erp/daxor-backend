@@ -26,15 +26,35 @@ function asPlain(doc: unknown): Record<string, unknown> {
   return doc as Record<string, unknown>;
 }
 
+function mapLineItem(l: Record<string, unknown>) {
+  return {
+    itemId: l.itemId != null ? String(l.itemId) : null,
+    itemDescription: String(l.itemDescription ?? ''),
+    orderedQty: Number(l.orderedQty) || 0,
+    receivedQty: Number(l.receivedQty) || 0,
+    unit: l.unit != null ? String(l.unit) : null,
+    unitPrice: l.unitPrice != null ? Number(l.unitPrice) : null,
+  };
+}
+
 function goodsReceiptToGraphQL(doc: unknown) {
   const o = asPlain(doc);
   const id = o._id != null ? String(o._id) : o.id != null ? String(o.id) : '';
+  const rawLines = Array.isArray(o.lineItems) ? o.lineItems : [];
   return {
     id,
     docNumber: String(o.docNumber ?? ''),
     docDate: graphqlIsoDate(o.docDate),
     status: String(o.status ?? 'DRAFT'),
     organizationId: String(o.organizationId ?? ''),
+    purchaseOrderId: o.purchaseOrderId != null ? String(o.purchaseOrderId) : null,
+    purchaseOrderNumber: o.purchaseOrderNumber != null ? String(o.purchaseOrderNumber) : null,
+    vendorId: o.vendorId != null ? String(o.vendorId) : null,
+    vendorName: o.vendorName != null ? String(o.vendorName) : null,
+    warehouseId: o.warehouseId != null ? String(o.warehouseId) : null,
+    warehouseName: o.warehouseName != null ? String(o.warehouseName) : null,
+    lineItems: rawLines.map((l) => mapLineItem(asPlain(l))),
+    notes: o.notes != null ? String(o.notes) : null,
     createdAt: graphqlIsoDate(o.createdAt),
   };
 }
@@ -68,6 +88,14 @@ export const resolvers = {
     ) => {
       const updated = await service.update(id, input as Parameters<GoodsReceiptService['update']>[1]);
       return goodsReceiptToGraphQL(updated);
+    },
+    postGoodsReceipt: async (
+      _: unknown,
+      { id }: { id: string },
+      context: GraphQLContext,
+    ) => {
+      const posted = await service.post(id, context.user?.id || 'system');
+      return goodsReceiptToGraphQL(posted);
     },
     deleteGoodsReceipt: async (_: unknown, { id }: { id: string }) => {
       await service.delete(id);

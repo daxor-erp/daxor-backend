@@ -1,4 +1,4 @@
-type AllocationLine {
+type ScheduleAllocationLine {
   destinationAccount: String!
   percentage: Float!
   amount: Float
@@ -10,13 +10,13 @@ type AllocationSchedule {
   scheduleName: String!
   sourceAccount: String!
   allocationMethod: String!
-  lines: [AllocationLine!]!
+  lines: [ScheduleAllocationLine!]!
   isActive: Boolean!
   organizationId: String!
   createdAt: String!
 }
 
-input AllocationLineInput {
+input ScheduleAllocationLineInput {
   destinationAccount: String!
   percentage: Float!
   amount: Float
@@ -26,7 +26,7 @@ input AllocationScheduleInput {
   scheduleName: String!
   sourceAccount: String!
   allocationMethod: String
-  lines: [AllocationLineInput!]!
+  lines: [ScheduleAllocationLineInput!]!
   isActive: Boolean
   organizationId: String!
 }

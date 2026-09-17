@@ -7,6 +7,13 @@ import { ApprovalRequestService, MODULE_KEY_SALES } from '../approval-request/se
 const service = new SalesReturnService()
 const approvalService = new ApprovalRequestService()
 
+function iso(d: unknown): string | null {
+  if (d == null) return null
+  const t = new Date(d as string | number | Date).getTime()
+  if (Number.isNaN(t)) return null
+  return new Date(t).toISOString()
+}
+
 export const resolvers = {
   Query: {
     salesreturn: async (_: any, { id }: { id: string }) => {
@@ -39,6 +46,16 @@ export const resolvers = {
       await service.delete(id)
       return true
     },
+  },
+  SalesReturn: {
+    id: (p: any) => String(p?._id ?? p?.id ?? ''),
+    docDate: (p: any) => iso(p.docDate) ?? '',
+    createdAt: (p: any) => iso(p.createdAt) ?? '',
+    items: (p: any) => p.items ?? [],
+    customerId: (p: any) => (p.customerId != null ? String(p.customerId) : null),
+    customerInvoiceId: (p: any) => (p.customerInvoiceId != null ? String(p.customerInvoiceId) : null),
+    salesOrderId: (p: any) => (p.salesOrderId != null ? String(p.salesOrderId) : null),
+    totalAmount: (p: any) => Number(p.totalAmount ?? 0),
   },
 }
 

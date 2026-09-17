@@ -22,4 +22,9 @@ export class UomRepository extends MongoBaseRepository<IUomDocument> {
 		if (filters.isActive != null) q.isActive = filters.isActive
 		return this.model.find(q).sort({ category: 1, name: 1 }).limit(500).exec()
 	}
+
+	/** Includes soft-deleted rows — used by ensureDefaults to avoid unique-index collisions. */
+	async findByNameIncludingDeleted(organizationId: string, name: string) {
+		return this.model.findOne({ organizationId, name: String(name).trim() }).exec()
+	}
 }

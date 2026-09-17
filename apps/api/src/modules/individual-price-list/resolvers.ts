@@ -79,6 +79,9 @@ export const resolvers = {
 			(parent.lines ?? []).map((line: any) => ({
 				...line,
 				itemId: line.itemId?._id?.toString() ?? line.itemId?.toString() ?? '',
+				name:
+					String(line.name ?? line.description ?? line.seqNo ?? '')
+						.trim() || 'Unnamed item',
 				standardRate: line.standardRate != null ? Number(line.standardRate) : 0,
 				customerRate: line.customerRate != null ? Number(line.customerRate) : 0,
 			})),
@@ -87,5 +90,8 @@ export const resolvers = {
 	IndividualPriceListLine: {
 		itemId: (parent: any) =>
 			parent.itemId?._id?.toString() ?? parent.itemId?.toString() ?? '',
+		name: (parent: any) =>
+			String(parent.name ?? parent.description ?? parent.seqNo ?? '')
+				.trim() || 'Unnamed item',
 	},
 }

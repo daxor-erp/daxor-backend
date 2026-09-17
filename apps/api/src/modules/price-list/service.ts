@@ -32,14 +32,21 @@ export class PriceListService {
 			sortOrder: 'asc',
 		})
 
-		const lines = (result.data ?? []).map((it: any) => ({
-			itemId: it._id,
-			seqNo: it.seqNo,
-			name: it.name,
-			unit: it.unit,
-			rate: it.rate != null ? Number(it.rate) : 0,
-			category: it.category,
-		}))
+		const lines = (result.data ?? [])
+			.filter((it: any) => it?._id != null)
+			.map((it: any) => {
+				const name =
+					String(it.name ?? it.description ?? it.seqNo ?? '')
+						.trim() || 'Unnamed item'
+				return {
+					itemId: it._id,
+					seqNo: it.seqNo != null ? String(it.seqNo) : undefined,
+					name,
+					unit: it.unit != null ? String(it.unit) : undefined,
+					rate: it.rate != null ? Number(it.rate) : 0,
+					category: it.category != null ? String(it.category) : undefined,
+				}
+			})
 
 		const listNumber = await this.generateListNumber(input.organizationId)
 

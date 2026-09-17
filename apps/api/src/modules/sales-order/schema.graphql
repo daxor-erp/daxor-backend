@@ -31,6 +31,8 @@ input CreateSalesOrderInput {
 	totalAmount: Float!
 	orderDate: String!
 	organizationId: ID!
+	"""When true, creates an immediate cash sale (status active, skips approval)."""
+	cashSale: Boolean
 	"""ordered_quantities | delivered_quantities. Defaults to ordered_quantities."""
 	invoicingPolicy: String
 }
