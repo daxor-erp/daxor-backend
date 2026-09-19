@@ -90,7 +90,7 @@ export async function createVendorApprovalRequestsWithAssignees(
 				severity: 'WARNING',
 				title: `Approval needed: ${payload.title}`,
 				message: `${requesterDisplayName} submitted a ${humanizeEntity(payload.entityType)} for your approval.`,
-				link: '/notifications',
+				link: '/org-admin/approvals',
 				referenceModule: 'approval-request',
 				referenceId: String((row as any)?._id ?? (row as any)?.id ?? ''),
 				moduleKey: String(payload.moduleKey ?? ''),

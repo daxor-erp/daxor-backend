@@ -40,7 +40,7 @@ export async function createPendingApprovalRequest(
 							severity: 'WARNING',
 							title: `Approval needed: ${opts.title}`,
 							message: `${requesterDisplayName} submitted a ${humanizeEntity(opts.entityType)} for your approval.`,
-							link: '/notifications',
+							link: '/org-admin/approvals',
 							referenceModule: 'approval-request',
 							referenceId: rowId,
 							moduleKey: opts.moduleKey,
@@ -81,7 +81,7 @@ export async function createPendingApprovalRequest(
 		assigneeApproverUserId: assigneeId,
 	})
 
-	// Notify the assigned approver. Best-effort — failures must not block submission.
+	// Notify only the configured module approver — never broadcast to the org.
 	if (deps.notificationService) {
 		await deps.notificationService.notify({
 			organizationId: String(opts.organizationId),
@@ -91,7 +91,7 @@ export async function createPendingApprovalRequest(
 			severity: 'WARNING',
 			title: `Approval needed: ${opts.title}`,
 			message: `${requesterDisplayName} submitted a ${humanizeEntity(opts.entityType)} for your approval.`,
-			link: '/notifications',
+			link: '/org-admin/approvals',
 			referenceModule: 'approval-request',
 			referenceId: String((created as any)?._id ?? (created as any)?.id ?? ''),
 			moduleKey: opts.moduleKey,
