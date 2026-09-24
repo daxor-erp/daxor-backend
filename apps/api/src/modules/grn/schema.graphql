@@ -3,6 +3,12 @@ type GRNLineItem {
   orderedQty: Float!
   receivedQty: Float!
   unitPrice: Float
+  """Combined lot/serial values stored on the receipt line."""
+  lotSerialNumbers: [String!]!
+  """Convenience: first lot value entered on the GRN form."""
+  lotNumber: String
+  """Convenience: first serial value entered on the GRN form."""
+  serialNumber: String
 }
 
 type LotSerialTraceEvent {
@@ -42,6 +48,9 @@ input GRNLineItemInput {
   orderedQty: Float!
   receivedQty: Float!
   unitPrice: Float
+  lotNumber: String
+  serialNumber: String
+  lotSerialNumbers: [String!]
 }
 
 input CreateGRNInput {
@@ -60,6 +69,8 @@ input UpdateGRNInput {
   status: String
   notes: String
   receivedDate: String
+  vendorName: String
+  lineItems: [GRNLineItemInput!]
 }
 
 extend type Query {

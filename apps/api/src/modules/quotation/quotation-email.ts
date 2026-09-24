@@ -33,7 +33,7 @@ export function buildQuotationEmailContent(quotation: {
 			const qty = Number(li.quantity ?? 0)
 			const up = Number(li.unitPrice ?? 0)
 			const tot = Number(li.total ?? 0)
-			return `<tr><td style="padding:8px;border:1px solid #ddd">${desc}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">${qty}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">$${up.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">$${tot.toFixed(2)}</td></tr>`
+			return `<tr><td style="padding:8px;border:1px solid #ddd">${desc}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">${qty}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">₹${up.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">₹${tot.toFixed(2)}</td></tr>`
 		}).join('') || ''
 
 	const qd = quotation.quotationDate ? new Date(quotation.quotationDate as string).toLocaleDateString() : ''
@@ -52,10 +52,10 @@ export function buildQuotationEmailContent(quotation: {
 <th style="padding:8px;border:1px solid #ddd;text-align:right">Unit</th>
 <th style="padding:8px;border:1px solid #ddd;text-align:right">Line total</th>
 </tr></thead><tbody>${rows}</tbody></table>
-<p><strong>Subtotal:</strong> $${Number(quotation.subtotal ?? 0).toFixed(2)}<br/>
-<strong>Discount:</strong> -$${Number(quotation.discountAmount ?? 0).toFixed(2)}<br/>
-<strong>Tax:</strong> $${Number(quotation.taxAmount ?? 0).toFixed(2)}<br/>
-<strong>Total:</strong> $${Number(quotation.totalAmount ?? 0).toFixed(2)}</p>
+<p><strong>Subtotal:</strong> ₹${Number(quotation.subtotal ?? 0).toFixed(2)}<br/>
+<strong>Discount:</strong> -₹${Number(quotation.discountAmount ?? 0).toFixed(2)}<br/>
+<strong>Tax:</strong> ₹${Number(quotation.taxAmount ?? 0).toFixed(2)}<br/>
+<strong>Total:</strong> ₹${Number(quotation.totalAmount ?? 0).toFixed(2)}</p>
 ${quotation.terms ? `<p><strong>Terms</strong><br/>${escapeHtml(quotation.terms).replace(/\n/g, '<br/>')}</p>` : ''}
 ${quotation.notes ? `<p><strong>Notes</strong><br/>${escapeHtml(quotation.notes).replace(/\n/g, '<br/>')}</p>` : ''}
 <p style="color:#6b7280;font-size:12px">This message was sent from your ERP system.</p>
@@ -69,10 +69,10 @@ ${quotation.notes ? `<p><strong>Notes</strong><br/>${escapeHtml(quotation.notes)
 		'',
 		...(quotation.lineItems || []).map(
 			(li) =>
-				`${li.description || ''} | qty ${li.quantity} @ $${Number(li.unitPrice ?? 0).toFixed(2)} = $${Number(li.total ?? 0).toFixed(2)}`,
+				`${li.description || ''} | qty ${li.quantity} @ ₹${Number(li.unitPrice ?? 0).toFixed(2)} = ₹${Number(li.total ?? 0).toFixed(2)}`,
 		),
 		'',
-		`Total: $${Number(quotation.totalAmount ?? 0).toFixed(2)}`,
+		`Total: ₹${Number(quotation.totalAmount ?? 0).toFixed(2)}`,
 	]
 	const text = textLines.join('\n')
 
@@ -82,16 +82,18 @@ ${quotation.notes ? `<p><strong>Notes</strong><br/>${escapeHtml(quotation.notes)
 /**
  * Sends full quotation details to the client over SMTP (Nodemailer).
  * Throws if SMTP credentials are missing or send fails.
+ * @param toEmail — destination (must be the customer's email from master data)
  */
 export async function sendQuotationEmailToClient(
 	quotation: Parameters<typeof buildQuotationEmailContent>[0],
+	toEmail?: string,
 ): Promise<void> {
 	if (!isSmtpConfigured()) {
 		throw new Error(
 			'SMTP is not configured. Set EMAIL_USER, EMAIL_PASSWORD, EMAIL_HOST (e.g. smtp.gmail.com), EMAIL_PORT (587 or 465), and EMAIL_FROM on the API server.',
 		)
 	}
-	const to = (quotation.customerId ?? quotation.clientId)?.email?.trim()
+	const to = String(toEmail ?? (quotation.customerId ?? quotation.clientId)?.email ?? '').trim()
 	if (!to) throw new Error('Customer has no email address')
 	const { subject, html, text } = buildQuotationEmailContent(quotation)
 	await sendHtmlEmail({ to, subject, html, text })

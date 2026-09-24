@@ -1,5 +1,6 @@
 import { SalesOrderRepository } from './repository'
 import { CustomerInvoiceService } from '../customer-invoice/service'
+import { GraphQLValidationError } from '@repo/errors'
 
 export class SalesOrderService {
 	private repository: SalesOrderRepository
@@ -23,7 +24,7 @@ export class SalesOrderService {
 
 		const cashSale = data.cashSale === true
 
-		return this.repository.create({
+		const payload: any = {
 			...data,
 			seqNo,
 			salesOrderNumber,
@@ -32,7 +33,16 @@ export class SalesOrderService {
 			clientId: normalizedCustomerId,
 			cashSale,
 			status: data.status ?? (cashSale ? 'active' : 'draft'),
-		})
+			subtotal: Number(data.subtotal ?? data.totalAmount ?? 0),
+			taxAmount: Number(data.taxAmount ?? 0),
+			totalAmount: Number(data.totalAmount ?? 0),
+			items: Array.isArray(data.items) ? data.items : [],
+		}
+		if (data.orderDate) payload.orderDate = new Date(data.orderDate)
+		if (data.deliveryDate) payload.deliveryDate = new Date(data.deliveryDate)
+		else delete payload.deliveryDate
+
+		return this.repository.create(payload)
 	}
 
 	async findById(id: string): Promise<any> {
@@ -141,12 +151,12 @@ export class SalesOrderService {
 		userId: string,
 	): Promise<any> {
 		const so = await this.repository.findById(salesOrderId)
-		if (!so) throw new Error('Sales order not found')
-		if ((so as any).deletedAt) throw new Error('Sales order was deleted')
+		if (!so) throw new GraphQLValidationError('Sales order not found')
+		if ((so as any).deletedAt) throw new GraphQLValidationError('Sales order was deleted')
 
 		const status = String((so as any).status ?? '')
 		if (!['approved', 'active', 'completed'].includes(status)) {
-			throw new Error(
+			throw new GraphQLValidationError(
 				`Cannot create an invoice for a sales order in status "${status}". ` +
 				'The order must be approved or active first.',
 			)
@@ -157,9 +167,8 @@ export class SalesOrderService {
 		if (policy === 'delivered_quantities') {
 			const delivered = Number((so as any).deliveredQuantity ?? 0)
 			if (delivered <= 0) {
-				throw new Error(
-					'There is no invoiceable line. This sales order uses the "Delivered quantities" invoicing policy. ' +
-					'Please make sure that at least some quantity has been delivered before creating an invoice.',
+				throw new GraphQLValidationError(
+					'Cannot create invoice yet. This sales order uses "Delivered quantities" policy — deliver at least some quantity first (Sales → Delivery Orders), then try Create Invoice again.',
 				)
 			}
 		}

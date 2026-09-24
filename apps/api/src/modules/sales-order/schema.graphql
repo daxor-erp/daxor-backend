@@ -1,3 +1,19 @@
+type SalesOrderItem {
+	itemId: ID
+	itemDescription: String!
+	quantity: Float!
+	unitPrice: Float!
+	lineTotal: Float!
+}
+
+input SalesOrderItemInput {
+	itemId: ID
+	itemDescription: String!
+	quantity: Float!
+	unitPrice: Float!
+	lineTotal: Float!
+}
+
 type SalesOrder {
 	id: ID!
 	seqNo: String!
@@ -6,9 +22,13 @@ type SalesOrder {
 	quotationId: ID
 	quotationStatus: String
 	projectId: ID
+	subtotal: Float!
+	taxAmount: Float!
 	totalAmount: Float!
 	status: String!
 	orderDate: String!
+	deliveryDate: String
+	items: [SalesOrderItem!]!
 	organizationId: ID!
 	cashSale: Boolean!
 	"""ordered_quantities: invoice on SO confirm. delivered_quantities: invoice only after delivery validated."""
@@ -28,8 +48,12 @@ input CreateSalesOrderInput {
 	projectId: ID
 	quotationId: ID
 	quotationStatus: String
+	subtotal: Float
+	taxAmount: Float
 	totalAmount: Float!
 	orderDate: String!
+	deliveryDate: String
+	items: [SalesOrderItemInput!]
 	organizationId: ID!
 	"""When true, creates an immediate cash sale (status active, skips approval)."""
 	cashSale: Boolean
@@ -40,8 +64,13 @@ input CreateSalesOrderInput {
 input UpdateSalesOrderInput {
 	customerId: ID
 	projectId: ID
+	subtotal: Float
+	taxAmount: Float
 	totalAmount: Float
 	status: String
+	orderDate: String
+	deliveryDate: String
+	items: [SalesOrderItemInput!]
 	"""ordered_quantities | delivered_quantities."""
 	invoicingPolicy: String
 	"""Updated when a delivery order is dispatched/delivered — tracks total quantity fulfilled."""
