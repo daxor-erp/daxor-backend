@@ -127,7 +127,8 @@ export class QuotationService {
     let emailSent = false
     try {
       const plain = typeof (populated as any).toObject === 'function' ? (populated as any).toObject() : populated
-      await sendQuotationEmailToClient(plain)
+      // Always send to the customer master email (same SMTP path as Test email)
+      await sendQuotationEmailToClient(plain, email)
       emailSent = true
     } catch (e) {
       logger.error('sendQuotation email error', e)

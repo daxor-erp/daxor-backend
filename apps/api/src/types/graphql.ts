@@ -1363,13 +1363,17 @@ export type CreateSalesOrderInput = {
   /** When true, creates an immediate cash sale (status active, skips approval). */
   cashSale: InputMaybe<Scalars['Boolean']['input']>;
   customerId: Scalars['ID']['input'];
+  deliveryDate: InputMaybe<Scalars['String']['input']>;
   /** ordered_quantities | delivered_quantities. Defaults to ordered_quantities. */
   invoicingPolicy: InputMaybe<Scalars['String']['input']>;
+  items: InputMaybe<Array<SalesOrderItemInput>>;
   orderDate: Scalars['String']['input'];
   organizationId: Scalars['ID']['input'];
   projectId: InputMaybe<Scalars['ID']['input']>;
   quotationId: InputMaybe<Scalars['ID']['input']>;
   quotationStatus: InputMaybe<Scalars['String']['input']>;
+  subtotal: InputMaybe<Scalars['Float']['input']>;
+  taxAmount: InputMaybe<Scalars['Float']['input']>;
   totalAmount: Scalars['Float']['input'];
 };
 
@@ -2232,15 +2236,24 @@ export type Grn = {
 export type GrnLineItem = {
   __typename?: 'GRNLineItem';
   itemDescription: Scalars['String']['output'];
+  /** Convenience: first lot value entered on the GRN form. */
+  lotNumber: Maybe<Scalars['String']['output']>;
+  /** Combined lot/serial values stored on the receipt line. */
+  lotSerialNumbers: Array<Scalars['String']['output']>;
   orderedQty: Scalars['Float']['output'];
   receivedQty: Scalars['Float']['output'];
+  /** Convenience: first serial value entered on the GRN form. */
+  serialNumber: Maybe<Scalars['String']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
 };
 
 export type GrnLineItemInput = {
   itemDescription: Scalars['String']['input'];
+  lotNumber: InputMaybe<Scalars['String']['input']>;
+  lotSerialNumbers: InputMaybe<Array<Scalars['String']['input']>>;
   orderedQty: Scalars['Float']['input'];
   receivedQty: Scalars['Float']['input'];
+  serialNumber: InputMaybe<Scalars['String']['input']>;
   unitPrice: InputMaybe<Scalars['Float']['input']>;
 };
 
@@ -3285,6 +3298,8 @@ export type Mutation = {
   /** Emails the vendor with the PO PDF attached, then marks the PO as sent. */
   sendPurchaseOrderByEmail: PurchaseOrder;
   sendQuotation: SendQuotationResult;
+  /** Dev/smoke: send a plain test email via SMTP to verify EMAIL_* config. Does not change quotations. */
+  sendTestEmail: Scalars['Boolean']['output'];
   /** Replace module-level approver assignments for an organization (org admin: own org only). */
   setOrganizationModuleApprovers: Organization;
   setPackageModuleAssignment: PackageModuleAssignment;
@@ -4826,6 +4841,12 @@ export type MutationSendPurchaseOrderByEmailArgs = {
 
 export type MutationSendQuotationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationSendTestEmailArgs = {
+  message: InputMaybe<Scalars['String']['input']>;
+  to: Scalars['String']['input'];
 };
 
 
@@ -8438,9 +8459,11 @@ export type SalesOrder = {
   customerId: Scalars['ID']['output'];
   /** Running total of quantity delivered — used to gate invoice creation under delivered_quantities policy. */
   deliveredQuantity: Scalars['Float']['output'];
+  deliveryDate: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   /** ordered_quantities: invoice on SO confirm. delivered_quantities: invoice only after delivery validated. */
   invoicingPolicy: Scalars['String']['output'];
+  items: Array<SalesOrderItem>;
   orderDate: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
   projectId: Maybe<Scalars['ID']['output']>;
@@ -8453,7 +8476,26 @@ export type SalesOrder = {
   refundedAt: Maybe<Scalars['String']['output']>;
   seqNo: Scalars['String']['output'];
   status: Scalars['String']['output'];
+  subtotal: Scalars['Float']['output'];
+  taxAmount: Scalars['Float']['output'];
   totalAmount: Scalars['Float']['output'];
+};
+
+export type SalesOrderItem = {
+  __typename?: 'SalesOrderItem';
+  itemDescription: Scalars['String']['output'];
+  itemId: Maybe<Scalars['ID']['output']>;
+  lineTotal: Scalars['Float']['output'];
+  quantity: Scalars['Float']['output'];
+  unitPrice: Scalars['Float']['output'];
+};
+
+export type SalesOrderItemInput = {
+  itemDescription: Scalars['String']['input'];
+  itemId: InputMaybe<Scalars['ID']['input']>;
+  lineTotal: Scalars['Float']['input'];
+  quantity: Scalars['Float']['input'];
+  unitPrice: Scalars['Float']['input'];
 };
 
 export type SalesQuotation = {
@@ -9030,9 +9072,11 @@ export type UpdateFixedAssetInput = {
 };
 
 export type UpdateGrnInput = {
+  lineItems: InputMaybe<Array<GrnLineItemInput>>;
   notes: InputMaybe<Scalars['String']['input']>;
   receivedDate: InputMaybe<Scalars['String']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  vendorName: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateHrMasterInput = {
@@ -9293,10 +9337,15 @@ export type UpdateSalesOrderInput = {
   customerId: InputMaybe<Scalars['ID']['input']>;
   /** Updated when a delivery order is dispatched/delivered — tracks total quantity fulfilled. */
   deliveredQuantity: InputMaybe<Scalars['Float']['input']>;
+  deliveryDate: InputMaybe<Scalars['String']['input']>;
   /** ordered_quantities | delivered_quantities. */
   invoicingPolicy: InputMaybe<Scalars['String']['input']>;
+  items: InputMaybe<Array<SalesOrderItemInput>>;
+  orderDate: InputMaybe<Scalars['String']['input']>;
   projectId: InputMaybe<Scalars['ID']['input']>;
   status: InputMaybe<Scalars['String']['input']>;
+  subtotal: InputMaybe<Scalars['Float']['input']>;
+  taxAmount: InputMaybe<Scalars['Float']['input']>;
   totalAmount: InputMaybe<Scalars['Float']['input']>;
 };
 
@@ -10298,6 +10347,8 @@ export type ResolversTypes = ResolversObject<{
   SalaryRangeInput: ResolverTypeWrapper<Partial<SalaryRangeInput>>;
   SalesEnquiry: ResolverTypeWrapper<Partial<SalesEnquiry>>;
   SalesOrder: ResolverTypeWrapper<Partial<SalesOrder>>;
+  SalesOrderItem: ResolverTypeWrapper<Partial<SalesOrderItem>>;
+  SalesOrderItemInput: ResolverTypeWrapper<Partial<SalesOrderItemInput>>;
   SalesQuotation: ResolverTypeWrapper<Partial<SalesQuotation>>;
   SalesReturn: ResolverTypeWrapper<Partial<SalesReturn>>;
   SalesReturnInput: ResolverTypeWrapper<Partial<SalesReturnInput>>;
@@ -10734,6 +10785,8 @@ export type ResolversParentTypes = ResolversObject<{
   SalaryRangeInput: Partial<SalaryRangeInput>;
   SalesEnquiry: Partial<SalesEnquiry>;
   SalesOrder: Partial<SalesOrder>;
+  SalesOrderItem: Partial<SalesOrderItem>;
+  SalesOrderItemInput: Partial<SalesOrderItemInput>;
   SalesQuotation: Partial<SalesQuotation>;
   SalesReturn: Partial<SalesReturn>;
   SalesReturnInput: Partial<SalesReturnInput>;
@@ -11899,8 +11952,11 @@ export type GrnResolvers<ContextType = GraphQLContext, ParentType extends Resolv
 
 export type GrnLineItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['GRNLineItem'] = ResolversParentTypes['GRNLineItem']> = ResolversObject<{
   itemDescription: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lotNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lotSerialNumbers: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   orderedQty: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   receivedQty: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  serialNumber: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   unitPrice: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -12683,6 +12739,7 @@ export type MutationResolvers<ContextType = GraphQLContext, ParentType extends R
   sendNotification: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<MutationSendNotificationArgs, 'input'>>;
   sendPurchaseOrderByEmail: Resolver<ResolversTypes['PurchaseOrder'], ParentType, ContextType, RequireFields<MutationSendPurchaseOrderByEmailArgs, 'id'>>;
   sendQuotation: Resolver<ResolversTypes['SendQuotationResult'], ParentType, ContextType, RequireFields<MutationSendQuotationArgs, 'id'>>;
+  sendTestEmail: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'to'>>;
   setOrganizationModuleApprovers: Resolver<ResolversTypes['Organization'], ParentType, ContextType, RequireFields<MutationSetOrganizationModuleApproversArgs, 'assignments' | 'organizationId'>>;
   setPackageModuleAssignment: Resolver<ResolversTypes['PackageModuleAssignment'], ParentType, ContextType, RequireFields<MutationSetPackageModuleAssignmentArgs, 'enabledModules' | 'organizationId' | 'packageId'>>;
   setQCInspectionOutcome: Resolver<ResolversTypes['QCInspection'], ParentType, ContextType, RequireFields<MutationSetQcInspectionOutcomeArgs, 'id' | 'outcome'>>;
@@ -13805,8 +13862,10 @@ export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends
   createdAt: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   customerId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   deliveredQuantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  deliveryDate: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   invoicingPolicy: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  items: Resolver<Array<ResolversTypes['SalesOrderItem']>, ParentType, ContextType>;
   orderDate: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organizationId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   projectId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -13819,7 +13878,18 @@ export type SalesOrderResolvers<ContextType = GraphQLContext, ParentType extends
   refundedAt: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   seqNo: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subtotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  taxAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   totalAmount: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SalesOrderItemResolvers<ContextType = GraphQLContext, ParentType extends ResolversParentTypes['SalesOrderItem'] = ResolversParentTypes['SalesOrderItem']> = ResolversObject<{
+  itemDescription: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  itemId: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  lineTotal: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  quantity: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  unitPrice: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -14576,6 +14646,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   SalaryRange: SalaryRangeResolvers<ContextType>;
   SalesEnquiry: SalesEnquiryResolvers<ContextType>;
   SalesOrder: SalesOrderResolvers<ContextType>;
+  SalesOrderItem: SalesOrderItemResolvers<ContextType>;
   SalesQuotation: SalesQuotationResolvers<ContextType>;
   SalesReturn: SalesReturnResolvers<ContextType>;
   SalesReturnLine: SalesReturnLineResolvers<ContextType>;

@@ -8,6 +8,7 @@ import { BankService } from '../bank/service'
 import { AuditLogService } from '../audit-log/service'
 import { isValidGstinFormat } from '../tax-compliance/providers/gstin-provider'
 import { isValidPanFormat } from '../tax-compliance/providers/pan-provider'
+import { PurchaseOrder } from '../purchase-order/model'
 
 const tagService = new TagService()
 const bankService = new BankService()
@@ -256,7 +257,6 @@ export class VendorService {
       const newStatus = String(incomingStatus).trim()
       // Gap 13 — prevent deactivating a vendor that has open (non-terminal) POs.
       if (newStatus === 'inactive') {
-        const { PurchaseOrder } = await import('../purchase-order/model')
         const openPOs = await PurchaseOrder.countDocuments({
           vendorId: id,
           deletedAt: null,

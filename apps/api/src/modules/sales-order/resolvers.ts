@@ -81,6 +81,13 @@ export const resolvers = {
 		cashSale: (parent: any) => parent.cashSale === true,
 		invoicingPolicy: (parent: any) => parent.invoicingPolicy ?? 'ordered_quantities',
 		deliveredQuantity: (parent: any) => Number(parent.deliveredQuantity ?? 0),
+		subtotal: (parent: any) => Number(parent.subtotal ?? 0),
+		taxAmount: (parent: any) => Number(parent.taxAmount ?? 0),
+		items: (parent: any) => parent.items ?? [],
+		orderDate: (parent: any) =>
+			parent.orderDate ? new Date(parent.orderDate).toISOString() : null,
+		deliveryDate: (parent: any) =>
+			parent.deliveryDate ? new Date(parent.deliveryDate).toISOString() : null,
 		refundedAt: (parent: any) =>
 			parent.refundedAt ? new Date(parent.refundedAt).toISOString() : null,
 		refundAmount: (parent: any) =>

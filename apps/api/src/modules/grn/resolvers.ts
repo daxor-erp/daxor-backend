@@ -46,11 +46,29 @@ function grnLineToGraphQL(item: Record<string, unknown>) {
     const n = typeof up === 'number' ? up : parseFloat(String(up))
     unitPrice = Number.isFinite(n) ? n : null
   }
+  const fromArray = Array.isArray(item.lotSerialNumbers)
+    ? (item.lotSerialNumbers as unknown[]).map((x) => String(x).trim()).filter(Boolean)
+    : []
+  const lotNumber =
+    item.lotNumber != null && String(item.lotNumber).trim() !== ''
+      ? String(item.lotNumber).trim()
+      : fromArray[0] ?? null
+  const serialNumber =
+    item.serialNumber != null && String(item.serialNumber).trim() !== ''
+      ? String(item.serialNumber).trim()
+      : fromArray.length > 1
+        ? fromArray[1]
+        : fromArray.length === 1 && lotNumber == null
+          ? fromArray[0]
+          : null
   return {
     itemDescription: String(item.itemDescription ?? ''),
     orderedQty,
     receivedQty,
     unitPrice,
+    lotSerialNumbers: fromArray,
+    lotNumber,
+    serialNumber,
   }
 }
 

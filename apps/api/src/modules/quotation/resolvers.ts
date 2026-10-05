@@ -1,10 +1,11 @@
 import { QuotationService } from './service'
 import { Quotation } from './model'
 import type { GraphQLContext } from '~/types/graphql.context'
-import { GraphQLAuthError } from '@repo/errors'
+import { GraphQLAuthError, GraphQLValidationError } from '@repo/errors'
 import { assertAuthenticated } from '../auth/authz'
 import { ApprovalRequestService, MODULE_KEY_QUOTATIONS } from '../approval-request/service'
 import { QUOTATION_PARTY_POPULATE, mapPartyRef } from './party'
+import { sendHtmlEmail } from '~/lib/mail'
 
 const service = new QuotationService()
 const approvalService = new ApprovalRequestService()
@@ -80,6 +81,34 @@ export const resolvers = {
         ...result,
         quotation: await withPartyPopulated(result.quotation),
       }
+    },
+
+    sendTestEmail: async (
+      _: unknown,
+      { to, message }: { to: string; message?: string | null },
+      ctx: GraphQLContext,
+    ) => {
+      assertAuthenticated(ctx)
+      const dest = String(to ?? '').trim()
+      if (!dest || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dest)) {
+        throw new GraphQLValidationError('Enter a valid destination email address')
+      }
+      const body = String(message ?? '').trim() || 'This is a test email from Daxor ERP. If you received it, SMTP is working.'
+      const when = new Date().toLocaleString()
+      const escaped = body
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br/>')
+      await sendHtmlEmail({
+        to: dest,
+        subject: 'Daxor ERP — SMTP test email',
+        text: `${body}\n\nSent at: ${when}`,
+        html: `<p><strong>Daxor ERP — SMTP test</strong></p>
+<p>${escaped}</p>
+<p style="color:#64748b;font-size:12px">Sent at ${when}</p>`,
+      })
+      return true
     },
 
     createSOFromQuotation: async (_: unknown, { quotationId }: { quotationId: string }, ctx: GraphQLContext) => {

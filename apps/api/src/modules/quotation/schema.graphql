@@ -106,6 +106,8 @@ extend type Mutation {
 	deleteQuotation(id: ID!): Boolean!
 	submitQuotationForApproval(id: ID!): Quotation!
 	sendQuotation(id: ID!): SendQuotationResult!
+	"""Dev/smoke: send a plain test email via SMTP to verify EMAIL_* config. Does not change quotations."""
+	sendTestEmail(to: String!, message: String): Boolean!
 	"""Convert an approved/accepted quotation into a Sales Order (Odoo: Confirm button)."""
 	createSOFromQuotation(quotationId: ID!): SalesOrder!
 }

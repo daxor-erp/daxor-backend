@@ -189,7 +189,7 @@ async function notifyAssignee(
 			severity: 'WARNING',
 			title: `Approval needed: ${opts.title}`,
 			message: `${opts.requesterName ?? 'A colleague'} submitted a ${humanizeEntity(opts.entityType)} for your approval.`,
-			link: '/notifications',
+			link: '/org-admin/approvals',
 			referenceModule: 'approval-request',
 			referenceId: opts.referenceId,
 			moduleKey: opts.moduleKey,

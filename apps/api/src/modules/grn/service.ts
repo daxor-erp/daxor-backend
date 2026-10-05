@@ -19,6 +19,52 @@ function parseDate(value: unknown, fallback: Date): Date {
   return fallback
 }
 
+/** Map UI lotNumber / serialNumber / lotSerialNumbers into the stored array. */
+function mapGrnLineItems(lineItems: unknown[]): Array<{
+  itemDescription: string
+  orderedQty: number
+  receivedQty: number
+  unitPrice: number
+  lotSerialNumbers: string[]
+  lotNumber?: string
+  serialNumber?: string
+}> {
+  return lineItems.map((raw: Record<string, unknown>) => {
+    const itemDescription = String(raw.itemDescription ?? '').trim() || 'Item'
+    const orderedQty = parseFloat(String(raw.orderedQty ?? 0)) || 0
+    const receivedQty = parseFloat(String(raw.receivedQty ?? 0)) || 0
+    const upRaw = raw.unitPrice
+    const unitPrice =
+      upRaw == null || upRaw === ''
+        ? 0
+        : (() => {
+            const n = typeof upRaw === 'number' ? upRaw : parseFloat(String(upRaw))
+            return Number.isFinite(n) ? n : 0
+          })()
+
+    const fromArray = Array.isArray(raw.lotSerialNumbers)
+      ? (raw.lotSerialNumbers as unknown[]).map((x) => String(x).trim()).filter(Boolean)
+      : []
+    const lot = raw.lotNumber != null ? String(raw.lotNumber).trim() : ''
+    const serial = raw.serialNumber != null ? String(raw.serialNumber).trim() : ''
+    const lotSerialNumbers = [
+      ...fromArray,
+      ...(lot && !fromArray.includes(lot) ? [lot] : []),
+      ...(serial && !fromArray.includes(serial) && serial !== lot ? [serial] : []),
+    ]
+
+    return {
+      itemDescription,
+      orderedQty,
+      receivedQty,
+      unitPrice,
+      lotSerialNumbers,
+      ...(lot ? { lotNumber: lot } : {}),
+      ...(serial ? { serialNumber: serial } : {}),
+    }
+  })
+}
+
 export class GRNService {
   private repository: GRNRepository
   constructor() {
@@ -48,26 +94,7 @@ export class GRNService {
       throw new Error('Invalid received date')
     }
 
-    const mappedLines = lineItems.map((raw: Record<string, unknown>) => {
-      const itemDescription = String(raw.itemDescription ?? '').trim() || 'Item'
-      const orderedQty = parseFloat(String(raw.orderedQty ?? 0)) || 0
-      const receivedQty = parseFloat(String(raw.receivedQty ?? 0)) || 0
-      const upRaw = raw.unitPrice
-      const unitPrice =
-        upRaw == null || upRaw === ''
-          ? 0
-          : (() => {
-              const n = typeof upRaw === 'number' ? upRaw : parseFloat(String(upRaw))
-              return Number.isFinite(n) ? n : 0
-            })()
-      return {
-        itemDescription,
-        orderedQty,
-        receivedQty,
-        unitPrice,
-        lotSerialNumbers: Array.isArray(raw.lotSerialNumbers) ? raw.lotSerialNumbers : [],
-      }
-    })
+    const mappedLines = mapGrnLineItems(lineItems as Record<string, unknown>[])
 
     if (!mappedLines.some((l) => l.receivedQty > 0)) {
       throw new Error('At least one line must have received quantity greater than zero')
@@ -150,6 +177,19 @@ export class GRNService {
         throw new Error('Invalid received date')
       }
       payload.receivedDate = d
+    }
+
+    if (input.vendorName !== undefined) {
+      const vn = input.vendorName == null ? '' : String(input.vendorName).trim()
+      payload.vendorName = vn === '' ? undefined : vn
+    }
+
+    if (Array.isArray(input.lineItems)) {
+      const mapped = mapGrnLineItems(input.lineItems as Record<string, unknown>[])
+      if (!mapped.some((l) => l.receivedQty > 0)) {
+        throw new Error('At least one line must have received quantity greater than zero')
+      }
+      payload.lineItems = mapped
     }
 
     if (Object.keys(payload).length === 0) {
