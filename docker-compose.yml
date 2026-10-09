@@ -23,10 +23,9 @@ services:
     environment:
       NODE_ENV: development
       PORT: "4000"
-      # Atlas holds the real data. The database name must be in the URI;
-      # DB_NAME is not appended by the Mongo connection.
-      MONGODB_URI: mongodb+srv://daxorerp_db_user:DmlypPY4ulDN2P3D@daxor-erp.jnpln6i.mongodb.net/daxor_db_production
-      DB_NAME: daxor_db_production
+      # Atlas database that holds the copied local data. The path must be /daxor_db.
+      MONGODB_URI: mongodb+srv://daxorerp_db_user:DmlypPY4ulDN2P3D@daxor-erp.jnpln6i.mongodb.net/daxor_db
+      DB_NAME: daxor_db
       PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
     depends_on:
