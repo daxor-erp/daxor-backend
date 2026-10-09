@@ -1,0 +1,53 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - apps/api/.env
+    environment:
+      NODE_ENV: development
+      PORT: "4000"
+      # Host .env points at 127.0.0.1. Inside Compose the database is the mongo service.
+      MONGODB_URI: mongodb://mongo:27017/daxor_db
+      DB_NAME: daxor_db
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/apps/api/uploads
+      - logs:/app/apps/api/logs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/ping').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  mongo_data:
+  uploads:
+  logs:
